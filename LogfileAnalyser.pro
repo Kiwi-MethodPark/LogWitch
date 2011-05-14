@@ -2,7 +2,8 @@ TEMPLATE = app
 TARGET = LogfileAnalyser
 QT += core \
     gui
-HEADERS += Assert.h \
+HEADERS += LogData/LogEntryParser_dummy.h \
+    Assert.h \
     LogData/LogEntryAttributes.h \
     LogData/LogEntryAttributeFactory.h \
     LogData/LogEntryParser_Logfile.h \
@@ -11,7 +12,8 @@ HEADERS += Assert.h \
     LogData/LogEntryFactory.h \
     LogData/LogEntry.h \
     logfileanalyser.h
-SOURCES += LogData/LogEntryAttributes.cpp \
+SOURCES += LogData/LogEntryParser_dummy.cpp \
+    LogData/LogEntryAttributes.cpp \
     LogData/LogEntryAttributeFactory.cpp \
     LogData/LogEntryParser_Logfile.cpp \
     LogData/StringCache.cpp \
