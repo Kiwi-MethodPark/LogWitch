@@ -1,0 +1,6 @@
+*.o
+debug/*
+release/*
+ui_*.h
+Makefile*
+LogfileAnalyser
