@@ -7,15 +7,15 @@
 
 #include "LogEntryFactory.h"
 
+
 LogEntryFactory::LogEntryFactory() {
-	// TODO Auto-generated constructor stub
+
 
 }
 
-boost::shared_ptr<LogEntry> LogEntryFactory::generateLogEntry( const QDateTime &date, boost::shared_ptr<QString> source, boost::shared_ptr<QString> severity, const QString &message)
+boost::shared_ptr<LogEntry> LogEntryFactory::generateLogEntry( const QDateTime &date, const QString &message)
 {
-	severity = severityCache.getString( severity );
-	source = sourceCache.getString( source );
+	boost::shared_ptr<LogEntryAttributes> attr = m_indexedAttributesFactory.getNewLogEntryAttributes();
 
-	return boost::shared_ptr<LogEntry>( new LogEntry( date, source, severity, message ) );
+	return boost::shared_ptr<LogEntry>( new LogEntry( date, attr, message ) );
 }

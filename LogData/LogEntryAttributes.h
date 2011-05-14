@@ -19,6 +19,10 @@ public:
 
 	LogEntryAttributes( LogEntryAttributeFactory *factory, const std::vector<boost::shared_ptr<QString> > &defAttributes );
 
+	void setAttribute( boost::shared_ptr<QString>, int idx );
+
+	boost::shared_ptr<const QString> getAttribute( int idx ) const;
+
 private:
 	std::vector<boost::shared_ptr<QString> > attributes;
 

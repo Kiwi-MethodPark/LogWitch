@@ -10,6 +10,7 @@
 #include <boost/shared_ptr.hpp>
 #include "LogEntry.h"
 #include "StringCache.h"
+#include "LogData/LogEntryAttributeFactory.h"
 
 /**
  * This class generates a new log entry and ensures the uniqueness of
@@ -19,16 +20,10 @@ class LogEntryFactory {
 public:
 	LogEntryFactory();
 
-	boost::shared_ptr<LogEntry> generateLogEntry( const QDateTime &date, boost::shared_ptr<QString> source, boost::shared_ptr<QString> severity, const QString &message );
-
-	StringCache &getSeverityCache( ) { return severityCache; }
-
-	StringCache &getSourceCache() { return sourceCache; }
+	boost::shared_ptr<LogEntry> generateLogEntry( const QDateTime &date, const QString &message );
 
 private:
-	StringCache severityCache;
-
-	StringCache sourceCache;
+	LogEntryAttributeFactory m_indexedAttributesFactory;
 };
 
 #endif /* LOGENTRYFACTORY_H_ */

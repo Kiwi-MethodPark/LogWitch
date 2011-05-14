@@ -13,14 +13,17 @@
 
 #include <boost/shared_ptr.hpp>
 
+class LogEntryAttributes;
+
 class LogEntry {
 public:
-	LogEntry(const QDateTime &date, boost::shared_ptr<QString> source, boost::shared_ptr<QString> severity, const QString &message );
+	LogEntry(const QDateTime &date, boost::shared_ptr<LogEntryAttributes> attr,  const QString &message );
 
 private:
 	QDateTime timestamp;
-	boost::shared_ptr<QString> source;
-	boost::shared_ptr<QString> severity;
+
+	boost::shared_ptr<LogEntryAttributes> indexedLogEntries;
+
 	QString message;
 };
 
