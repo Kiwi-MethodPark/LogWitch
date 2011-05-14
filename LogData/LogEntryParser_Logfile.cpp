@@ -12,8 +12,9 @@
 LogEntryParser_Logfile::LogEntryParser_Logfile( const QString &filename)
 	: logfile( filename )
 	, logfileStreamReady( false )
-	, lineMessageRegex( new QRegExp("") )
+	, lineMessageRegex( new QRegExp("^([\\d\\.\\\\]+)\\s+([\\d\\.\\:]+)\\s+([\\w]+)\\s+(\".+\"|[\\S]+)\\s+\\[(.*)\\]:") )
 {
+	lineMessageRegex->setMinimal(true);
 
 
 }
