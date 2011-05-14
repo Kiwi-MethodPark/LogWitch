@@ -24,3 +24,13 @@ LogEntryAttributes &LogEntry::getAttributes()
 {
 	return *indexedLogEntries;
 }
+
+const QDateTime &LogEntry::getTimestamp() const
+{
+	return timestamp;
+}
+
+const QString &LogEntry::getMessage() const
+{
+	return message;
+}

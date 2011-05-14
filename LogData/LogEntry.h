@@ -22,6 +22,11 @@ public:
 	const LogEntryAttributes &getAttributes() const;
 
 	LogEntryAttributes &getAttributes();
+
+	const QDateTime &getTimestamp() const;
+
+	const QString &getMessage() const;
+
 private:
 	QDateTime timestamp;
 
