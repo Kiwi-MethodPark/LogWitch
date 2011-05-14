@@ -19,6 +19,11 @@ LogEntryParser_Logfile::LogEntryParser_Logfile( const QString &filename)
 
 }
 
+const LogEntryAttributeFactory *LogEntryParser_Logfile::getLogEntryAttributeFactory() const
+{
+	return NULL; //m_LogEntryFactory.get();
+}
+
 void LogEntryParser_Logfile::init()
 {
     if (!logfile.open(QIODevice::ReadOnly | QIODevice::Text))

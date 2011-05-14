@@ -23,6 +23,8 @@ public:
 
 	virtual boost::shared_ptr<LogEntry> getNextLogEntry();
 
+	virtual const LogEntryAttributeFactory *getLogEntryAttributeFactory() const;
+
 private:
 	void init();
 
