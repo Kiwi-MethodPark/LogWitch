@@ -7,7 +7,9 @@
 
 #ifndef LOGENTRYPARSER_H_
 #define LOGENTRYPARSER_H_
+#include <boost/shared_ptr.hpp>
 
+class LogEntry;
 /**
  * This class parses a line or more lines from a log file and passes the found
  * elements to the LogEntryFactory for generating a new LogEntry.
