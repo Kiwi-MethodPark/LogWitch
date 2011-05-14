@@ -44,7 +44,7 @@ public:
 	/**
 	 * Returns the description for a given field idx.
 	 */
-	const QString& getDescription( int idx );
+	const QString& getDescription( int idx ) const;
 
 	/**
 	 * Returns the correspinding string cache.

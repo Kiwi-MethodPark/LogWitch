@@ -50,7 +50,7 @@ int LogEntryAttributeFactory::getNumberOfFields( ) const
 	return fieldDescriptions.size();
 }
 
-const QString& LogEntryAttributeFactory::getDescription( int idx )
+const QString& LogEntryAttributeFactory::getDescription( int idx ) const
 {
 	LFA_ASSERT_D( m_disallowAddingFields, "Getting descriptions of fields only allowed if all fields are added!" );
 	return fieldDescriptions[idx];
