@@ -19,3 +19,13 @@ boost::shared_ptr<LogEntry> LogEntryFactory::generateLogEntry( const QDateTime &
 
 	return boost::shared_ptr<LogEntry>( new LogEntry( date, attr, message ) );
 }
+
+const LogEntryAttributeFactory *LogEntryFactory::getLogEntryAttributeFactory() const
+{
+	return &m_indexedAttributesFactory;
+}
+
+LogEntryAttributeFactory *LogEntryFactory::getLogEntryAttributeFactory()
+{
+	return &m_indexedAttributesFactory;
+}

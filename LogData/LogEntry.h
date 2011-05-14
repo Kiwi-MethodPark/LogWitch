@@ -19,6 +19,9 @@ class LogEntry {
 public:
 	LogEntry(const QDateTime &date, boost::shared_ptr<LogEntryAttributes> attr,  const QString &message );
 
+	const LogEntryAttributes &getAttributes() const;
+
+	LogEntryAttributes &getAttributes();
 private:
 	QDateTime timestamp;
 

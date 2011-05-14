@@ -14,3 +14,13 @@ LogEntry::LogEntry(const QDateTime &date, boost::shared_ptr<LogEntryAttributes> 
 {
 
 }
+
+const LogEntryAttributes &LogEntry::getAttributes() const
+{
+	return *indexedLogEntries;
+}
+
+LogEntryAttributes &LogEntry::getAttributes()
+{
+	return *indexedLogEntries;
+}
