@@ -56,7 +56,7 @@ const QString& LogEntryAttributeFactory::getDescription( int idx )
 	return fieldDescriptions[idx];
 }
 
-const StringCache& LogEntryAttributeFactory::getCache( int idx )
+StringCache& LogEntryAttributeFactory::getCache( int idx )
 {
 	LFA_ASSERT_D( m_disallowAddingFields, "Getting caches of fields only allowed if all fields are added!" );
 	return fieldCaches[idx];

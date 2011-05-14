@@ -49,7 +49,7 @@ public:
 	/**
 	 * Returns the correspinding string cache.
 	 */
-	const StringCache& getCache( int idx );
+	StringCache& getCache( int idx );
 
 	/**
 	 * Disallows adding fields and enables the usage of all getter
