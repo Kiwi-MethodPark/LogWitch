@@ -14,7 +14,8 @@ HEADERS += LogData/LogEntryTable.h \
     LogData/LogEntryFactory.h \
     LogData/LogEntry.h \
     logfileanalyser.h
-SOURCES += Models/LogEntryTableModel.cpp \
+SOURCES += LogData/LogEntryTable.cpp \
+    Models/LogEntryTableModel.cpp \
     LogData/LogEntryParser_dummy.cpp \
     LogData/LogEntryAttributes.cpp \
     LogData/LogEntryAttributeFactory.cpp \
