@@ -18,12 +18,12 @@ LogEntryParser_Logfile::LogEntryParser_Logfile( const QString &filename)
 
 }
 
-void init()
+void LogEntryParser_Logfile::init()
 {
     if (!logfile.open(QIODevice::ReadOnly | QIODevice::Text))
         return;
 
-    logfileStream.setDevice( logfile );
+    logfileStream.setDevice( &logfile );
     logfileStreamReady = true;
 }
 
@@ -41,7 +41,7 @@ boost::shared_ptr<LogEntry> LogEntryParser_Logfile::getNextLogEntry()
 			if( stashedLine.isEmpty() && !logfileStream.atEnd() )
 				stashedLine = logfileStream.readLine();
 
-			if( logfileStream.atEnd() )
+			if( logfileStream.atEnd() && stashedLine.isEmpty() )
 			{
 				// End of logfile
 				entryComplete = true;
@@ -53,13 +53,6 @@ boost::shared_ptr<LogEntry> LogEntryParser_Logfile::getNextLogEntry()
 				// Example logline:
 				// 12.3.2011 14:23:12.456 ERROR MainUnit.Test.Nix [Test.cpp:23]: This is our log message
 				//                Here comes more Text from a stacktrace for eg.
-
-				lineMessageRegex;
-
-
-
-
-
 			}
 		}
     }

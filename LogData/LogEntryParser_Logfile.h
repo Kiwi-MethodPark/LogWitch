@@ -11,8 +11,10 @@
 #include "LogEntryParser.h"
 #include <boost/scoped_ptr.hpp>
 #include <QFile>
+#include <QTextStream>
 
 class QRegExp;
+class LogEntry;
 
 class LogEntryParser_Logfile : public LogEntryParser
 {
@@ -22,6 +24,8 @@ public:
 	virtual boost::shared_ptr<LogEntry> getNextLogEntry();
 
 private:
+	void init();
+
 	QFile logfile;
 
 	QTextStream logfileStream;
