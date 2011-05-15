@@ -19,9 +19,9 @@ LogEntryParser_Logfile::LogEntryParser_Logfile( const QString &filename)
 
 }
 
-const LogEntryAttributeFactory *LogEntryParser_Logfile::getLogEntryAttributeFactory() const
+boost::shared_ptr<const LogEntryAttributeFactory> LogEntryParser_Logfile::getLogEntryAttributeFactory() const
 {
-	return NULL; //m_LogEntryFactory.get();
+	return m_LogEntryFactory->getLogEntryAttributeFactory();
 }
 
 void LogEntryParser_Logfile::init()
@@ -33,9 +33,9 @@ void LogEntryParser_Logfile::init()
     logfileStreamReady = true;
 }
 
-boost::shared_ptr<LogEntry> LogEntryParser_Logfile::getNextLogEntry()
+TSharedLogEntry LogEntryParser_Logfile::getNextLogEntry()
 {
-	boost::shared_ptr<LogEntry> entry;
+	TSharedLogEntry entry;
 
 	if( logfileStreamReady )
 	{

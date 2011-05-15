@@ -7,25 +7,28 @@
 
 #include "LogEntryFactory.h"
 
+#include "LogData/LogEntry.h"
+#include "LogData/LogEntryAttributeFactory.h"
 
-LogEntryFactory::LogEntryFactory() {
 
-
+LogEntryFactory::LogEntryFactory()
+	: m_indexedAttributesFactory( new LogEntryAttributeFactory )
+{
 }
 
-boost::shared_ptr<LogEntry> LogEntryFactory::generateLogEntry( const QDateTime &date, const QString &message)
+TSharedLogEntry LogEntryFactory::generateLogEntry( const QDateTime &date, const QString &message)
 {
-	boost::shared_ptr<LogEntryAttributes> attr = m_indexedAttributesFactory.getNewLogEntryAttributes();
+	boost::shared_ptr<LogEntryAttributes> attr = m_indexedAttributesFactory->getNewLogEntryAttributes();
 
-	return boost::shared_ptr<LogEntry>( new LogEntry( date, attr, message ) );
+	return TSharedLogEntry( new LogEntry( date, attr, message ) );
 }
 
-const LogEntryAttributeFactory *LogEntryFactory::getLogEntryAttributeFactory() const
+boost::shared_ptr<const LogEntryAttributeFactory> LogEntryFactory::getLogEntryAttributeFactory() const
 {
-	return &m_indexedAttributesFactory;
+	return m_indexedAttributesFactory;
 }
 
-LogEntryAttributeFactory *LogEntryFactory::getLogEntryAttributeFactory()
+boost::shared_ptr<LogEntryAttributeFactory> &LogEntryFactory::getLogEntryAttributeFactory()
 {
-	return &m_indexedAttributesFactory;
+	return m_indexedAttributesFactory;
 }

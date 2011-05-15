@@ -8,9 +8,12 @@
 #include "LogEntryParser_dummy.h"
 #include "LogData/LogEntry.h"
 #include "LogData/LogEntryAttributes.h"
+#include "LogData/LogEntryAttributeFactory.h"
 
 LogEntryParser_dummy::LogEntryParser_dummy()
-	: m_entries( 10 )
+	: m_entries( 0 )
+	, m_abort( false )
+	, m_count( 12 )
 {
 	// PReparing attributes factory
 	myFactory.getLogEntryAttributeFactory()->addField("Severity");
@@ -20,22 +23,77 @@ LogEntryParser_dummy::LogEntryParser_dummy()
 
 LogEntryParser_dummy::~LogEntryParser_dummy()
 {
+	m_abort = true;
+	wait();
 }
 
-boost::shared_ptr<LogEntry> LogEntryParser_dummy::getNextLogEntry()
+void LogEntryParser_dummy::addEntries( int count )
 {
-	boost::shared_ptr<LogEntry> entry;
-	if( m_entries-- )
+	m_count = count;
+}
+
+void LogEntryParser_dummy::startEmiting()
+{
+    if (!isRunning() && !m_abort )
+        start(LowPriority);
+}
+
+void LogEntryParser_dummy::run()
+{
+	forever
 	{
-		myFactory.generateLogEntry( QDateTime::currentDateTime(), "Message text :)");
-		entry->getAttributes().setAttribute( boost::shared_ptr<QString>(new QString("ERROR")), 0 );
+		for( int i = 0; i < 4; i++ )
+		{
+			usleep(250000);
+
+			if( m_count )
+				break;
+
+			if ( m_abort)
+				return;
+		}
+
+		while( m_count )
+		{
+			TSharedLogEntry entry( getNextLogEntry() );
+
+	        if( entry )
+	        	emit newEntry( entry );
+	        m_count--;
+			if( m_count < 0 )
+				m_count = 0;
+		}
+
+		TSharedLogEntry entry( getNextLogEntry() );
+
+        if( entry )
+        	emit newEntry( entry );
+        else
+        	m_abort = true;
+	}
+}
+
+TSharedLogEntry LogEntryParser_dummy::getNextLogEntry()
+{
+	TSharedLogEntry entry;
+	//if( m_entries++ < 100000 )
+	{
+		m_entries++;
+
+		entry = myFactory.generateLogEntry( QDateTime::currentDateTime(), QString("Message #").append(QString("%1").arg(m_entries))  );
+		entry->getAttributes().setAttribute( boost::shared_ptr<QString>(new QString("DEBUG") ), 0 );
+		if( (m_entries % 20) == 0 )
+			entry->getAttributes().setAttribute( boost::shared_ptr<QString>(new QString("WARN") ), 0 );
+		if( (m_entries % 100) == 0 )
+			entry->getAttributes().setAttribute( boost::shared_ptr<QString>(new QString("ERROR") ), 0 );
+
 		entry->getAttributes().setAttribute( boost::shared_ptr<QString>(new QString("MainUnit.Logging")), 1 );
 	}
 
 	return entry;
 }
 
-const LogEntryAttributeFactory *LogEntryParser_dummy::getLogEntryAttributeFactory() const
+boost::shared_ptr<const LogEntryAttributeFactory> LogEntryParser_dummy::getLogEntryAttributeFactory() const
 {
 	return myFactory.getLogEntryAttributeFactory();
 }

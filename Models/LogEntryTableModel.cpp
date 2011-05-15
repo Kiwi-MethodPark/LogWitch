@@ -7,19 +7,27 @@
 
 #include "LogEntryTableModel.h"
 
+#include <iostream>
+
 #include <QtCore/QtCore>
 #include <QtCore/QVariant>
 #include <QDateTime>
 
 #include "LogData/LogEntry.h"
-#include "LogData/LogEntryTable.h"
 #include "LogData/LogEntryAttributes.h"
 #include "LogData/LogEntryAttributeFactory.h"
+#include "LogData/LogEntryParser.h"
+#include "LogData/LogEntryTable.h"
 
-LogEntryTableModel::LogEntryTableModel(boost::shared_ptr<const LogEntryTable> table )
-	: m_table( table )
+LogEntryTableModel::LogEntryTableModel( boost::shared_ptr<LogEntryParser> parser )
+	: m_table( new LogEntryTable( parser->getLogEntryAttributeFactory() ) )
+	, m_dateTimeConversionString("dd.MM.yyyy hh:mm:ss.zzz")
+	, m_entryLoader( parser )
 {
+    QObject::connect(dynamic_cast<QObject*>(parser.get()), SIGNAL(newEntry( TSharedLogEntry)),
+                     this, SLOT(insertEntry( TSharedLogEntry )) );
 
+	m_entryLoader->startEmiting();
 }
 
 LogEntryTableModel::~LogEntryTableModel()
@@ -37,7 +45,8 @@ int LogEntryTableModel::rowCount(const QModelIndex &parent) const
 int LogEntryTableModel::columnCount(const QModelIndex &parent) const
 {
 	Q_UNUSED(parent);
-	return m_table->getLogEntryAttributeFactory()->getNumberOfFields( ) + 2;
+	int value = m_table->getLogEntryAttributeFactory()->getNumberOfFields( ) + 2;
+	return value;
 }
 
 QVariant LogEntryTableModel::data(const QModelIndex &index, int role) const
@@ -45,17 +54,20 @@ QVariant LogEntryTableModel::data(const QModelIndex &index, int role) const
     if (!index.isValid())
         return QVariant();
 
-    if (index.row() >= (m_table->getLogEntryTable().size() + 2) || index.row() < 0)
+    if (index.column() >= (m_table->getLogEntryAttributeFactory()->getNumberOfFields( ) + 2 )
+    		|| index.column() < 0
+    		|| index.row() < 0
+    		|| index.row() >= (m_table->getLogEntryTable().size() ) )
         return QVariant();
 
     if (role == Qt::DisplayRole)
     {
     	LogEntryTable::TLogEntryTable &getLogEntryTable();
 
-    	boost::shared_ptr<LogEntry> entry = m_table->getLogEntryTable()[index.row()];
+    	TSharedLogEntry entry = m_table->getLogEntryTable()[index.row()];
 
     	if( index.column() == 0 )
-    		return entry->getTimestamp();
+    		return entry->getTimestamp().toString( m_dateTimeConversionString  );
     	if( index.column() == 1 )
     		return entry->getMessage();
 
@@ -69,7 +81,7 @@ QVariant LogEntryTableModel::headerData(int section, Qt::Orientation orientation
     if (role != Qt::DisplayRole)
         return QVariant();
 
-    if (section >= (m_table->getLogEntryTable().size() + 2) || section < 0)
+    if (section >= (m_table->getLogEntryAttributeFactory()->getNumberOfFields( ) + 2) || section < 0)
         return QVariant();
 
     if (orientation == Qt::Horizontal)
@@ -84,10 +96,10 @@ QVariant LogEntryTableModel::headerData(int section, Qt::Orientation orientation
     return QVariant();
 }
 
-Qt::ItemFlags LogEntryTableModel::flags(const QModelIndex &index) const
+void LogEntryTableModel::insertEntry( TSharedLogEntry entry )
 {
-    if (!index.isValid())
-        return Qt::ItemIsEnabled;
-
-    return QAbstractTableModel::flags(index);
+	int newPos = m_table->getLogEntryTable().size();
+	beginInsertRows( QModelIndex(), newPos, newPos );
+	m_table->getLogEntryTable().push_back( entry );
+	endInsertRows();
 }

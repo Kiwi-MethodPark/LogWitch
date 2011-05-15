@@ -12,6 +12,7 @@
 #include <boost/scoped_ptr.hpp>
 #include <QFile>
 #include <QTextStream>
+#include "LogEntryFactory.h"
 
 class QRegExp;
 class LogEntry;
@@ -21,9 +22,9 @@ class LogEntryParser_Logfile : public LogEntryParser
 public:
 	LogEntryParser_Logfile( const QString &filename );
 
-	virtual boost::shared_ptr<LogEntry> getNextLogEntry();
+	virtual TSharedLogEntry getNextLogEntry();
 
-	virtual const LogEntryAttributeFactory *getLogEntryAttributeFactory() const;
+	virtual boost::shared_ptr<const LogEntryAttributeFactory> getLogEntryAttributeFactory() const;
 
 private:
 	void init();
@@ -37,6 +38,8 @@ private:
 	QString stashedLine;
 
 	boost::scoped_ptr<QRegExp> lineMessageRegex;
+
+	boost::shared_ptr<const LogEntryFactory> m_LogEntryFactory;
 
 
 };

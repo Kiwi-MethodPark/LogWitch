@@ -9,26 +9,26 @@
 #define LOGENTRYTABLE_H_
 #include <vector>
 #include <boost/shared_ptr.hpp>
+#include "LogData/LogEntry.h"
 
-class LogEntry;
 class LogEntryAttributeFactory;
 
 class LogEntryTable
 {
 public:
-	LogEntryTable(const LogEntryAttributeFactory *factory);
+	LogEntryTable( boost::shared_ptr<const LogEntryAttributeFactory> factory);
 
-	typedef std::vector<boost::shared_ptr<LogEntry> > TLogEntryTable;
+	typedef std::vector<TSharedLogEntry > TLogEntryTable;
 
 	TLogEntryTable &getLogEntryTable();
 	const TLogEntryTable &getLogEntryTable() const;
 
-	const LogEntryAttributeFactory *getLogEntryAttributeFactory() const;
+	boost::shared_ptr<const LogEntryAttributeFactory> getLogEntryAttributeFactory() const;
 
 private:
 	TLogEntryTable m_table;
 
-	const LogEntryAttributeFactory *m_attributeFactory;
+	boost::shared_ptr<const LogEntryAttributeFactory> m_attributeFactory;
 };
 
 #endif /* LOGENTRYTABLE_H_ */

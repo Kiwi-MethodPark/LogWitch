@@ -10,6 +10,7 @@
 
 #include <QDateTime>
 #include <QString>
+#include <QMetaType>
 
 #include <boost/shared_ptr.hpp>
 
@@ -34,5 +35,9 @@ private:
 
 	QString message;
 };
+
+typedef boost::shared_ptr<LogEntry> TSharedLogEntry;
+
+Q_DECLARE_METATYPE ( TSharedLogEntry );
 
 #endif /* LOGENTRY_H_ */

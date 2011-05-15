@@ -8,9 +8,11 @@
 #ifndef LOGENTRYFACTORY_H_
 #define LOGENTRYFACTORY_H_
 #include <boost/shared_ptr.hpp>
-#include "LogEntry.h"
-#include "StringCache.h"
-#include "LogData/LogEntryAttributeFactory.h"
+#include "LogData/LogEntry.h"
+
+class LogEntryAttributeFactory;
+class QDateTime;
+class QString;
 
 /**
  * This class generates a new log entry and ensures the uniqueness of
@@ -20,14 +22,14 @@ class LogEntryFactory {
 public:
 	LogEntryFactory();
 
-	boost::shared_ptr<LogEntry> generateLogEntry( const QDateTime &date, const QString &message );
+	TSharedLogEntry generateLogEntry( const QDateTime &date, const QString &message );
 
-	const LogEntryAttributeFactory *getLogEntryAttributeFactory() const;
+	boost::shared_ptr<const LogEntryAttributeFactory> getLogEntryAttributeFactory() const;
 
-	LogEntryAttributeFactory *getLogEntryAttributeFactory();
+	boost::shared_ptr<LogEntryAttributeFactory> &getLogEntryAttributeFactory();
 
 private:
-	LogEntryAttributeFactory m_indexedAttributesFactory;
+	boost::shared_ptr<LogEntryAttributeFactory> m_indexedAttributesFactory;
 };
 
 #endif /* LOGENTRYFACTORY_H_ */
