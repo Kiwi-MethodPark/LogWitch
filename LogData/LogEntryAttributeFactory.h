@@ -51,6 +51,8 @@ public:
 	 */
 	StringCache& getCache( int idx );
 
+	const StringCache& getCache( int idx ) const;
+
 	/**
 	 * Disallows adding fields and enables the usage of all getter
 	 * methods.

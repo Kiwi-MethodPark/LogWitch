@@ -61,3 +61,9 @@ StringCache& LogEntryAttributeFactory::getCache( int idx )
 	LFA_ASSERT_D( m_disallowAddingFields, "Getting caches of fields only allowed if all fields are added!" );
 	return fieldCaches[idx];
 }
+
+const StringCache& LogEntryAttributeFactory::getCache( int idx ) const
+{
+	LFA_ASSERT_D( m_disallowAddingFields, "Getting caches of fields only allowed if all fields are added!" );
+	return fieldCaches[idx];
+}
