@@ -11,6 +11,7 @@
 #include <set>
 
 #include <QString>
+#include <QtCore/QObject>
 #include "Types.h"
 
 /**
@@ -19,7 +20,10 @@
  * This class ensures there is always one string instance for a specific
  * string present.
  */
-class StringCache {
+class StringCache
+	: public QObject
+{
+	Q_OBJECT
 public:
 	StringCache();
 
@@ -35,6 +39,9 @@ private:
 	typedef std::set< TSharedConstQString, StringCache::lessStringSharedPtr > TMyCache;
 
 	TMyCache cache;
+
+signals:
+	void newStringElement( TSharedConstQString );
 };
 
 #endif /* STRINGCACHE_H_ */

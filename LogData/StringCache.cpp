@@ -15,10 +15,8 @@ StringCache::StringCache()
 TSharedConstQString StringCache::getString( TSharedConstQString str )
 {
 	TMyCache::iterator it = cache.insert( str ).first;
-	if( *it == str ) // str already inside our container, so invoke update request
-	{
-		// TODO: We have to perform an update event / signal to listeners
-	}
+	if( *it == str ) // str new to container, so invoke update request
+		emit newStringElement( *it );
 
 	return *it;
 }
