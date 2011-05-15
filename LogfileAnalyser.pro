@@ -2,7 +2,9 @@ TEMPLATE = app
 TARGET = LogfileAnalyser
 QT += core \
     gui
-HEADERS += Types.h \
+HEADERS += Models/StringCacheTreeItem.h \
+    Types.h \
+    Models/StringCacheTreeModel.h \
     LogEntryTableWindow.h \
     logfileanalyser.h \
     LogData/LogEntryTable.h \
@@ -16,7 +18,9 @@ HEADERS += Types.h \
     LogData/LogEntryFactory.h \
     LogData/LogEntry.h \
     logfileanalyser.h
-SOURCES += LogEntryTableWindow.cpp \
+SOURCES += Models/StringCacheTreeItem.cpp \
+    Models/StringCacheTreeModel.cpp \
+    LogEntryTableWindow.cpp \
     LogData/LogEntryTable.cpp \
     Models/LogEntryTableModel.cpp \
     LogData/LogEntryParser_dummy.cpp \
