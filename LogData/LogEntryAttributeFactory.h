@@ -10,6 +10,7 @@
 
 #include <vector>
 #include <boost/shared_ptr.hpp>
+#include "Types.h"
 
 
 class QString;
@@ -64,7 +65,7 @@ private:
 
 	std::vector<StringCache> fieldCaches;
 
-	std::vector< boost::shared_ptr<QString> > defaultLine;
+	std::vector< TSharedConstQString > defaultLine;
 
 	bool m_disallowAddingFields;
 };

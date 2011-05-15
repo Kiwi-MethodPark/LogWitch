@@ -9,6 +9,7 @@
 #define LOGENTRYATTRIBUTES_H_
 #include <boost/shared_ptr.hpp>
 #include <vector>
+#include "Types.h"
 
 class LogEntryAttributeFactory;
 class QString;
@@ -17,14 +18,14 @@ class LogEntryAttributes {
 public:
 	virtual ~LogEntryAttributes();
 
-	LogEntryAttributes( LogEntryAttributeFactory *factory, const std::vector<boost::shared_ptr<QString> > &defAttributes );
+	LogEntryAttributes( LogEntryAttributeFactory *factory, const std::vector< TSharedConstQString > &defAttributes );
 
-	void setAttribute( boost::shared_ptr<QString>, int idx );
+	void setAttribute( TSharedConstQString, int idx );
 
-	boost::shared_ptr<const QString> getAttribute( int idx ) const;
+	TSharedConstQString getAttribute( int idx ) const;
 
 private:
-	std::vector<boost::shared_ptr<QString> > attributes;
+	std::vector< TSharedConstQString > attributes;
 
 	LogEntryAttributeFactory *myFactory;
 };

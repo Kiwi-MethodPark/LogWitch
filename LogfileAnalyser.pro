@@ -2,7 +2,8 @@ TEMPLATE = app
 TARGET = LogfileAnalyser
 QT += core \
     gui
-HEADERS += LogEntryTableWindow.h \
+HEADERS += Types.h \
+    LogEntryTableWindow.h \
     logfileanalyser.h \
     LogData/LogEntryTable.h \
     Models/LogEntryTableModel.h \

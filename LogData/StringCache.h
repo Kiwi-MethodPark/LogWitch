@@ -11,6 +11,7 @@
 #include <set>
 
 #include <QString>
+#include "Types.h"
 
 /**
  * This class caches strings for usage. The class is a container
@@ -22,16 +23,16 @@ class StringCache {
 public:
 	StringCache();
 
-	boost::shared_ptr<QString> getString( boost::shared_ptr<QString> );
+	TSharedConstQString getString( TSharedConstQString );
 
 private:
 	struct lessStringSharedPtr
 	{
-	  bool operator() (const boost::shared_ptr<QString> &s1, const boost::shared_ptr<QString> &s2) const
+	  bool operator() (const TSharedConstQString &s1, const TSharedConstQString &s2) const
 	  {return (*s1) < (*s2);}
 	};
 
-	typedef std::set< boost::shared_ptr<QString>, StringCache::lessStringSharedPtr > TMyCache;
+	typedef std::set< TSharedConstQString, StringCache::lessStringSharedPtr > TMyCache;
 
 	TMyCache cache;
 };
