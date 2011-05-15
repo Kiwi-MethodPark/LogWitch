@@ -40,8 +40,8 @@ void LogEntryAttributeFactory::addField( const QString &description )
 {
 	LFA_ASSERT( !disallowAddingFields, "Adding fields is not allowed!" );
 	fieldDescriptions.push_back( description );
-	fieldCaches.resize( fieldDescriptions.size() );
-	defaultLine.push_back( fieldCaches.back().getString( boost::shared_ptr<QString>(new QString("")) ) );
+	fieldCaches.push_back( boost::shared_ptr<StringCache>( new StringCache ) );
+	defaultLine.push_back( fieldCaches.back()->getString( boost::shared_ptr<QString>(new QString("")) ) );
 }
 
 int LogEntryAttributeFactory::getNumberOfFields( ) const
@@ -59,11 +59,11 @@ const QString& LogEntryAttributeFactory::getDescription( int idx ) const
 StringCache& LogEntryAttributeFactory::getCache( int idx )
 {
 	LFA_ASSERT_D( m_disallowAddingFields, "Getting caches of fields only allowed if all fields are added!" );
-	return fieldCaches[idx];
+	return *(fieldCaches[idx]);
 }
 
 const StringCache& LogEntryAttributeFactory::getCache( int idx ) const
 {
 	LFA_ASSERT_D( m_disallowAddingFields, "Getting caches of fields only allowed if all fields are added!" );
-	return fieldCaches[idx];
+	return *(fieldCaches[idx]);
 }

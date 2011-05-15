@@ -63,7 +63,7 @@ public:
 private:
 	std::vector<QString> fieldDescriptions;
 
-	std::vector<StringCache> fieldCaches;
+	std::vector< boost::shared_ptr<StringCache> > fieldCaches;
 
 	std::vector< TSharedConstQString > defaultLine;
 
