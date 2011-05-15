@@ -87,7 +87,23 @@ TSharedLogEntry LogEntryParser_dummy::getNextLogEntry()
 		if( (m_entries % 100) == 0 )
 			entry->getAttributes().setAttribute( boost::shared_ptr<QString>(new QString("ERROR") ), 0 );
 
+
 		entry->getAttributes().setAttribute( boost::shared_ptr<QString>(new QString("MainUnit.Logging")), 1 );
+		if( (m_entries % 3) == 0 )
+			entry->getAttributes().setAttribute( boost::shared_ptr<QString>(new QString("MainUnit.Logging1")), 1 );
+		if( (m_entries % 10) == 0 )
+			entry->getAttributes().setAttribute( boost::shared_ptr<QString>(new QString("MainUnit.Logging2")), 1 );
+		if( (m_entries % 15) == 0 )
+		entry->getAttributes().setAttribute( boost::shared_ptr<QString>(new QString("MainUnit5.Logging3")), 1 );
+		if( (m_entries % 20) == 0 )
+			entry->getAttributes().setAttribute( boost::shared_ptr<QString>(new QString("MainUnit3.Logging4")), 1 );
+		if( (m_entries % 21) == 0 )
+			entry->getAttributes().setAttribute( boost::shared_ptr<QString>(new QString("Aplication2.Logging5")), 1 );
+		if( (m_entries % 25) == 0 )
+			entry->getAttributes().setAttribute( boost::shared_ptr<QString>(new QString("Aplication.Comp1")), 1 );
+		if( (m_entries % 30) == 0 )
+			entry->getAttributes().setAttribute( boost::shared_ptr<QString>(new QString("Aplication1.XTray.Loop")), 1 );
+
 	}
 
 	return entry;
