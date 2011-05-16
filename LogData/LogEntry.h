@@ -28,6 +28,8 @@ public:
 
 	const QString &getMessage() const;
 
+	void setMessage(const QString &str) {message = str; };
+
 private:
 	QDateTime timestamp;
 
