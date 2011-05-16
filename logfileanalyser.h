@@ -8,6 +8,7 @@
 class LogEntryParser_dummy;
 class LogEntryTableModel;
 class LogEntryTable;
+class LogEntryParser;
 
 class LogfileAnalyser : public QMainWindow
 {
@@ -16,6 +17,8 @@ class LogfileAnalyser : public QMainWindow
 public:
     LogfileAnalyser(QWidget *parent = 0);
     ~LogfileAnalyser();
+
+    void createWindowsFromParser(boost::shared_ptr<LogEntryParser> parser);
 
 private:
     Ui::LogfileAnalyserClass ui;
@@ -27,6 +30,8 @@ private slots:
   	void openDummyLogfile();
 
   	void moreDummyLogfile();
+
+  	void openLogfile();
 };
 
 #endif // LOGFILEANALYSER_H
