@@ -17,6 +17,7 @@
 #include <QtCore/QtCore>
 
 #include "LogEntryFactory.h"
+#include <QRegExp>
 
 class QRegExp;
 class LogEntry;
@@ -32,6 +33,8 @@ public:
 	~LogEntryParser_Logfile();
 
 	void startEmiting();
+
+	void run();
 
 	virtual boost::shared_ptr<const LogEntryAttributeFactory> getLogEntryAttributeFactory() const;
 
@@ -55,7 +58,12 @@ private:
 
 	QString stashedLine;
 
+	QString message;
+
 	boost::scoped_ptr<QRegExp> lineMessageRegex;
+
+	QRegExp cellRegex;
+
 	QString timeFormat;
 
 	LogEntryFactory myFactory;
