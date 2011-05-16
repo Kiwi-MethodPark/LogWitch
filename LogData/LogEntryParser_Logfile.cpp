@@ -8,20 +8,42 @@
 #include "LogEntryParser_Logfile.h"
 
  #include <QRegExp>
+#include "LogEntryFactory.h"
+#include "LogData/LogEntryAttributeFactory.h"
+#include "LogData/LogEntryAttributes.h"
 
 LogEntryParser_Logfile::LogEntryParser_Logfile( const QString &filename)
-	: logfile( filename )
+	: m_abort(false )
+	, logfile( filename )
 	, logfileStreamReady( false )
-	, lineMessageRegex( new QRegExp("^([\\d\\.\\\\]+)\\s+([\\d\\.\\:]+)\\s+([\\w]+)\\s+(\".+\"|[\\S]+)\\s+\\[(.*)\\]:") )
+	, lineMessageRegex( new QRegExp("^([\\d-]+)\\s+([\\d\\,\\:]+)\\s+([\\w]+)\\s+-\\s+(\".+\"|[\\S]+)\\s+-\\s\\[(.*)\\]\\s+-\\s+") )
+	, timeFormat( "yyy-MM-dd HH:mm:ss,zzz" )
 {
 	lineMessageRegex->setMinimal(true);
 
+	// PReparing attributes factory
+	myFactory.getLogEntryAttributeFactory()->addField("Severity");
+	myFactory.getLogEntryAttributeFactory()->addField("Component");
+	myFactory.getLogEntryAttributeFactory()->addField("File source");
+	myFactory.getLogEntryAttributeFactory()->disallowAddingFields();
 
+}
+
+LogEntryParser_Logfile::~LogEntryParser_Logfile()
+{
+	m_abort = true;
+	wait();
+}
+
+void LogEntryParser_Logfile::startEmiting()
+{
+    if (!isRunning() && !m_abort )
+        start(LowPriority);
 }
 
 boost::shared_ptr<const LogEntryAttributeFactory> LogEntryParser_Logfile::getLogEntryAttributeFactory() const
 {
-	return m_LogEntryFactory->getLogEntryAttributeFactory();
+	return myFactory.getLogEntryAttributeFactory();
 }
 
 void LogEntryParser_Logfile::init()
@@ -35,7 +57,7 @@ void LogEntryParser_Logfile::init()
 
 TSharedLogEntry LogEntryParser_Logfile::getNextLogEntry()
 {
-	TSharedLogEntry entry;
+	TSharedLogEntry entryReturn;
 
 	if( logfileStreamReady )
 	{
@@ -47,21 +69,35 @@ TSharedLogEntry LogEntryParser_Logfile::getNextLogEntry()
 			if( stashedLine.isEmpty() && !logfileStream.atEnd() )
 				stashedLine = logfileStream.readLine();
 
-			if( logfileStream.atEnd() && stashedLine.isEmpty() )
+			if( logfileStream.atEnd() && stashedLine.isEmpty()  )
 			{
 				// End of logfile
 				entryComplete = true;
 			}
 			else
 			{
-				// If signature of new line found, post last entry
-				// to factory
-				// Example logline:
-				// 12.3.2011 14:23:12.456 ERROR MainUnit.Test.Nix [Test.cpp:23]: This is our log message
-				//                Here comes more Text from a stacktrace for eg.
+				if( lineMessageRegex->indexIn( stashedLine ) != -1 )
+				{
+					if( entry ) // first entry
+					{
+						entry->setMessage( message );
+						entryComplete = true;
+						entryReturn = entry;
+					}
+
+					QDateTime timestamp( QDateTime::fromString ( lineMessageRegex->cap(1), timeFormat ) );
+					entry = myFactory.generateLogEntry( timestamp );
+					entry->getAttributes().setAttribute( boost::shared_ptr<QString>(new QString(lineMessageRegex->cap(2)) ), 0 );
+					entry->getAttributes().setAttribute( boost::shared_ptr<QString>(new QString(lineMessageRegex->cap(3)) ), 1 );
+					entry->getAttributes().setAttribute( boost::shared_ptr<QString>(new QString(lineMessageRegex->cap(4)) ), 2 );
+				}
+				else
+				{
+					message += stashedLine;
+				}
 			}
 		}
     }
 
-    return entry;
+    return entryReturn;
 }
