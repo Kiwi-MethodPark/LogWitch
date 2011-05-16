@@ -22,7 +22,7 @@ class LogEntryFactory {
 public:
 	LogEntryFactory();
 
-	TSharedLogEntry generateLogEntry( const QDateTime &date, const QString &message );
+	TSharedLogEntry generateLogEntry( const QDateTime &date, const QString &message = "" );
 
 	boost::shared_ptr<const LogEntryAttributeFactory> getLogEntryAttributeFactory() const;
 
