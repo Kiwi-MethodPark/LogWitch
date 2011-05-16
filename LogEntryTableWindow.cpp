@@ -16,7 +16,6 @@ LogEntryTableWindow::LogEntryTableWindow( boost::shared_ptr<LogEntryTableModel> 
     this->horizontalHeader()->moveSection(1, model->columnCount( QModelIndex() )-1 );
     this->verticalHeader()->setDefaultSectionSize( 20 );
     this->setAlternatingRowColors(true);
-	show();
 }
 
 LogEntryTableWindow::~LogEntryTableWindow()
