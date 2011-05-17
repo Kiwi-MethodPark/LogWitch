@@ -15,16 +15,18 @@ class LogEntryTableModel;
 class LogEntryTableWindow
 	: public QTableView
 {
+	Q_OBJECT
 public:
-	LogEntryTableWindow( boost::shared_ptr<LogEntryTableModel> model );
+	LogEntryTableWindow( boost::shared_ptr<LogEntryTableModel> model, QWidget *parent = NULL );
 	virtual ~LogEntryTableWindow();
-
-	boost::shared_ptr<LogEntryTableModel> m_model;
 
 protected:
 	void updateGeometries();
 
+
 private:
+	boost::shared_ptr<LogEntryTableModel> m_model;
+
 	QTableView m_tableView;
 
 

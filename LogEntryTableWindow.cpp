@@ -9,13 +9,16 @@
 
 #include "Models/LogEntryTableModel.h"
 
-LogEntryTableWindow::LogEntryTableWindow( boost::shared_ptr<LogEntryTableModel> model )
-	:m_model( model )
+LogEntryTableWindow::LogEntryTableWindow( boost::shared_ptr<LogEntryTableModel> model, QWidget *parent )
+	:QTableView(parent)
+	 ,m_model( model )
 {
 	setModel( model.get() );
     this->horizontalHeader()->moveSection(1, model->columnCount( QModelIndex() )-1 );
     this->verticalHeader()->setDefaultSectionSize( 20 );
     this->setAlternatingRowColors(true);
+    setSelectionBehavior(QAbstractItemView::SelectRows);
+	setSelectionMode( QAbstractItemView::SingleSelection );
 }
 
 LogEntryTableWindow::~LogEntryTableWindow()
