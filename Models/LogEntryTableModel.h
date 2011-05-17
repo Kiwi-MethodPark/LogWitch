@@ -33,6 +33,8 @@ public:
 
     QVariant headerData(int section, Qt::Orientation orientation, int role) const;
 
+    TconstSharedLogEntry getEntryByIndex( const QModelIndex &index ) const;
+
 public slots:
 	void insertEntry( TSharedLogEntry entry );
 

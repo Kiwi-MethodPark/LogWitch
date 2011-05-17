@@ -49,6 +49,17 @@ int LogEntryTableModel::columnCount(const QModelIndex &parent) const
 	return value;
 }
 
+TconstSharedLogEntry LogEntryTableModel::getEntryByIndex( const QModelIndex &index ) const
+{
+    if (index.column() >= (m_table->getLogEntryAttributeFactory()->getNumberOfFields( ) + 2 )
+    		|| index.column() < 0
+    		|| index.row() < 0
+    		|| index.row() >= (m_table->getLogEntryTable().size() ) )
+        return TconstSharedLogEntry();
+
+	return m_table->getLogEntryTable()[index.row()];
+}
+
 QVariant LogEntryTableModel::data(const QModelIndex &index, int role) const
 {
     if (!index.isValid())
