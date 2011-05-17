@@ -39,6 +39,7 @@ private:
 };
 
 typedef boost::shared_ptr<LogEntry> TSharedLogEntry;
+typedef boost::shared_ptr<const LogEntry> TconstSharedLogEntry;
 
 Q_DECLARE_METATYPE ( TSharedLogEntry );
 
