@@ -13,6 +13,7 @@
 #include <QtCore/QtCore>
 #include "Models/StringCacheTreeModel.h"
 #include "LogData/LogEntryParser_Logfile.h"
+#include "LogEntryCombinedWidget.h"
 
 LogfileAnalyser::LogfileAnalyser(QWidget *parent)
     : QMainWindow(parent)
@@ -53,7 +54,7 @@ void LogfileAnalyser::createWindowsFromParser(boost::shared_ptr<LogEntryParser> 
 	boost::shared_ptr<LogEntryTableModel> model( new LogEntryTableModel( parser ) );
 	m_model = model;
 
-	LogEntryTableWindow *wnd = new LogEntryTableWindow( model );
+	LogEntryCombinedWidget *wnd = new LogEntryCombinedWidget( model );
 	ui.mdiArea->addSubWindow( wnd );
 	wnd->show();
 
