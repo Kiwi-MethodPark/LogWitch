@@ -12,6 +12,9 @@
 
 #include "LogData/LogEntryFactory.h"
 #include "LogData/LogEntryParser.h"
+#include "LogEntryParserModelConfiguration.h"
+
+class LogEntryParserModelConfiguration;
 
 /**
  * This class is a dummy for testing without a valid logfile.
@@ -30,7 +33,7 @@ public:
 
 	void addEntries( int count );
 
-	virtual boost::shared_ptr<const LogEntryAttributeFactory> getLogEntryAttributeFactory() const;
+	boost::shared_ptr<LogEntryParserModelConfiguration> getParserModelConfiguration() const;
 
 signals:
 	void newEntry( TSharedLogEntry );
@@ -48,6 +51,8 @@ private:
 	bool m_abort;
 
 	int m_count;
+
+	boost::shared_ptr<LogEntryParserModelConfiguration> m_myModelConfig;
 };
 
 #endif /* LOGENTRYPARSER_DUMMY_H_ */

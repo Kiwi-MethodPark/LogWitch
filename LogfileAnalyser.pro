@@ -2,7 +2,11 @@ TEMPLATE = app
 TARGET = LogfileAnalyser
 QT += core \
     gui
-HEADERS += Models/LogEntryTableFilter.h \
+HEADERS += Models/LogEntryRemoveFilter.h \
+    Models/LogEntryFilter.h \
+    EntryToTextFormater_Logfile.h \
+    LogData/LogEntryParserModelConfiguration.h \
+    Models/LogEntryTableFilter.h \
     EntryToTextFormater.h \
     LogEntryCombinedWidget.h \
     Models/StringCacheTreeItem.h \
@@ -10,7 +14,6 @@ HEADERS += Models/LogEntryTableFilter.h \
     Models/StringCacheTreeModel.h \
     LogEntryTableWindow.h \
     logfileanalyser.h \
-    LogData/LogEntryTable.h \
     Models/LogEntryTableModel.h \
     LogData/LogEntryParser_dummy.h \
     LogData/LogEntryParser_Logfile.h \
@@ -22,13 +25,15 @@ HEADERS += Models/LogEntryTableFilter.h \
     LogData/LogEntryFactory.h \
     LogData/LogEntry.h \
     logfileanalyser.h
-SOURCES += Models/LogEntryTableFilter.cpp \
-    EntryToTextFormater.cpp \
+SOURCES += Models/LogEntryRemoveFilter.cpp \
+    Models/LogEntryFilter.cpp \
+    EntryToTextFormater_Logfile.cpp \
+    LogData/LogEntryParserModelConfiguration.cpp \
+    Models/LogEntryTableFilter.cpp \
     LogEntryCombinedWidget.cpp \
     Models/StringCacheTreeItem.cpp \
     Models/StringCacheTreeModel.cpp \
     LogEntryTableWindow.cpp \
-    LogData/LogEntryTable.cpp \
     Models/LogEntryTableModel.cpp \
     LogData/LogEntryParser_dummy.cpp \
     LogData/LogEntryParser_Logfile.cpp \

@@ -17,7 +17,7 @@ class StringCacheTreeModel
 {
 	Q_OBJECT
 public:
-	StringCacheTreeModel( const StringCache * cache, const QString &splitString = QString() );
+	StringCacheTreeModel( QObject *parent, const StringCache * cache, const QString &splitString = QString() );
 	virtual ~StringCacheTreeModel();
 
     QVariant data(const QModelIndex &index, int role) const;

@@ -12,6 +12,8 @@
 #include "LogData/LogEntryAttributeFactory.h"
 #include "LogData/LogEntryAttributes.h"
 #include <QtCore/QtCore>
+#include "LogEntryParserModelConfiguration.h"
+#include "EntryToTextFormater_Logfile.h"
 
 LogEntryParser_Logfile::LogEntryParser_Logfile( const QString &filename)
 	: m_abort(false )
@@ -23,12 +25,16 @@ LogEntryParser_Logfile::LogEntryParser_Logfile( const QString &filename)
 {
 	lineMessageRegex->setMinimal(true);
 
-	// PReparing attributes factory
+	// Preparing attributes in factory
 	myFactory.getLogEntryAttributeFactory()->addField("Severity");
 	myFactory.getLogEntryAttributeFactory()->addField("Component");
 	myFactory.getLogEntryAttributeFactory()->addField("File source");
 	myFactory.getLogEntryAttributeFactory()->disallowAddingFields();
 
+	m_myModelConfig = boost::shared_ptr<LogEntryParserModelConfiguration>( new LogEntryParserModelConfiguration );
+	m_myModelConfig->setLogEntryAttributeFactory( myFactory.getLogEntryAttributeFactory() );
+	m_myModelConfig->setHierarchySplitString( 1, "\\.");
+	m_myModelConfig->setEntryToTextFormater( boost::shared_ptr<EntryToTextFormater>( new EntryToTextFormater_Logfile ) );
 }
 
 LogEntryParser_Logfile::~LogEntryParser_Logfile()
@@ -43,9 +49,9 @@ void LogEntryParser_Logfile::startEmiting()
         start(LowPriority);
 }
 
-boost::shared_ptr<const LogEntryAttributeFactory> LogEntryParser_Logfile::getLogEntryAttributeFactory() const
+boost::shared_ptr<LogEntryParserModelConfiguration> LogEntryParser_Logfile::getParserModelConfiguration() const
 {
-	return myFactory.getLogEntryAttributeFactory();
+	return m_myModelConfig;
 }
 
 void LogEntryParser_Logfile::init()
@@ -67,6 +73,7 @@ void LogEntryParser_Logfile::run()
 	{
 		if ( m_abort)
 			return;
+
 		TSharedLogEntry entry( getNextLogEntry() );
 
         if( entry )
@@ -77,7 +84,7 @@ void LogEntryParser_Logfile::run()
         //if( i++ > 35 )
         //	return;
         i++;
-        qDebug() << "Entry: " << i;
+        //qDebug() << "Entry: " << i;
 	}
 }
 
@@ -146,7 +153,7 @@ TSharedLogEntry LogEntryParser_Logfile::getNextLogEntry()
 				else
 				{
 					//qDebug() << " appending stashed line to message";
-					message += stashedLine;
+					message += "\n" + stashedLine;
 				}
 
 				stashedLine = "";

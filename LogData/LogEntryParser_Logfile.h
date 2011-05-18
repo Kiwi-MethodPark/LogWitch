@@ -15,12 +15,12 @@
 #include <QFile>
 #include <QTextStream>
 #include <QtCore/QtCore>
-
-#include "LogEntryFactory.h"
 #include <QRegExp>
+#include "LogEntryFactory.h"
 
 class QRegExp;
 class LogEntry;
+class LogEntryParserModelConfiguration;
 
 class LogEntryParser_Logfile
 	: public QThread
@@ -36,7 +36,7 @@ public:
 
 	void run();
 
-	virtual boost::shared_ptr<const LogEntryAttributeFactory> getLogEntryAttributeFactory() const;
+	virtual boost::shared_ptr<LogEntryParserModelConfiguration> getParserModelConfiguration() const;
 
 signals:
 	void newEntry( TSharedLogEntry );
@@ -67,6 +67,8 @@ private:
 	QString timeFormat;
 
 	LogEntryFactory myFactory;
+
+	boost::shared_ptr<LogEntryParserModelConfiguration> m_myModelConfig;
 
 
 };

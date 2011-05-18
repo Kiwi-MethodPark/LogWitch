@@ -14,7 +14,7 @@
 
 #include "LogData/LogEntry.h"
 
-class LogEntryAttributeFactory;
+class LogEntryParserModelConfiguration;
 
 /**
  * This class parses a line or more lines from a log file and passes the found
@@ -30,7 +30,7 @@ public:
 	 */
 	virtual void startEmiting() = 0;
 
-	virtual boost::shared_ptr<const LogEntryAttributeFactory> getLogEntryAttributeFactory() const = 0;
+	virtual boost::shared_ptr<LogEntryParserModelConfiguration> getParserModelConfiguration() const = 0;
 
 	// This block is the later called signals methods.
 protected:

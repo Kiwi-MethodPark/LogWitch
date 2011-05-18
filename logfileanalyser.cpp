@@ -3,7 +3,6 @@
 #include <boost/shared_ptr.hpp>
 
 #include "LogData/LogEntryParser_dummy.h"
-#include "LogData/LogEntryTable.h"
 #include "LogData/LogEntryAttributeFactory.h"
 
 #include "Models/LogEntryTableModel.h"
@@ -47,10 +46,6 @@ void LogfileAnalyser::openLogfile()
 
 void LogfileAnalyser::createWindowsFromParser(boost::shared_ptr<LogEntryParser> parser)
 {
-	// This odel must connected to the parser prior to the entryTabModel to get all strings.
-	StringCacheTreeModel *strModel = new StringCacheTreeModel( &parser->getLogEntryAttributeFactory()->getCache(0) );
-	StringCacheTreeModel *str2Model = new StringCacheTreeModel( &parser->getLogEntryAttributeFactory()->getCache(1), "\\." );
-
 	boost::shared_ptr<LogEntryTableModel> model( new LogEntryTableModel( parser ) );
 	m_model = model;
 
@@ -58,17 +53,37 @@ void LogfileAnalyser::createWindowsFromParser(boost::shared_ptr<LogEntryParser> 
 	ui.mdiArea->addSubWindow( wnd );
 	wnd->show();
 
-    QTreeView *view = new QTreeView;
-	view->setModel(strModel);
-	view->setWindowTitle(QObject::tr("Simple Tree Model"));
-	ui.mdiArea->addSubWindow( view );
-	view->show();
+	QDockWidget *dock = new QDockWidget(tr("FilterSettings"), this);
+	dock->setAllowedAreas(Qt::LeftDockWidgetArea | Qt::RightDockWidgetArea);
 
+	QTabWidget *tabs = new QTabWidget(dock);
+	dock->setWidget( tabs );
+
+	int attributes = parser->getParserModelConfiguration()->getLogEntryAttributeFactory()->getNumberOfFields();
+	for(int attr = 0; attr < attributes; attr++ )
+	{
+		QTreeView *view = new QTreeView;
+		StringCacheTreeModel *strModel = new StringCacheTreeModel(view
+				, &parser->getParserModelConfiguration()->getLogEntryAttributeFactory()->getCache(attr)
+				, parser->getParserModelConfiguration()->getHierarchySplitString(attr) );
+
+		view->setModel(strModel);
+		view->show();
+		tabs->addTab( view, parser->getParserModelConfiguration()->getLogEntryAttributeFactory()->getDescription(attr));
+	}
+
+	addDockWidget(Qt::RightDockWidgetArea, dock);
+
+	m_model->startModel();
+
+
+/*
     view = new QTreeView;
 	view->setModel(str2Model);
 	view->setWindowTitle(QObject::tr("Source Model"));
 	ui.mdiArea->addSubWindow( view );
 	view->show();
+	*/
 }
 
 void LogfileAnalyser::openDummyLogfile()
@@ -83,30 +98,7 @@ void LogfileAnalyser::openDummyLogfile()
 	boost::shared_ptr<LogEntryParser_dummy> parser( new LogEntryParser_dummy );
 	m_parser = parser;
 
-	// This odel must connected to the parser prior to the entryTabModel to get all strings.
-	StringCacheTreeModel *strModel = new StringCacheTreeModel( &parser->getLogEntryAttributeFactory()->getCache(0) );
-	StringCacheTreeModel *str2Model = new StringCacheTreeModel( &parser->getLogEntryAttributeFactory()->getCache(1), "\\." );
-
-	boost::shared_ptr<LogEntryTableModel> model( new LogEntryTableModel( parser ) );
-	m_model = model;
-
-	LogEntryTableWindow *wnd = new LogEntryTableWindow( model );
-	ui.mdiArea->addSubWindow( wnd );
-	wnd->show();
-
-
-    QTreeView *view = new QTreeView;
-	view->setModel(strModel);
-	view->setWindowTitle(QObject::tr("Simple Tree Model"));
-	ui.mdiArea->addSubWindow( view );
-	view->show();
-
-    view = new QTreeView;
-	view->setModel(str2Model);
-	view->setWindowTitle(QObject::tr("Source Model"));
-	ui.mdiArea->addSubWindow( view );
-	view->show();
-
+	createWindowsFromParser( parser );
 }
 
 void LogfileAnalyser::moreDummyLogfile()

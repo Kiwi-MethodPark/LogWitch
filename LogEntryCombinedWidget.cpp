@@ -11,6 +11,7 @@
 #include <QtCore/QtCore>
 #include "Models/LogEntryTableModel.h"
 #include "EntryToTextFormater.h"
+#include "LogData/LogEntryParserModelConfiguration.h"
 
 LogEntryCombinedWidget::LogEntryCombinedWidget( boost::shared_ptr<LogEntryTableModel> model )
 	:QSplitter( Qt::Vertical )
@@ -31,10 +32,7 @@ void LogEntryCombinedWidget::newSelection ( const QItemSelection & selected, con
 	qDebug() << "New selection of size: " << selected.size();
 
 	TconstSharedLogEntry entry = m_model->getEntryByIndex( m_table->mapToSource( selected.front().topLeft() ) );
-
-	EntryToTextFormater fmt;
-
-	m_text->setHtml( fmt.formatEntry( entry ) );
+	m_text->setHtml( m_model->getParserModelConfiguration()->getEntryToTextFormater()->formatEntry( entry ) );
 }
 
 LogEntryCombinedWidget::~LogEntryCombinedWidget()

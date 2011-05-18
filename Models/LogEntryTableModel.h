@@ -15,7 +15,7 @@
 #include "LogData/LogEntry.h"
 
 class LogEntryParser;
-class LogEntryTable;
+class LogEntryParserModelConfiguration;
 
 class LogEntryTableModel: public QAbstractTableModel
 {
@@ -24,6 +24,8 @@ class LogEntryTableModel: public QAbstractTableModel
 public:
 	LogEntryTableModel( boost::shared_ptr<LogEntryParser> parser );
 	virtual ~LogEntryTableModel();
+
+	void startModel();
 
     int rowCount(const QModelIndex &parent) const;
 
@@ -35,11 +37,17 @@ public:
 
     TconstSharedLogEntry getEntryByIndex( const QModelIndex &index ) const;
 
+    boost::shared_ptr<const LogEntryParserModelConfiguration> getParserModelConfiguration() const;
+
 public slots:
 	void insertEntry( TSharedLogEntry entry );
 
 private:
-    boost::shared_ptr<LogEntryTable> m_table;
+    typedef std::vector<TconstSharedLogEntry> TLogEntryTable;
+
+    TLogEntryTable m_table;
+
+    boost::shared_ptr<const LogEntryParserModelConfiguration> m_modelConfiguration;
 
     QString m_dateTimeConversionString;
 

@@ -9,6 +9,7 @@
 #include "LogData/LogEntry.h"
 #include "LogData/LogEntryAttributes.h"
 #include "LogData/LogEntryAttributeFactory.h"
+#include "EntryToTextFormater_Logfile.h"
 
 LogEntryParser_dummy::LogEntryParser_dummy()
 	: m_entries( 0 )
@@ -18,7 +19,13 @@ LogEntryParser_dummy::LogEntryParser_dummy()
 	// PReparing attributes factory
 	myFactory.getLogEntryAttributeFactory()->addField("Severity");
 	myFactory.getLogEntryAttributeFactory()->addField("Source");
+	myFactory.getLogEntryAttributeFactory()->addField("EMPTY"); 	// add this to fit to EntryToTextFormater_Logfile
 	myFactory.getLogEntryAttributeFactory()->disallowAddingFields();
+
+	m_myModelConfig = boost::shared_ptr<LogEntryParserModelConfiguration>( new LogEntryParserModelConfiguration );
+	m_myModelConfig->setLogEntryAttributeFactory( myFactory.getLogEntryAttributeFactory() );
+	m_myModelConfig->setHierarchySplitString( 1, "\\.");
+	m_myModelConfig->setEntryToTextFormater( boost::shared_ptr<EntryToTextFormater>( new EntryToTextFormater_Logfile ) );
 }
 
 LogEntryParser_dummy::~LogEntryParser_dummy()
@@ -109,7 +116,7 @@ TSharedLogEntry LogEntryParser_dummy::getNextLogEntry()
 	return entry;
 }
 
-boost::shared_ptr<const LogEntryAttributeFactory> LogEntryParser_dummy::getLogEntryAttributeFactory() const
+boost::shared_ptr<LogEntryParserModelConfiguration> LogEntryParser_dummy::getParserModelConfiguration() const
 {
-	return myFactory.getLogEntryAttributeFactory();
+	return m_myModelConfig;
 }

@@ -10,8 +10,9 @@
 #include <iostream>
 #include <QtCore/QtCore>
 
-StringCacheTreeModel::StringCacheTreeModel( const StringCache * cache, const QString &splitString  )
-	: m_rootNode( new StringCacheTreeItem( TSharedConstQString(new QString("RootNode")) ) )
+StringCacheTreeModel::StringCacheTreeModel( QObject *parent, const StringCache * cache, const QString &splitString  )
+	: QAbstractItemModel( parent )
+	, m_rootNode( new StringCacheTreeItem( TSharedConstQString(new QString("RootNode")) ) )
 	, m_splitRegex( )
 {
 	if( !splitString.isEmpty() )
