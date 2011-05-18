@@ -8,17 +8,25 @@
 #include "LogEntryTableWindow.h"
 
 #include "Models/LogEntryTableModel.h"
+#include "Models/LogEntryTableFilter.h"
 
 LogEntryTableWindow::LogEntryTableWindow( boost::shared_ptr<LogEntryTableModel> model, QWidget *parent )
 	:QTableView(parent)
 	 ,m_model( model )
 {
-	setModel( model.get() );
+    m_proxyModel = new LogEntryTableFilter(this);
+    m_proxyModel->setSourceModel(m_model.get());
+	setModel( m_proxyModel );
     this->horizontalHeader()->moveSection(1, model->columnCount( QModelIndex() )-1 );
     this->verticalHeader()->setDefaultSectionSize( 20 );
     this->setAlternatingRowColors(true);
     setSelectionBehavior(QAbstractItemView::SelectRows);
 	setSelectionMode( QAbstractItemView::SingleSelection );
+}
+
+QModelIndex LogEntryTableWindow::mapToSource ( const QModelIndex & proxyIndex ) const
+{
+	return m_proxyModel->mapToSource ( proxyIndex );
 }
 
 LogEntryTableWindow::~LogEntryTableWindow()

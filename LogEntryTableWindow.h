@@ -11,6 +11,7 @@
 #include <boost/shared_ptr.hpp>
 
 class LogEntryTableModel;
+class QSortFilterProxyModel;
 
 class LogEntryTableWindow
 	: public QTableView
@@ -20,14 +21,20 @@ public:
 	LogEntryTableWindow( boost::shared_ptr<LogEntryTableModel> model, QWidget *parent = NULL );
 	virtual ~LogEntryTableWindow();
 
+	QModelIndex mapToSource ( const QModelIndex & proxyIndex ) const;
+
 protected:
 	void updateGeometries();
+
+
 
 
 private:
 	boost::shared_ptr<LogEntryTableModel> m_model;
 
 	QTableView m_tableView;
+
+	QSortFilterProxyModel *m_proxyModel;
 
 
 };

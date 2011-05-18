@@ -11,6 +11,7 @@
 #include <boost/shared_ptr.hpp>
 
 class LogEntryTableModel;
+class LogEntryTableWindow;
 
 class LogEntryCombinedWidget
 	: public QSplitter
@@ -27,6 +28,7 @@ private:
 	boost::shared_ptr<LogEntryTableModel> m_model;
 
 	QTextEdit *m_text;
+	LogEntryTableWindow *m_table;
 };
 
 #endif /* LOGENTRYCOMBINEDWIDGET_H_ */

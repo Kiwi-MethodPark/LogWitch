@@ -16,13 +16,13 @@ LogEntryCombinedWidget::LogEntryCombinedWidget( boost::shared_ptr<LogEntryTableM
 	:QSplitter( Qt::Vertical )
 	 , m_model( model )
 {
-	LogEntryTableWindow *table = new LogEntryTableWindow( model, this );
+	m_table = new LogEntryTableWindow( model, this );
 	m_text = new QTextEdit("<b>Log Message viewer</b>",this);
 
-    QObject::connect(table->selectionModel(), SIGNAL(selectionChanged ( const QItemSelection & , const QItemSelection & )),
+    QObject::connect(m_table->selectionModel(), SIGNAL(selectionChanged ( const QItemSelection & , const QItemSelection & )),
                      SLOT(newSelection ( const QItemSelection &, const QItemSelection & )));
 
-    addWidget( table );
+    addWidget( m_table );
     addWidget( m_text );
 }
 
@@ -30,7 +30,7 @@ void LogEntryCombinedWidget::newSelection ( const QItemSelection & selected, con
 {
 	qDebug() << "New selection of size: " << selected.size();
 
-	TconstSharedLogEntry entry = m_model->getEntryByIndex( selected.front().topLeft() );
+	TconstSharedLogEntry entry = m_model->getEntryByIndex( m_table->mapToSource( selected.front().topLeft() ) );
 
 	EntryToTextFormater fmt;
 
