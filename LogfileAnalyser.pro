@@ -2,7 +2,8 @@ TEMPLATE = app
 TARGET = LogfileAnalyser
 QT += core \
     gui
-HEADERS += EntryToTextFormater.h \
+HEADERS += Models/LogEntryTableFilter.h \
+    EntryToTextFormater.h \
     LogEntryCombinedWidget.h \
     Models/StringCacheTreeItem.h \
     Types.h \
@@ -21,7 +22,8 @@ HEADERS += EntryToTextFormater.h \
     LogData/LogEntryFactory.h \
     LogData/LogEntry.h \
     logfileanalyser.h
-SOURCES += EntryToTextFormater.cpp \
+SOURCES += Models/LogEntryTableFilter.cpp \
+    EntryToTextFormater.cpp \
     LogEntryCombinedWidget.cpp \
     Models/StringCacheTreeItem.cpp \
     Models/StringCacheTreeModel.cpp \
