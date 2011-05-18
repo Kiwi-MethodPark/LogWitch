@@ -10,13 +10,12 @@
 #include <QtCore/QtCore>
 #include "LogData/LogEntry.h"
 
-class EntryToTextFormater {
+class EntryToTextFormater
+{
 public:
-	EntryToTextFormater();
-	virtual ~EntryToTextFormater();
+	virtual ~EntryToTextFormater(){};
 
-	QString formatEntry( TconstSharedLogEntry entry ) const;
-private:
+	virtual QString formatEntry( TconstSharedLogEntry entry ) const = 0;
 };
 
 #endif /* ENTRYTOTEXTFORMATER_H_ */
