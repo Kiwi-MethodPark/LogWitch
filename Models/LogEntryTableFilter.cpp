@@ -15,6 +15,8 @@ LogEntryTableFilter::LogEntryTableFilter( QObject *parent)
 	: QSortFilterProxyModel( parent )
 	, m_model( NULL )
 {
+    QObject::connect(&m_filterChain, SIGNAL(filterUpdateFinished()),
+                     this, SLOT(invalidate()));
 }
 
 LogEntryTableFilter::~LogEntryTableFilter()

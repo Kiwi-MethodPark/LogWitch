@@ -46,6 +46,8 @@ public:
 private:
     void dataChangedToChildren(const QModelIndex &index );
 
+    void updateFilters( StringCacheTreeItem *item, bool forceSelect = false, bool forceDeselect = false );
+
 public slots:
 	void newStringElement( TSharedConstQString );
 

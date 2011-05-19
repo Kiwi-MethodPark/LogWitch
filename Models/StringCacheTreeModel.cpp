@@ -66,9 +66,10 @@ bool StringCacheTreeModel::setData( const QModelIndex &index, const QVariant& va
 	if( role != Qt::CheckStateRole )
 	  return false;
 
+
+
 	StringCacheTreeItem *item = static_cast<StringCacheTreeItem*>( index.internalPointer() );
 	item->nextChecked();
-
 
 	QModelIndex node = index;
 	while( node.isValid() )
@@ -79,14 +80,49 @@ bool StringCacheTreeModel::setData( const QModelIndex &index, const QVariant& va
 
    	dataChangedToChildren(index);
 
-	// dataChanged( top, bottom );
-
+   	m_myFilter->startChange();
+   	updateFilters(item);
+   	m_myFilter->endChange();
 	return true;
 }
 
-void StringCacheTreeModel::dataChangedToChildren(const QModelIndex &index )
+void StringCacheTreeModel::updateFilters( StringCacheTreeItem *item, bool forceSelect /*= false*/, bool forceDeselect /*= false*/ )
+{
+	// Write this to Filter ..
+	if( forceDeselect )
+	{
+		m_myFilter->addEntry( item->getOriginalString() );
+	}
+	else if( forceSelect )
+	{
+		m_myFilter->removeEntry( item->getOriginalString() );
+	}
+	else
+	{
+		if( item->getCheckedNative() == StringCacheTreeItem::Unchecked  )
+			m_myFilter->addEntry( item->getOriginalString() );
+		else
+			m_myFilter->removeEntry( item->getOriginalString() );
+
+		if( item->getCheckedNative() == StringCacheTreeItem::Unchecked )
+			forceDeselect = true;
+		else if( item->getCheckedNative() == StringCacheTreeItem::Checked )
+			forceSelect = true;
+	}
+
+	int childCount = item->childCount();
+	for( int i = 0; i < childCount; i++ )
+	{
+		updateFilters( item->child(i), forceSelect, forceDeselect  );
+	}
+}
+
+
+
+void StringCacheTreeModel::dataChangedToChildren(const QModelIndex &index)
 {
 	emit dataChanged(index, index);
+
 	if( !hasChildren(index) )
 		return;
 
@@ -199,6 +235,11 @@ void StringCacheTreeModel::newStringElement( TSharedConstQString string )
 				endInsertRows();
 			}
 		}
+
+		// Now this is a special case, for filtering we also need for in between elements the right element.
+		// eg: S1.S2.S3 is coming first and the S1, so S1 node has the string S1.S2.S3 as original string.
+		// this must be omitted!! So check this. We may also have problems with the sourcestring therefore.
+		// We should generate a new one in this case.
 	}
 	else
 	{
