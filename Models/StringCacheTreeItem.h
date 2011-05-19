@@ -14,6 +14,7 @@
 #include <QtCore/QtCore>
 
 class StringCacheTreeItem {
+public:
 	enum Check{
 		Child,
 		Checked,
@@ -52,6 +53,8 @@ public:
     	else
     		return Qt::Unchecked;
     }
+
+    Check getCheckedNative( ) { return m_checked; }
 
     bool getForcedChecked( ) const
     {
