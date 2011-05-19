@@ -11,9 +11,20 @@
 
 class LogEntryFilter {
 public:
-	virtual ~LogEntryFilter();
+	LogEntryFilter( ): m_parent(NULL) { } ;
+
+	virtual ~LogEntryFilter( );
+
+	virtual void setParent( LogEntryFilter *parent ){ m_parent = parent; }
 
 	virtual bool filterEntry( TconstSharedLogEntry entry ) const = 0;
+
+	virtual void startChange() { if( m_parent ) m_parent->startChange(); };
+
+	virtual void endChange() { if( m_parent ) m_parent->endChange(); };
+
+protected:
+	LogEntryFilter *m_parent;
 };
 
 #endif /* LOGENTRYFILTER_H_ */
