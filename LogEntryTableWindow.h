@@ -12,6 +12,8 @@
 
 class LogEntryTableModel;
 class QSortFilterProxyModel;
+class LogEntryFilter;
+class LogEntryTableFilter;
 
 class LogEntryTableWindow
 	: public QTableView
@@ -22,6 +24,8 @@ public:
 	virtual ~LogEntryTableWindow();
 
 	QModelIndex mapToSource ( const QModelIndex & proxyIndex ) const;
+
+	void addFilter( boost::shared_ptr<const LogEntryFilter> flt );
 
 protected:
 	void updateGeometries();
@@ -34,7 +38,7 @@ private:
 
 	QTableView m_tableView;
 
-	QSortFilterProxyModel *m_proxyModel;
+	LogEntryTableFilter *m_proxyModel;
 
 
 };

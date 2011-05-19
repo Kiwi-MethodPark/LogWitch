@@ -21,6 +21,11 @@ LogEntryTableFilter::~LogEntryTableFilter()
 {
 }
 
+void LogEntryTableFilter::addFilter( boost::shared_ptr<const LogEntryFilter> flt )
+{
+	m_filterChain.addFilter( flt );
+}
+
 void LogEntryTableFilter::setSourceModel( QAbstractItemModel *model )
 {
 	QSortFilterProxyModel::setSourceModel( model );
@@ -34,12 +39,5 @@ bool LogEntryTableFilter::filterAcceptsRow ( int sourceRow, const QModelIndex & 
     QModelIndex index = sourceModel()->index(sourceRow, 0, sourceParent);
     TconstSharedLogEntry entry = m_model->getEntryByIndex( index );
 
-    if(*entry->getAttributes().getAttribute(0) == "ERROR" )
-    {
-    	return true;
-    }
-    else
-    {
-    	return false;
-    }
+    return m_filterChain.filterEntry( entry );
 }

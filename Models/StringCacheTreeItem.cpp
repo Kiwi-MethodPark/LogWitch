@@ -7,10 +7,11 @@
 
 #include "StringCacheTreeItem.h"
 
-StringCacheTreeItem::StringCacheTreeItem( TSharedConstQString str, StringCacheTreeItem *parent /* = NULL */ )
+StringCacheTreeItem::StringCacheTreeItem( TSharedConstQString originalString, TSharedConstQString str, StringCacheTreeItem *parent /* = NULL */ )
 	: m_parentItem( parent )
 	, m_checked( Child )
 	, m_string( str )
+	, m_stringOriginal( originalString )
 {
 
 }
@@ -52,5 +53,10 @@ StringCacheTreeItem *StringCacheTreeItem::parent()
 TSharedConstQString StringCacheTreeItem::getString() const
 {
 	return m_string;
+}
+
+TSharedConstQString StringCacheTreeItem::getOriginalString() const
+{
+	return m_stringOriginal;
 }
 

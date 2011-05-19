@@ -20,7 +20,7 @@ class StringCacheTreeItem {
 		Unchecked
 	};
 public:
-	StringCacheTreeItem( TSharedConstQString str, StringCacheTreeItem *parent = NULL );
+	StringCacheTreeItem( TSharedConstQString originalString, TSharedConstQString str, StringCacheTreeItem *parent = NULL );
 	virtual ~StringCacheTreeItem();
 
     void appendChild(StringCacheTreeItem *child);
@@ -32,7 +32,15 @@ public:
     int row() const;
     StringCacheTreeItem *parent();
 
+    /**
+     * This is the readable name which need not be the same as the string from the StringCache
+     */
     TSharedConstQString getString() const;
+
+    /**
+     * This function returns the original string from the StringCache which can be used for a direct pointer
+     */
+    TSharedConstQString getOriginalString() const ;
 
     Qt::CheckState getChecked() const
     {
@@ -109,6 +117,8 @@ private:
     Check m_checked;
 
     TSharedConstQString m_string;
+
+    TSharedConstQString m_stringOriginal;
 };
 
 #endif /* STRINGCACHETREEITEM_H_ */

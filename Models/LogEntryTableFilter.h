@@ -9,6 +9,7 @@
 #define LOGENTRYTABLEFILTER_H_
 
 #include <QSortFilterProxyModel>
+#include "LogEntryFilterChain.h"
 
 class LogEntryTableModel;
 
@@ -21,6 +22,8 @@ public:
 
 	void setSourceModel( QAbstractItemModel *model );
 
+	void addFilter( boost::shared_ptr<const LogEntryFilter> );
+
 	virtual ~LogEntryTableFilter();
 
 protected:
@@ -28,6 +31,8 @@ protected:
 
 private:
 	LogEntryTableModel *m_model;
+
+	LogEntryFilterChain m_filterChain;
 };
 
 #endif /* LOGENTRYTABLEFILTER_H_ */

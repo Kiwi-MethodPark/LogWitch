@@ -12,6 +12,7 @@
 
 class LogEntryTableModel;
 class LogEntryTableWindow;
+class LogEntryFilter;
 
 class LogEntryCombinedWidget
 	: public QSplitter
@@ -20,6 +21,8 @@ class LogEntryCombinedWidget
 public:
 	LogEntryCombinedWidget( boost::shared_ptr<LogEntryTableModel> model );
 	virtual ~LogEntryCombinedWidget();
+
+	void addFilter( boost::shared_ptr<const LogEntryFilter> flt );
 
 private slots:
 	void newSelection ( const QItemSelection & selected, const QItemSelection & deselected );

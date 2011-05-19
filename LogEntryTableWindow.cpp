@@ -24,6 +24,11 @@ LogEntryTableWindow::LogEntryTableWindow( boost::shared_ptr<LogEntryTableModel> 
 	setSelectionMode( QAbstractItemView::SingleSelection );
 }
 
+void LogEntryTableWindow::addFilter( boost::shared_ptr<const LogEntryFilter> flt )
+{
+	m_proxyModel->addFilter( flt );
+}
+
 QModelIndex LogEntryTableWindow::mapToSource ( const QModelIndex & proxyIndex ) const
 {
 	return m_proxyModel->mapToSource ( proxyIndex );

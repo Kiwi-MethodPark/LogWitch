@@ -12,12 +12,15 @@
 #include "StringCacheTreeItem.h"
 #include <QRegExp>
 
+class LogEntryFilter;
+class LogEntryRemoveFilter;
+
 class StringCacheTreeModel
 	: public QAbstractItemModel
 {
 	Q_OBJECT
 public:
-	StringCacheTreeModel( QObject *parent, const StringCache * cache, const QString &splitString = QString() );
+	StringCacheTreeModel( QObject *parent, const StringCache * cache, int attributeId, const QString &splitString = QString() );
 	virtual ~StringCacheTreeModel();
 
     QVariant data(const QModelIndex &index, int role) const;
@@ -38,6 +41,8 @@ public:
 
     bool setData( const QModelIndex &index, const QVariant& value, int role );
 
+    boost::shared_ptr<const LogEntryFilter> getFilter() const;
+
 private:
     void dataChangedToChildren(const QModelIndex &index );
 
@@ -50,6 +55,8 @@ private:
 	QString m_modelname;
 
 	boost::shared_ptr<QRegExp> m_splitRegex;
+
+	boost::shared_ptr<LogEntryRemoveFilter> m_myFilter;
 };
 
 #endif /* STRINGCACHETREEMODEL_H_ */

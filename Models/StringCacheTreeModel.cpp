@@ -9,12 +9,16 @@
 
 #include <iostream>
 #include <QtCore/QtCore>
+#include "LogEntryRemoveFilter.h"
 
-StringCacheTreeModel::StringCacheTreeModel( QObject *parent, const StringCache * cache, const QString &splitString  )
+StringCacheTreeModel::StringCacheTreeModel( QObject *parent, const StringCache * cache, int attributeId, const QString &splitString  )
 	: QAbstractItemModel( parent )
-	, m_rootNode( new StringCacheTreeItem( TSharedConstQString(new QString("RootNode")) ) )
 	, m_splitRegex( )
+	, m_myFilter( new LogEntryRemoveFilter(attributeId) )
 {
+	TSharedConstQString rootNode( new QString("RootNode"));
+	m_rootNode.reset( new StringCacheTreeItem( rootNode, rootNode ) );
+
 	if( !splitString.isEmpty() )
 		m_splitRegex.reset( new QRegExp( splitString ) );
 
@@ -27,7 +31,10 @@ StringCacheTreeModel::~StringCacheTreeModel()
 
 }
 
-
+boost::shared_ptr<const LogEntryFilter> StringCacheTreeModel::getFilter() const
+{
+	return m_myFilter;
+}
 
 QVariant StringCacheTreeModel::data(const QModelIndex &index, int role) const
 {
@@ -185,7 +192,7 @@ void StringCacheTreeModel::newStringElement( TSharedConstQString string )
 			if( i == count )
 			{
 				beginInsertRows( idx, node->childCount(), node->childCount() );
-				StringCacheTreeItem *newNode = new StringCacheTreeItem( TSharedConstQString( new QString(str) ), node );
+				StringCacheTreeItem *newNode = new StringCacheTreeItem( string,TSharedConstQString( new QString(str) ), node );
 				node->appendChild( newNode );
 				node = newNode;
 				idx = index(i,0,idx);
@@ -196,7 +203,7 @@ void StringCacheTreeModel::newStringElement( TSharedConstQString string )
 	else
 	{
 		beginInsertRows( QModelIndex(), m_rootNode->childCount(), m_rootNode->childCount() );
-		m_rootNode->appendChild( new StringCacheTreeItem( string, m_rootNode.get() ) );
+		m_rootNode->appendChild( new StringCacheTreeItem( string, string, m_rootNode.get() ) );
 		endInsertRows();
 	}
 }

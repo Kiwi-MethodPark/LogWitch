@@ -65,7 +65,11 @@ void LogfileAnalyser::createWindowsFromParser(boost::shared_ptr<LogEntryParser> 
 		QTreeView *view = new QTreeView;
 		StringCacheTreeModel *strModel = new StringCacheTreeModel(view
 				, &parser->getParserModelConfiguration()->getLogEntryAttributeFactory()->getCache(attr)
+				, attr
 				, parser->getParserModelConfiguration()->getHierarchySplitString(attr) );
+
+		if( strModel->getFilter() )
+			wnd->addFilter( strModel->getFilter() );
 
 		view->setModel(strModel);
 		view->show();
