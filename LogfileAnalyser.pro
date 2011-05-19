@@ -2,7 +2,8 @@ TEMPLATE = app
 TARGET = LogfileAnalyser
 QT += core \
     gui
-HEADERS += Models/LogEntryRemoveFilter.h \
+HEADERS += Models/LogEntryFilterChain.h \
+    Models/LogEntryRemoveFilter.h \
     Models/LogEntryFilter.h \
     EntryToTextFormater_Logfile.h \
     LogData/LogEntryParserModelConfiguration.h \
@@ -25,7 +26,8 @@ HEADERS += Models/LogEntryRemoveFilter.h \
     LogData/LogEntryFactory.h \
     LogData/LogEntry.h \
     logfileanalyser.h
-SOURCES += Models/LogEntryRemoveFilter.cpp \
+SOURCES += Models/LogEntryFilterChain.cpp \
+    Models/LogEntryRemoveFilter.cpp \
     Models/LogEntryFilter.cpp \
     EntryToTextFormater_Logfile.cpp \
     LogData/LogEntryParserModelConfiguration.cpp \
