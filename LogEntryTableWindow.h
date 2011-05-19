@@ -25,7 +25,7 @@ public:
 
 	QModelIndex mapToSource ( const QModelIndex & proxyIndex ) const;
 
-	void addFilter( boost::shared_ptr<const LogEntryFilter> flt );
+	void addFilter( boost::shared_ptr<LogEntryFilter> flt );
 
 protected:
 	void updateGeometries();

@@ -21,7 +21,7 @@ LogEntryTableFilter::~LogEntryTableFilter()
 {
 }
 
-void LogEntryTableFilter::addFilter( boost::shared_ptr<const LogEntryFilter> flt )
+void LogEntryTableFilter::addFilter( boost::shared_ptr<LogEntryFilter> flt )
 {
 	m_filterChain.addFilter( flt );
 }

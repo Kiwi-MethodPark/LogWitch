@@ -22,7 +22,7 @@ public:
 	LogEntryCombinedWidget( boost::shared_ptr<LogEntryTableModel> model );
 	virtual ~LogEntryCombinedWidget();
 
-	void addFilter( boost::shared_ptr<const LogEntryFilter> flt );
+	void addFilter( boost::shared_ptr<LogEntryFilter> flt );
 
 private slots:
 	void newSelection ( const QItemSelection & selected, const QItemSelection & deselected );

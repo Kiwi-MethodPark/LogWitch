@@ -20,14 +20,14 @@ public:
 
 	virtual ~LogEntryFilterChain();
 
-	void addFilter( boost::shared_ptr<const LogEntryFilter> );
+	void addFilter( boost::shared_ptr< LogEntryFilter> );
 
-	void removeFilter( boost::shared_ptr<const LogEntryFilter> );
+	void removeFilter( boost::shared_ptr< LogEntryFilter> );
 
 	virtual bool filterEntry( TconstSharedLogEntry entry ) const;
 
 private:
-	typedef std::list< boost::shared_ptr< const LogEntryFilter> > TFilterChain;
+	typedef std::list< boost::shared_ptr<  LogEntryFilter> > TFilterChain;
 	TFilterChain m_filterChain;
 };
 

@@ -24,7 +24,7 @@ LogEntryTableWindow::LogEntryTableWindow( boost::shared_ptr<LogEntryTableModel> 
 	setSelectionMode( QAbstractItemView::SingleSelection );
 }
 
-void LogEntryTableWindow::addFilter( boost::shared_ptr<const LogEntryFilter> flt )
+void LogEntryTableWindow::addFilter( boost::shared_ptr<LogEntryFilter> flt )
 {
 	m_proxyModel->addFilter( flt );
 }

@@ -27,7 +27,7 @@ LogEntryCombinedWidget::LogEntryCombinedWidget( boost::shared_ptr<LogEntryTableM
     addWidget( m_text );
 }
 
-void LogEntryCombinedWidget::addFilter( boost::shared_ptr<const LogEntryFilter> flt )
+void LogEntryCombinedWidget::addFilter( boost::shared_ptr<LogEntryFilter> flt )
 {
 	m_table->addFilter( flt);
 }

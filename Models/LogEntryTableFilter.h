@@ -22,7 +22,7 @@ public:
 
 	void setSourceModel( QAbstractItemModel *model );
 
-	void addFilter( boost::shared_ptr<const LogEntryFilter> );
+	void addFilter( boost::shared_ptr<LogEntryFilter> );
 
 	virtual ~LogEntryTableFilter();
 

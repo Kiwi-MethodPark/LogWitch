@@ -14,12 +14,15 @@ LogEntryFilterChain::LogEntryFilterChain()
 LogEntryFilterChain::~LogEntryFilterChain()
 {
 }
-void LogEntryFilterChain::addFilter( boost::shared_ptr<const LogEntryFilter> flt )
+
+void LogEntryFilterChain::addFilter( boost::shared_ptr<LogEntryFilter> flt )
 {
+	flt->setParent( this );
+
 	m_filterChain.push_back( flt );
 }
 
-void LogEntryFilterChain::removeFilter( boost::shared_ptr<const LogEntryFilter>  flt )
+void LogEntryFilterChain::removeFilter( boost::shared_ptr<LogEntryFilter>  flt )
 {
 	TFilterChain::iterator it = m_filterChain.begin();
 	for( ; it != m_filterChain.end(); ++it )

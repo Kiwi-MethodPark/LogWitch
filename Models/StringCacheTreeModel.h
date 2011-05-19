@@ -41,7 +41,7 @@ public:
 
     bool setData( const QModelIndex &index, const QVariant& value, int role );
 
-    boost::shared_ptr<const LogEntryFilter> getFilter() const;
+    boost::shared_ptr<LogEntryFilter> getFilter() const;
 
 private:
     void dataChangedToChildren(const QModelIndex &index );
