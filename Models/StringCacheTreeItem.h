@@ -43,6 +43,8 @@ public:
      */
     TSharedConstQString getOriginalString() const ;
 
+    void setOriginalString( TSharedConstQString str);
+
     Qt::CheckState getChecked() const
     {
     	Check c = getCheckedInt();

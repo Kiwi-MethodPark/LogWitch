@@ -60,3 +60,9 @@ TSharedConstQString StringCacheTreeItem::getOriginalString() const
 	return m_stringOriginal;
 }
 
+void StringCacheTreeItem::setOriginalString( TSharedConstQString str)
+{
+	m_stringOriginal = str;
+}
+
+
