@@ -15,6 +15,7 @@ StringCacheTreeModel::StringCacheTreeModel( QObject *parent, const StringCache *
 	: QAbstractItemModel( parent )
 	, m_splitRegex( )
 	, m_myFilter( new LogEntryRemoveFilter(attributeId) )
+	, m_undefinedString( new QString("Undefined") )
 {
 	TSharedConstQString rootNode( new QString("RootNode"));
 	m_rootNode.reset( new StringCacheTreeItem( rootNode, rootNode ) );
@@ -91,18 +92,23 @@ void StringCacheTreeModel::updateFilters( StringCacheTreeItem *item, bool forceS
 	// Write this to Filter ..
 	if( forceDeselect )
 	{
-		m_myFilter->addEntry( item->getOriginalString() );
+		if( item->getOriginalString() != m_undefinedString )
+			m_myFilter->addEntry( item->getOriginalString() );
 	}
 	else if( forceSelect )
 	{
-		m_myFilter->removeEntry( item->getOriginalString() );
+		if( item->getOriginalString() != m_undefinedString )
+			m_myFilter->removeEntry( item->getOriginalString() );
 	}
 	else
 	{
-		if( item->getCheckedNative() == StringCacheTreeItem::Unchecked  )
-			m_myFilter->addEntry( item->getOriginalString() );
-		else
-			m_myFilter->removeEntry( item->getOriginalString() );
+		if( item->getOriginalString() != m_undefinedString )
+		{
+			if( item->getCheckedNative() == StringCacheTreeItem::Unchecked  )
+				m_myFilter->addEntry( item->getOriginalString() );
+			else
+				m_myFilter->removeEntry( item->getOriginalString() );
+		}
 
 		if( item->getCheckedNative() == StringCacheTreeItem::Unchecked )
 			forceDeselect = true;
@@ -228,11 +234,20 @@ void StringCacheTreeModel::newStringElement( TSharedConstQString string )
 			if( i == count )
 			{
 				beginInsertRows( idx, node->childCount(), node->childCount() );
-				StringCacheTreeItem *newNode = new StringCacheTreeItem( string,TSharedConstQString( new QString(str) ), node );
+				StringCacheTreeItem *newNode = new StringCacheTreeItem(
+						  list.empty() ? string : m_undefinedString
+						, TSharedConstQString( new QString(str) )
+						, node );
 				node->appendChild( newNode );
 				node = newNode;
 				idx = index(i,0,idx);
 				endInsertRows();
+			}
+			if( list.empty() && i < count)
+			{
+				// Here we should replace the Undefined string with the real one. This case
+				// happens if a deeper hierarchy was inserted before.
+				node->setOriginalString( string );
 			}
 		}
 
@@ -247,5 +262,7 @@ void StringCacheTreeModel::newStringElement( TSharedConstQString string )
 		m_rootNode->appendChild( new StringCacheTreeItem( string, string, m_rootNode.get() ) );
 		endInsertRows();
 	}
+
+	updateFilters(m_rootNode.get());
 }
 

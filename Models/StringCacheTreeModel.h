@@ -11,6 +11,7 @@
 #include <QAbstractTableModel>
 #include "StringCacheTreeItem.h"
 #include <QRegExp>
+#include "Types.h"
 
 class LogEntryFilter;
 class LogEntryRemoveFilter;
@@ -59,6 +60,8 @@ private:
 	boost::shared_ptr<QRegExp> m_splitRegex;
 
 	boost::shared_ptr<LogEntryRemoveFilter> m_myFilter;
+
+	TSharedConstQString m_undefinedString;
 };
 
 #endif /* STRINGCACHETREEMODEL_H_ */
