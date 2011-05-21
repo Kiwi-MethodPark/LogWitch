@@ -19,6 +19,8 @@ LogEntryTableWindow::LogEntryTableWindow( boost::shared_ptr<LogEntryTableModel> 
 	setModel( m_proxyModel );
     this->horizontalHeader()->moveSection(1, model->columnCount( QModelIndex() )-1 );
     this->verticalHeader()->setDefaultSectionSize( 20 );
+    this->verticalHeader()->setResizeMode(QHeaderView::Fixed);
+    this->verticalHeader()->hide();
     this->setAlternatingRowColors(true);
     setSelectionBehavior(QAbstractItemView::SelectRows);
 	setSelectionMode( QAbstractItemView::SingleSelection );
