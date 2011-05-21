@@ -53,6 +53,8 @@ private:
 
 
     boost::shared_ptr<LogEntryParser> m_entryLoader;
+
+    static const int m_fixedFirstColumns = 3;
 };
 
 #endif /* LOGENTRYTABLEMODEL_H_ */
