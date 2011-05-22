@@ -13,25 +13,37 @@
 class LogEntryTableModel;
 class LogEntryTableWindow;
 class LogEntryFilter;
+class QTabWidget;
 
 class LogEntryCombinedWidget
-	: public QSplitter
+	: public QMdiSubWindow
 {
 	Q_OBJECT
 public:
-	LogEntryCombinedWidget( boost::shared_ptr<LogEntryTableModel> model );
+	LogEntryCombinedWidget( boost::shared_ptr<LogEntryTableModel> model, QWidget *parent = NULL );
 	virtual ~LogEntryCombinedWidget();
 
 	void addFilter( boost::shared_ptr<LogEntryFilter> flt );
 
+	QTabWidget *getTabFilterWidget();
+
+	void setDockForFilter( QDockWidget *dock );
+
 private slots:
 	void newSelection ( const QItemSelection & selected, const QItemSelection & deselected );
+public slots:
+	void getFocused();
 
 private:
 	boost::shared_ptr<LogEntryTableModel> m_model;
 
+	QSplitter *m_splitter;
 	QTextEdit *m_text;
 	LogEntryTableWindow *m_table;
+
+	QTabWidget *m_myFilterTabs;
+
+	QDockWidget *m_dockFilterShouldDockedTo;
 };
 
 #endif /* LOGENTRYCOMBINEDWIDGET_H_ */

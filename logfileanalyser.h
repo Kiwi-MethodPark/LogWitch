@@ -9,6 +9,7 @@ class LogEntryParser_dummy;
 class LogEntryTableModel;
 class LogEntryTable;
 class LogEntryParser;
+class QDockWidget;
 
 class LogfileAnalyser : public QMainWindow
 {
@@ -25,6 +26,8 @@ private:
 
     boost::shared_ptr<LogEntryTableModel> m_model;
     boost::shared_ptr<LogEntryParser_dummy> m_parser;
+
+    QDockWidget *m_myFilterDock;
 
 private slots:
   	void openDummyLogfile();

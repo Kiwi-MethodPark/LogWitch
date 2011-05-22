@@ -25,6 +25,10 @@ LogfileAnalyser::LogfileAnalyser(QWidget *parent)
                      this, SLOT(moreDummyLogfile()));
     QObject::connect(ui.actionOpen, SIGNAL(triggered()),
                      this, SLOT(openLogfile()));
+
+	m_myFilterDock = new QDockWidget(tr("FilterSettings"), this);
+	m_myFilterDock->setAllowedAreas(Qt::LeftDockWidgetArea | Qt::RightDockWidgetArea);
+	addDockWidget(Qt::RightDockWidgetArea, m_myFilterDock);
 }
 
 LogfileAnalyser::~LogfileAnalyser()
@@ -49,41 +53,17 @@ void LogfileAnalyser::createWindowsFromParser(boost::shared_ptr<LogEntryParser> 
 	boost::shared_ptr<LogEntryTableModel> model( new LogEntryTableModel( parser ) );
 	m_model = model;
 
-	QMdiSubWindow *wnd = new  QMdiSubWindow( ui.mdiArea );
-	LogEntryCombinedWidget *wid = new LogEntryCombinedWidget( model );
+	LogEntryCombinedWidget *wnd = new LogEntryCombinedWidget( model, ui.mdiArea );
 
-	wnd->setWidget( wid );
-	wnd->setWindowState(Qt::WindowMaximized );
+    wnd->setWindowState(Qt::WindowMaximized );
     wnd->setAttribute(Qt::WA_DeleteOnClose);
-    wnd->resize( 800, 800 );
 	wnd->show();
 
-	ui.mdiArea->addSubWindow( wnd );
 
-	QDockWidget *dock = new QDockWidget(tr("FilterSettings"), this);
-	dock->setAllowedAreas(Qt::LeftDockWidgetArea | Qt::RightDockWidgetArea);
 
-	QTabWidget *tabs = new QTabWidget(dock);
-	dock->setWidget( tabs );
-
-	int attributes = parser->getParserModelConfiguration()->getLogEntryAttributeFactory()->getNumberOfFields();
-	for(int attr = 0; attr < attributes; attr++ )
-	{
-		QTreeView *view = new QTreeView;
-		StringCacheTreeModel *strModel = new StringCacheTreeModel(view
-				, &parser->getParserModelConfiguration()->getLogEntryAttributeFactory()->getCache(attr)
-				, attr
-				, parser->getParserModelConfiguration()->getHierarchySplitString(attr) );
-
-		if( strModel->getFilter() )
-			wid->addFilter( strModel->getFilter() );
-
-		view->setModel(strModel);
-		tabs->addTab( view, parser->getParserModelConfiguration()->getLogEntryAttributeFactory()->getDescription(attr));
-		view->show();
-	}
-
-	addDockWidget(Qt::RightDockWidgetArea, dock);
+	// m_myFilterDock->setWidget( wnd->getTabFilterWidget() );
+	wnd->setDockForFilter(m_myFilterDock);
+	wnd->getFocused();
 
 	m_model->startModel();
 }

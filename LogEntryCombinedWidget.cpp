@@ -12,10 +12,15 @@
 #include "Models/LogEntryTableModel.h"
 #include "EntryToTextFormater.h"
 #include "LogData/LogEntryParserModelConfiguration.h"
+#include "LogData/LogEntryAttributeFactory.h"
+#include "Models/StringCacheTreeModel.h"
 
-LogEntryCombinedWidget::LogEntryCombinedWidget( boost::shared_ptr<LogEntryTableModel> model )
-	:QSplitter( Qt::Vertical )
-	 , m_model( model )
+LogEntryCombinedWidget::LogEntryCombinedWidget( boost::shared_ptr<LogEntryTableModel> model, QWidget *parent )
+	: QMdiSubWindow( parent )
+	, m_model( model )
+	, m_splitter( new QSplitter(Qt::Vertical, this) )
+	, m_myFilterTabs( NULL )
+	, m_dockFilterShouldDockedTo( NULL )
 {
 	m_table = new LogEntryTableWindow( model, this );
 	m_text = new QTextEdit("<b>Log Message viewer</b>",this);
@@ -23,10 +28,61 @@ LogEntryCombinedWidget::LogEntryCombinedWidget( boost::shared_ptr<LogEntryTableM
     QObject::connect(m_table->selectionModel(), SIGNAL(selectionChanged ( const QItemSelection & , const QItemSelection & )),
                      SLOT(newSelection ( const QItemSelection &, const QItemSelection & )));
 
-    addWidget( m_table );
-    addWidget( m_text );
+    QObject::connect(this, SIGNAL(aboutToActivate()),
+                     this, SLOT(getFocused() ) );
 
-    this->setStretchFactor( 0, 20 );
+    m_splitter->addWidget( m_table );
+    m_splitter->addWidget( m_text );
+
+    m_splitter->setStretchFactor( 0, 20 );
+    this->setWidget( m_splitter );
+    resize( 800, 500 );
+
+    // Just generate the tab here, because we want to catch all filter entries.
+    getTabFilterWidget();
+}
+
+void LogEntryCombinedWidget::setDockForFilter( QDockWidget *dock )
+{
+	m_dockFilterShouldDockedTo = dock;
+	if( isActiveWindow () )
+		getFocused();
+}
+
+void LogEntryCombinedWidget::getFocused()
+{
+	if( m_dockFilterShouldDockedTo != NULL )
+	{
+		m_dockFilterShouldDockedTo->setWidget( getTabFilterWidget() );
+	}
+}
+
+QTabWidget *LogEntryCombinedWidget::getTabFilterWidget()
+{
+	if ( m_myFilterTabs == NULL )
+	{
+		QTabWidget *tabs = new QTabWidget( );
+
+		int attributes = m_model->getParserModelConfiguration()->getLogEntryAttributeFactory()->getNumberOfFields();
+		for(int attr = 0; attr < attributes; attr++ )
+		{
+			QTreeView *view = new QTreeView;
+			StringCacheTreeModel *strModel = new StringCacheTreeModel(view
+					, &m_model->getParserModelConfiguration()->getLogEntryAttributeFactory()->getCache(attr)
+					, attr
+					, m_model->getParserModelConfiguration()->getHierarchySplitString(attr) );
+
+			if( strModel->getFilter() )
+				addFilter( strModel->getFilter() );
+
+			view->setModel(strModel);
+			tabs->addTab( view, m_model->getParserModelConfiguration()->getLogEntryAttributeFactory()->getDescription(attr));
+			view->show();
+		}
+		m_myFilterTabs = tabs;
+	}
+
+	return m_myFilterTabs;
 }
 
 void LogEntryCombinedWidget::addFilter( boost::shared_ptr<LogEntryFilter> flt )
