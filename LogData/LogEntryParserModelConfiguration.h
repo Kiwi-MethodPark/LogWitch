@@ -56,12 +56,30 @@ public:
 
 	void setLogEntryAttributeFactory( boost::shared_ptr<LogEntryAttributeFactory> factory) { m_attr = factory;}
 
+	int getFieldWidthHint( int idx ) const
+	{
+		if( idx < (int)m_filedWidthHints.size() )
+			return m_filedWidthHints[idx] < 0 ? 150 : m_filedWidthHints[idx];
+		else
+			return 150;
+	}
+
+	void setFieldWidthHint( int idx, int width )
+	{
+		while( idx >= (int)m_filedWidthHints.size() )
+			m_filedWidthHints.push_back(-1);
+
+		m_filedWidthHints[idx] = width;
+	}
+
 private:
 	QVector<QString> m_hierarchySplitstrings;
 
 	boost::shared_ptr<EntryToTextFormater> m_formater;
 
 	boost::shared_ptr<LogEntryAttributeFactory> m_attr;
+
+	std::vector<int> m_filedWidthHints;
 };
 
 #endif /* LOGENTRYPARSERMODELCONFIGURATION_H_ */

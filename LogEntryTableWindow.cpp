@@ -24,6 +24,14 @@ LogEntryTableWindow::LogEntryTableWindow( boost::shared_ptr<LogEntryTableModel> 
     this->setAlternatingRowColors(true);
     setSelectionBehavior(QAbstractItemView::SelectRows);
 	setSelectionMode( QAbstractItemView::SingleSelection );
+
+	// Qt::Horizontal
+	int count = m_model->columnCount( QModelIndex() );
+	for( int col = 0; col < count; col ++)
+	{
+		int width = m_proxyModel->headerData( col, Qt::Horizontal, 512 ).value<int>();
+		this->horizontalHeader()->resizeSection( col, width );
+	}
 }
 
 void LogEntryTableWindow::addFilter( boost::shared_ptr<LogEntryFilter> flt )

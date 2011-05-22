@@ -35,6 +35,10 @@ LogEntryParser_Logfile::LogEntryParser_Logfile( const QString &filename)
 	m_myModelConfig->setLogEntryAttributeFactory( myFactory.getLogEntryAttributeFactory() );
 	m_myModelConfig->setHierarchySplitString( 1, "\\.");
 	m_myModelConfig->setEntryToTextFormater( boost::shared_ptr<EntryToTextFormater>( new EntryToTextFormater_Logfile ) );
+
+	m_myModelConfig->setFieldWidthHint( 0, 70 ); // severity
+	m_myModelConfig->setFieldWidthHint( 1, 250 ); // component
+	m_myModelConfig->setFieldWidthHint( 2, 150 ); // file source
 }
 
 LogEntryParser_Logfile::~LogEntryParser_Logfile()
