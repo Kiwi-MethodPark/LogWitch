@@ -2,5 +2,6 @@
 debug/*
 release/*
 ui_*.h
+moc_*
 Makefile*
 LogfileAnalyser
