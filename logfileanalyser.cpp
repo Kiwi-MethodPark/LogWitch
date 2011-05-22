@@ -49,9 +49,16 @@ void LogfileAnalyser::createWindowsFromParser(boost::shared_ptr<LogEntryParser> 
 	boost::shared_ptr<LogEntryTableModel> model( new LogEntryTableModel( parser ) );
 	m_model = model;
 
-	LogEntryCombinedWidget *wnd = new LogEntryCombinedWidget( model );
-	ui.mdiArea->addSubWindow( wnd );
+	QMdiSubWindow *wnd = new  QMdiSubWindow( ui.mdiArea );
+	LogEntryCombinedWidget *wid = new LogEntryCombinedWidget( model );
+
+	wnd->setWidget( wid );
+	wnd->setWindowState(Qt::WindowMaximized );
+    wnd->setAttribute(Qt::WA_DeleteOnClose);
+    wnd->resize( 800, 800 );
 	wnd->show();
+
+	ui.mdiArea->addSubWindow( wnd );
 
 	QDockWidget *dock = new QDockWidget(tr("FilterSettings"), this);
 	dock->setAllowedAreas(Qt::LeftDockWidgetArea | Qt::RightDockWidgetArea);
@@ -69,11 +76,11 @@ void LogfileAnalyser::createWindowsFromParser(boost::shared_ptr<LogEntryParser> 
 				, parser->getParserModelConfiguration()->getHierarchySplitString(attr) );
 
 		if( strModel->getFilter() )
-			wnd->addFilter( strModel->getFilter() );
+			wid->addFilter( strModel->getFilter() );
 
 		view->setModel(strModel);
-		view->show();
 		tabs->addTab( view, parser->getParserModelConfiguration()->getLogEntryAttributeFactory()->getDescription(attr));
+		view->show();
 	}
 
 	addDockWidget(Qt::RightDockWidgetArea, dock);

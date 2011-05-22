@@ -25,6 +25,8 @@ LogEntryCombinedWidget::LogEntryCombinedWidget( boost::shared_ptr<LogEntryTableM
 
     addWidget( m_table );
     addWidget( m_text );
+
+    this->setStretchFactor( 0, 20 );
 }
 
 void LogEntryCombinedWidget::addFilter( boost::shared_ptr<LogEntryFilter> flt )
