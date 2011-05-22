@@ -79,25 +79,10 @@ void LogfileAnalyser::createWindowsFromParser(boost::shared_ptr<LogEntryParser> 
 	addDockWidget(Qt::RightDockWidgetArea, dock);
 
 	m_model->startModel();
-
-
-/*
-    view = new QTreeView;
-	view->setModel(str2Model);
-	view->setWindowTitle(QObject::tr("Source Model"));
-	ui.mdiArea->addSubWindow( view );
-	view->show();
-	*/
 }
 
 void LogfileAnalyser::openDummyLogfile()
 {
-//	QMessageBox msgBox;
-//	msgBox.setText("Dummy log entries will be loaded ...");
-//	msgBox.setStandardButtons(QMessageBox::Ok );
-//	msgBox.setDefaultButton(QMessageBox::Ok);
-//	msgBox.exec();
-
 	// Create table with log entries and a new model for this
 	boost::shared_ptr<LogEntryParser_dummy> parser( new LogEntryParser_dummy );
 	m_parser = parser;
