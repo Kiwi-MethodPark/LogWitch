@@ -35,6 +35,8 @@ private slots:
   	void moreDummyLogfile();
 
   	void openLogfile();
+
+  	void openPort();
 };
 
 #endif // LOGFILEANALYSER_H

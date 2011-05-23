@@ -13,6 +13,7 @@
 #include "Models/StringCacheTreeModel.h"
 #include "LogData/LogEntryParser_Logfile.h"
 #include "LogEntryCombinedWidget.h"
+#include "LogEntryParser_log4cplusSocket.h"
 
 LogfileAnalyser::LogfileAnalyser(QWidget *parent)
     : QMainWindow(parent)
@@ -26,6 +27,8 @@ LogfileAnalyser::LogfileAnalyser(QWidget *parent)
                      this, SLOT(moreDummyLogfile()));
     QObject::connect(ui.actionOpen, SIGNAL(triggered()),
                      this, SLOT(openLogfile()));
+    QObject::connect(ui.startListen, SIGNAL(clicked()),
+                     this, SLOT(openPort()));
 }
 
 LogfileAnalyser::~LogfileAnalyser()
@@ -42,6 +45,14 @@ void LogfileAnalyser::openLogfile()
     	QStringList fileNames = dialog.selectedFiles();
     	createWindowsFromParser( boost::shared_ptr<LogEntryParser>(new LogEntryParser_Logfile( fileNames.first() ) ) );
     }
+}
+
+void LogfileAnalyser::openPort()
+{
+	int port = ui.listenPort->value();
+	boost::shared_ptr<LogEntryParser_log4cplusSocket> socketParser( new LogEntryParser_log4cplusSocket( port ) );
+
+	createWindowsFromParser( socketParser );
 }
 
 
