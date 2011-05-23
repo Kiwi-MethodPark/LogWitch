@@ -85,11 +85,10 @@ void LogEntryParser_Logfile::run()
         else
         	m_abort = true;
 
-        //if( i++ > 35 )
-        //	return;
         i++;
-        //qDebug() << "Entry: " << i;
 	}
+
+	qDebug() << "We got " << i << " entries from logfile.";
 }
 
 TSharedLogEntry LogEntryParser_Logfile::getNextLogEntry()
