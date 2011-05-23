@@ -16,6 +16,7 @@
 
 LogfileAnalyser::LogfileAnalyser(QWidget *parent)
     : QMainWindow(parent)
+	, m_myFilterDock( NULL )
 {
 	ui.setupUi(this);
 
@@ -25,10 +26,6 @@ LogfileAnalyser::LogfileAnalyser(QWidget *parent)
                      this, SLOT(moreDummyLogfile()));
     QObject::connect(ui.actionOpen, SIGNAL(triggered()),
                      this, SLOT(openLogfile()));
-
-	m_myFilterDock = new QDockWidget(tr("FilterSettings"), this);
-	m_myFilterDock->setAllowedAreas(Qt::LeftDockWidgetArea | Qt::RightDockWidgetArea);
-	addDockWidget(Qt::RightDockWidgetArea, m_myFilterDock);
 }
 
 LogfileAnalyser::~LogfileAnalyser()
@@ -60,10 +57,25 @@ void LogfileAnalyser::createWindowsFromParser(boost::shared_ptr<LogEntryParser> 
 	wnd->show();
 
 
+	/*
+	 * We want to open the Dock the first time we ceate a window.
+	 * The advantage of doing so is the correct size for the inner
+	 * filter tab widget which is set to the dock widget.
+	 */
+	if( !m_myFilterDock )
+	{
+		m_myFilterDock = new QDockWidget(tr("FilterSettings"), this);
+		m_myFilterDock->setAllowedAreas(Qt::LeftDockWidgetArea | Qt::RightDockWidgetArea);
+		wnd->setDockForFilter(m_myFilterDock);
+		wnd->getFocused();
+		addDockWidget(Qt::RightDockWidgetArea, m_myFilterDock);
+	}
+	else
+	{
+		wnd->setDockForFilter(m_myFilterDock);
+		wnd->getFocused();
+	}
 
-	// m_myFilterDock->setWidget( wnd->getTabFilterWidget() );
-	wnd->setDockForFilter(m_myFilterDock);
-	wnd->getFocused();
 
 	m_model->startModel();
 }
