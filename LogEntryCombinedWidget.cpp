@@ -100,4 +100,6 @@ void LogEntryCombinedWidget::newSelection ( const QItemSelection & selected, con
 
 LogEntryCombinedWidget::~LogEntryCombinedWidget()
 {
+	if( m_myFilterTabs && m_dockFilterShouldDockedTo->widget() == m_myFilterTabs )
+		m_dockFilterShouldDockedTo->setWidget( NULL );
 }
