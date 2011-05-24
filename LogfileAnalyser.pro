@@ -7,7 +7,9 @@ TARGET =
 DEPENDPATH += . LogData Models
 INCLUDEPATH += . LogData Models
 LIBS += -llog4cplus
-
+QT += core \
+	gui \
+	network
 # Input
 HEADERS += Assert.h \
            EntryToTextFormater.h \

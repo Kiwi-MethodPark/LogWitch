@@ -10,14 +10,16 @@
 #include <boost/scoped_ptr.hpp>
 #include <log4cplus/helpers/socket.h>
 #include <QtCore/QtCore>
+#include <QtNetwork>
 
 #include "LogData/LogEntryFactory.h"
 #include "LogData/LogEntryParser.h"
+#include <boost/shared_ptr.hpp>
 
 class LogEntryParser_log4cplusSocket_ReceiverThread;
 
 class LogEntryParser_log4cplusSocket
-  : public QThread
+  : public QTcpServer
   , public LogEntryParser
 {
 	Q_OBJECT
@@ -28,13 +30,14 @@ public:
 
 	virtual ~LogEntryParser_log4cplusSocket();
 
-	void run();
-
 	void startEmiting();
 
 	boost::shared_ptr<LogEntryParserModelConfiguration> getParserModelConfiguration() const;
 public:
 	void newEntryFromReceiver( TSharedLogEntry entry);
+
+protected:
+    void incomingConnection(int socketDescriptor);
 
 signals:
 	void newEntry( TSharedLogEntry );
@@ -42,9 +45,7 @@ signals:
 private:
 	int m_port;
 
-	bool m_abort;
-
-	std::list<LogEntryParser_log4cplusSocket_ReceiverThread *> m_myReceiverThreads;
+	// std::list<LogEntryParser_log4cplusSocket_ReceiverThread *> m_myReceiverThreads;
 
 	LogEntryFactory myFactory;
 
@@ -63,17 +64,20 @@ class LogEntryParser_log4cplusSocket_ReceiverThread
 {
 	Q_OBJECT
 public:
-	LogEntryParser_log4cplusSocket_ReceiverThread(log4cplus::helpers::Socket sock, LogEntryParser_log4cplusSocket *parent);
+	LogEntryParser_log4cplusSocket_ReceiverThread(int socketDescriptor, LogEntryParser_log4cplusSocket *parent);
 
 	virtual ~LogEntryParser_log4cplusSocket_ReceiverThread();
 
 	void shutdownSocket();
 
+ signals:
+	 void error(QTcpSocket::SocketError socketError);
+
 protected:
 	void run();
 
 private:
-	log4cplus::helpers::Socket m_clientsock;
+	int m_clientsock;
 
 	LogEntryParser_log4cplusSocket *m_parent;
 };

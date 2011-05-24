@@ -23,8 +23,35 @@
 #include "LogEntryParserModelConfiguration.h"
 
 
-LogEntryParser_log4cplusSocket_ReceiverThread::LogEntryParser_log4cplusSocket_ReceiverThread(log4cplus::helpers::Socket sock, LogEntryParser_log4cplusSocket *parent)
-: m_clientsock(sock)
+namespace
+{
+	qint64 read( log4cplus::helpers::SocketBuffer &buffer, QTcpSocket &socket )
+	{
+	    qint64 read = 0;
+
+	    do
+	    {
+	    	socket.waitForReadyRead();
+	    	if( !socket.isValid() )
+	    		return 0;
+
+	        qint64 res = socket.read( buffer.getBuffer() + read,
+	            buffer.getMaxSize() - read);
+	        if( res < 0 )
+	        {
+	        	qDebug() << "SOCKET error: res " << res <<" read" << read << " of " << buffer.getMaxSize();
+	            return 0;
+	        }
+	        read += res;
+	    } while( read < static_cast<qint64>(buffer.getMaxSize()) );
+
+		qDebug() << "read" << read << " of " << buffer.getMaxSize();
+
+	    return read;
+	}
+}
+LogEntryParser_log4cplusSocket_ReceiverThread::LogEntryParser_log4cplusSocket_ReceiverThread( int socketDescriptor, LogEntryParser_log4cplusSocket *parent)
+: m_clientsock(socketDescriptor)
 , m_parent( parent )
 {
 	qDebug() << "Received a client connection!!!!";
@@ -37,25 +64,37 @@ LogEntryParser_log4cplusSocket_ReceiverThread::~LogEntryParser_log4cplusSocket_R
 
 void LogEntryParser_log4cplusSocket_ReceiverThread::shutdownSocket()
 {
-	m_clientsock.close();
+	// m_clientsock.close();
 }
 
 void LogEntryParser_log4cplusSocket_ReceiverThread::run()
 {
+	QTcpSocket tcpSocket;
+    if (!tcpSocket.setSocketDescriptor(m_clientsock)) {
+        emit error(tcpSocket.error());
+        qDebug() << "Socket error: " << tcpSocket.error();
+        return;
+    }
+
 	forever
 	{
-		if(!m_clientsock.isOpen())
-			return;
-
 		log4cplus::helpers::SocketBuffer msgSizeBuffer(sizeof(unsigned int));
-		if(!m_clientsock.read(msgSizeBuffer))
+		if(!read(msgSizeBuffer,tcpSocket))
+		{
+			qDebug() << "Wrong message size (1)";
+			qDebug() << "Socket error: " << tcpSocket.error();
 			return;
+		}
 
 		unsigned int msgSize = msgSizeBuffer.readInt();
 
 		log4cplus::helpers::SocketBuffer buffer(msgSize);
-		if(!m_clientsock.read(buffer))
+		if(!read(buffer,tcpSocket))
+		{
+			qDebug() << "Wrong message size (2)";
+			qDebug() << "Socket error: " << tcpSocket.error();
 			return;
+		}
 
 		log4cplus::spi::InternalLoggingEvent event = readFromBuffer(buffer);
 
@@ -88,12 +127,16 @@ void LogEntryParser_log4cplusSocket_ReceiverThread::run()
 
 		m_parent->newEntry( entry );
 	}
+
+   tcpSocket.disconnectFromHost();
+   tcpSocket.waitForDisconnected();
 }
 
 
 LogEntryParser_log4cplusSocket::LogEntryParser_log4cplusSocket( int port )
 	:m_port(port)
 {
+
 	// Preparing attributes in factory
 	myFactory.getLogEntryAttributeFactory()->addField("Loglevel");
 	myFactory.getLogEntryAttributeFactory()->addField("Component");
@@ -123,19 +166,25 @@ LogEntryParser_log4cplusSocket::LogEntryParser_log4cplusSocket( int port )
 
 LogEntryParser_log4cplusSocket::~LogEntryParser_log4cplusSocket()
 {
+	qDebug() << "called: ~LogEntryParser_log4cplusSocket";
 	// First stop socket waiter
-	m_abort = true;
-	wait();
-
-	// then stop receiver threads
-	// m_myReceiverThreads
-	while( !m_myReceiverThreads.empty() )
-	{
-		m_myReceiverThreads.front()->shutdownSocket();
-		m_myReceiverThreads.front()->wait();
-		delete m_myReceiverThreads.front();
-		m_myReceiverThreads.pop_front();
-	}
+//	m_abort = true;
+//	m_serverSocket->close();
+//	qDebug() << "wait for server thread ... ";
+//	wait();
+//
+//	qDebug() << "shutting down receiver threads ... ";
+//
+//	// then stop receiver threads
+//	// m_myReceiverThreads
+//	while( !m_myReceiverThreads.empty() )
+//	{
+//		m_myReceiverThreads.front()->shutdownSocket();
+//		m_myReceiverThreads.front()->wait();
+//		delete m_myReceiverThreads.front();
+//		m_myReceiverThreads.pop_front();
+//	}
+	qDebug() << "finished: ~LogEntryParser_log4cplusSocket";
 }
 
 void LogEntryParser_log4cplusSocket::newEntryFromReceiver( TSharedLogEntry entry)
@@ -150,25 +199,16 @@ boost::shared_ptr<LogEntryParserModelConfiguration> LogEntryParser_log4cplusSock
 
 void LogEntryParser_log4cplusSocket::startEmiting()
 {
-    if (!isRunning() && !m_abort )
-        start(LowPriority);
+	qDebug() << "Server listening on port: " << m_port;
+	listen ( QHostAddress::Any, m_port );
 }
 
-void LogEntryParser_log4cplusSocket::run()
+void LogEntryParser_log4cplusSocket::incomingConnection(int socketDescriptor)
 {
-	log4cplus::helpers::ServerSocket serverSocket( m_port );
+	qDebug() << "Incomming connection ... dispatching";
 
-	if (!serverSocket.isOpen())
-	{
-		qDebug() << "Could not open server socket, maybe port "
-			<< m_port << " is already in use.";
-		return;
-	}
-
-	forever
-	{
-		LogEntryParser_log4cplusSocket_ReceiverThread *th = new LogEntryParser_log4cplusSocket_ReceiverThread( serverSocket.accept(), this );
-		m_myReceiverThreads.push_back( th );
-		th->start();
-	}
+	LogEntryParser_log4cplusSocket_ReceiverThread *thread = new LogEntryParser_log4cplusSocket_ReceiverThread(socketDescriptor, this);
+    connect(thread, SIGNAL(finished()), thread, SLOT(deleteLater()));
+    thread->start();
 }
+
