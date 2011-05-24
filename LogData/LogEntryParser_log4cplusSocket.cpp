@@ -80,7 +80,11 @@ void LogEntryParser_log4cplusSocket_ReceiverThread::run()
 
 		entry->getAttributes().setAttribute( logLevel , 0 );
 		entry->getAttributes().setAttribute( TSharedConstQString(new QString( event.getLoggerName().c_str() ) ), 1 );
-		entry->getAttributes().setAttribute( TSharedConstQString(new QString( event.getFile().c_str() )), 2 );
+		TSharedQString source = TSharedQString( new QString( event.getFile().c_str() ) );
+		(*source) = (*source) + ":" + QString::number( event.getLine() );
+		entry->getAttributes().setAttribute( source, 2 );
+		entry->getAttributes().setAttribute( TSharedConstQString( new QString( event.getThread().c_str() ) ), 3 );
+		entry->getAttributes().setAttribute( TSharedConstQString( new QString( event.getNDC().c_str() ) ), 4 );
 
 		m_parent->newEntry( entry );
 	}
@@ -91,9 +95,11 @@ LogEntryParser_log4cplusSocket::LogEntryParser_log4cplusSocket( int port )
 	:m_port(port)
 {
 	// Preparing attributes in factory
-	myFactory.getLogEntryAttributeFactory()->addField("Severity");
+	myFactory.getLogEntryAttributeFactory()->addField("Loglevel");
 	myFactory.getLogEntryAttributeFactory()->addField("Component");
 	myFactory.getLogEntryAttributeFactory()->addField("File source");
+	myFactory.getLogEntryAttributeFactory()->addField("Thread");
+	myFactory.getLogEntryAttributeFactory()->addField("NDC");
 	myFactory.getLogEntryAttributeFactory()->disallowAddingFields();
 
 	m_myModelConfig = boost::shared_ptr<LogEntryParserModelConfiguration>( new LogEntryParserModelConfiguration );
@@ -104,6 +110,8 @@ LogEntryParser_log4cplusSocket::LogEntryParser_log4cplusSocket( int port )
 	m_myModelConfig->setFieldWidthHint( 0, 70 ); // severity
 	m_myModelConfig->setFieldWidthHint( 1, 250 ); // component
 	m_myModelConfig->setFieldWidthHint( 2, 150 ); // file source
+	m_myModelConfig->setFieldWidthHint( 3, 70 ); // thread
+	m_myModelConfig->setFieldWidthHint( 4, 100 ); // NDC
 
 	m_loglevelStringOff.reset(new QString("OFF"));
 	m_loglevelStringFatal.reset(new QString("FATAL"));
