@@ -13,6 +13,7 @@
 
 class QString;
 
+typedef boost::shared_ptr<QString> TSharedQString;
 typedef boost::shared_ptr<const QString> TSharedConstQString;
 
 Q_DECLARE_METATYPE ( TSharedConstQString );
