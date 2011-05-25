@@ -117,7 +117,7 @@ void LogEntryParser_log4cplusSocket_ReceiverThread::run()
 		else if( event.getLogLevel() >= log4cplus::TRACE_LOG_LEVEL )
 			logLevel = m_parent->m_loglevelStringTrace;
 
-		entry->getAttributes().setAttribute( logLevel , 0 );
+		entry->getAttributes().setAttribute( TSharedConstQString(new QString( *logLevel )) , 0 );
 		entry->getAttributes().setAttribute( TSharedConstQString(new QString( event.getLoggerName().c_str() ) ), 1 );
 		TSharedQString source = TSharedQString( new QString( event.getFile().c_str() ) );
 		(*source) = (*source) + ":" + QString::number( event.getLine() );
