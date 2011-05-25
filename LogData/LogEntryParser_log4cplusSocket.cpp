@@ -31,7 +31,7 @@ namespace
 
 	    do
 	    {
-	    	socket.waitForReadyRead();
+	    	socket.waitForReadyRead(100);
 	    	if( !socket.isValid() )
 	    		return 0;
 
