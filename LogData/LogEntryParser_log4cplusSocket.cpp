@@ -100,8 +100,13 @@ void LogEntryParser_log4cplusSocket_ReceiverThread::run()
 		}
 
 		log4cplus::spi::InternalLoggingEvent event = readFromBuffer(buffer);
-
-		QDateTime timestamp( QDateTime::fromMSecsSinceEpoch ( qint64(event.getTimestamp().getTime()) * 1000 + qint64( event.getTimestamp().usec() ) ) );
+#if QT_VERSION > 0x040700 //needs > Qt.4.7
+		QDateTime timestamp( QDateTime::fromMSecsSinceEpoch ( qint64(event.getTimestamp().getTime()) * 1000 + ((qint64( event.getTimestamp().usec()/1000)%1000) ) ) );
+#else
+		// This is a workaround for older QT versions (<=4.7)
+		QDateTime timestamp( QDateTime::fromTime_t(0) );
+		timestamp = timestamp.addMSecs(qint64(event.getTimestamp().getTime()) * 1000 + ((qint64( event.getTimestamp().usec()/1000)%1000) ) );
+#endif
 
 		TSharedLogEntry entry = m_parent->myFactory.generateLogEntry( timestamp );
 		entry->setMessage( QString( event.getMessage().c_str() ) );
