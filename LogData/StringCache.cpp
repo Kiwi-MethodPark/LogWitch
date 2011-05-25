@@ -14,11 +14,11 @@ StringCache::StringCache()
 
 TSharedConstQString StringCache::getString( TSharedConstQString str )
 {
-	TMyCache::iterator it = cache.insert( str ).first;
-	if( *it == str ) // str new to container, so invoke update request
-		emit newStringElement( *it );
+	std::pair<TMyCache::iterator,bool> rv = cache.insert( str );
+	if( rv.second ) // str new to container, so invoke update request
+		emit newStringElement( *(rv.first) );
 
-	return *it;
+	return *(rv.first);
 }
 
 
