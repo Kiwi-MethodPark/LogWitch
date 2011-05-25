@@ -24,7 +24,6 @@ public:
 private:
     Ui::LogfileAnalyserClass ui;
 
-    boost::shared_ptr<LogEntryTableModel> m_model;
     boost::shared_ptr<LogEntryParser_dummy> m_parser;
 
     QDockWidget *m_myFilterDock;

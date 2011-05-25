@@ -59,7 +59,6 @@ void LogfileAnalyser::openPort()
 void LogfileAnalyser::createWindowsFromParser(boost::shared_ptr<LogEntryParser> parser)
 {
 	boost::shared_ptr<LogEntryTableModel> model( new LogEntryTableModel( parser ) );
-	m_model = model;
 
 	LogEntryCombinedWidget *wnd = new LogEntryCombinedWidget( model, ui.mdiArea );
 
@@ -88,7 +87,7 @@ void LogfileAnalyser::createWindowsFromParser(boost::shared_ptr<LogEntryParser> 
 	}
 
 
-	m_model->startModel();
+	model->startModel();
 }
 
 void LogfileAnalyser::openDummyLogfile()

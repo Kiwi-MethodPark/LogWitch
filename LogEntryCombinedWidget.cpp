@@ -40,6 +40,7 @@ LogEntryCombinedWidget::LogEntryCombinedWidget( boost::shared_ptr<LogEntryTableM
 
     // Just generate the tab here, because we want to catch all filter entries.
     getTabFilterWidget();
+    QMdiSubWindow::setAttribute(Qt::WA_DeleteOnClose,true);
 }
 
 void LogEntryCombinedWidget::setDockForFilter( QDockWidget *dock )
@@ -100,6 +101,7 @@ void LogEntryCombinedWidget::newSelection ( const QItemSelection & selected, con
 
 LogEntryCombinedWidget::~LogEntryCombinedWidget()
 {
+	qDebug() << " Window deleted.";
 	if( m_myFilterTabs && m_dockFilterShouldDockedTo->widget() == m_myFilterTabs )
 		m_dockFilterShouldDockedTo->setWidget( NULL );
 }
