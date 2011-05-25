@@ -88,6 +88,9 @@ void LogEntryParser_log4cplusSocket_ReceiverThread::run()
 
 		unsigned int msgSize = msgSizeBuffer.readInt();
 
+		if( msgSize == 0 )
+			continue;
+
 		log4cplus::helpers::SocketBuffer buffer(msgSize);
 		if(!read(buffer,tcpSocket))
 		{
