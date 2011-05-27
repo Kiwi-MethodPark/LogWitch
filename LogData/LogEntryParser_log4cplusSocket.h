@@ -16,7 +16,7 @@
 #include "LogData/LogEntryParser.h"
 #include <boost/shared_ptr.hpp>
 
-class LogEntryParser_log4cplusSocket_ReceiverThread;
+class LogEntryParser_log4cplusSocket_Receiver;
 
 class LogEntryParser_log4cplusSocket
   : public QTcpServer
@@ -24,7 +24,7 @@ class LogEntryParser_log4cplusSocket
 {
 	Q_OBJECT
 
-	friend class LogEntryParser_log4cplusSocket_ReceiverThread;
+	friend class LogEntryParser_log4cplusSocket_Receiver;
 public:
 	LogEntryParser_log4cplusSocket( int port );
 
@@ -33,19 +33,16 @@ public:
 	void startEmiting();
 
 	boost::shared_ptr<LogEntryParserModelConfiguration> getParserModelConfiguration() const;
-public:
-	void newEntryFromReceiver( TSharedLogEntry entry);
 
-protected:
-    void incomingConnection(int socketDescriptor);
+private slots:
+	void newIncomingConnection();
+	void newEntryFromReceiver( TSharedLogEntry entry);
 
 signals:
 	void newEntry( TSharedLogEntry );
 
 private:
 	int m_port;
-
-	// std::list<LogEntryParser_log4cplusSocket_ReceiverThread *> m_myReceiverThreads;
 
 	LogEntryFactory myFactory;
 
@@ -59,26 +56,35 @@ private:
 	boost::shared_ptr<QString> m_loglevelStringTrace;
 };
 
-class LogEntryParser_log4cplusSocket_ReceiverThread
-	: public QThread
+class LogEntryParser_log4cplusSocket_Receiver
+	: public QObject
 {
-	Q_OBJECT
+	  Q_OBJECT
 public:
-	LogEntryParser_log4cplusSocket_ReceiverThread(int socketDescriptor, LogEntryParser_log4cplusSocket *parent);
+	LogEntryParser_log4cplusSocket_Receiver( LogEntryParser_log4cplusSocket *server, QTcpSocket *socket );
+	~LogEntryParser_log4cplusSocket_Receiver();
 
-	virtual ~LogEntryParser_log4cplusSocket_ReceiverThread();
+signals:
+	void error(QTcpSocket::SocketError socketError);
 
-	void shutdownSocket();
+	void newEntry( TSharedLogEntry );
 
- signals:
-	 void error(QTcpSocket::SocketError socketError);
+public slots:
+	void newDataAvailable();
 
-protected:
-	void run();
-
+	void shutdown();
 private:
-	int m_clientsock;
+	TSharedLogEntry bufferToEntry();
 
-	LogEntryParser_log4cplusSocket *m_parent;
+	void readDataToBuffer( );
+private:
+	QTcpSocket *m_socket;
+
+	boost::shared_ptr<log4cplus::helpers::SocketBuffer> m_buffer;
+	quint64 m_bytesNeeded;
+	bool m_stateReadSize;
+
+	LogEntryParser_log4cplusSocket *m_server;
 };
+
 #endif /* LOGENTRYPARSER_LOG4CPLUSSOCKET_H_ */
