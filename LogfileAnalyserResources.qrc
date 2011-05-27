@@ -1,0 +1,6 @@
+<RCC>
+  <qresource prefix="icons">
+    <file>icons/network32x32.png</file>
+    <file>icons/trash32x32.png</file>
+  </qresource>
+</RCC>

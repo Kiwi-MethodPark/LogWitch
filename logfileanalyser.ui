@@ -50,6 +50,9 @@
    <attribute name="toolBarBreak">
     <bool>false</bool>
    </attribute>
+   <addaction name="separator"/>
+   <addaction name="actionClearLogTable"/>
+   <addaction name="actionOpenLog4cplusServer"/>
   </widget>
   <widget class="QDockWidget" name="dockWidget">
    <attribute name="dockWidgetArea">
@@ -115,7 +118,32 @@
     <string>AddEntries</string>
    </property>
   </action>
+  <action name="actionClearLogTable">
+   <property name="icon">
+    <iconset resource="LogfileAnalyserResources.qrc">
+     <normaloff>:/icons/icons/trash32x32.png</normaloff>
+     <normalon>:/icons/icons/trash32x32.png</normalon>:/icons/icons/trash32x32.png</iconset>
+   </property>
+   <property name="text">
+    <string>Clear</string>
+   </property>
+  </action>
+  <action name="actionOpenLog4cplusServer">
+   <property name="icon">
+    <iconset>
+     <normalon>:/icons/icons/network32x32.png</normalon>
+    </iconset>
+   </property>
+   <property name="text">
+    <string>OpenLog4cplusServer</string>
+   </property>
+   <property name="toolTip">
+    <string>Starts the Log4cplus logging server.</string>
+   </property>
+  </action>
  </widget>
- <resources/>
+ <resources>
+  <include location="LogfileAnalyserResources.qrc"/>
+ </resources>
  <connections/>
 </ui>
