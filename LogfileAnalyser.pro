@@ -17,7 +17,9 @@ QT += core \
     network
 
 # Input
-HEADERS += Assert.h \
+HEADERS += GUITools/DockWidgetStateSaver.h \
+    GUITools/WidgetStateSaver.h \
+    Assert.h \
     EntryToTextFormater.h \
     EntryToTextFormater_Logfile.h \
     LogEntryCombinedWidget.h \
@@ -42,7 +44,9 @@ HEADERS += Assert.h \
     Models/StringCacheTreeItem.h \
     Models/StringCacheTreeModel.h
 FORMS += logfileanalyser.ui
-SOURCES += EntryToTextFormater_Logfile.cpp \
+SOURCES += GUITools/DockWidgetStateSaver.cpp \
+    GUITools/WidgetStateSaver.cpp \
+    EntryToTextFormater_Logfile.cpp \
     LogEntryCombinedWidget.cpp \
     LogEntryTableWindow.cpp \
     logfileanalyser.cpp \
