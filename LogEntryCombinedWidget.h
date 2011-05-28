@@ -31,8 +31,6 @@ public:
 
 private slots:
 	void newSelection ( const QItemSelection & selected, const QItemSelection & deselected );
-public slots:
-	void getFocused();
 
 private:
 	boost::shared_ptr<LogEntryTableModel> m_model;

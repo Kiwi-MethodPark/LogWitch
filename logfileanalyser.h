@@ -13,6 +13,8 @@ class LogEntryTable;
 class LogEntryParser;
 class QDockWidget;
 class QSpinBox;
+class WidgetStateSaver;
+class QMdiSubWindow;
 
 class LogfileAnalyser : public QMainWindow
 {
@@ -24,6 +26,10 @@ public:
 
     void createWindowsFromParser(boost::shared_ptr<LogEntryParser> parser);
 
+public slots:
+    void subWindowActivated( QMdiSubWindow * );
+    void subWindowDestroyed( QObject *obj );
+
 private:
     Ui::LogfileAnalyserClass ui;
 
@@ -33,6 +39,8 @@ private:
 
     QSpinBox *m_uiLog4cplusPort;
     QAction * m_uiLog4cplusPort_Action;
+
+    WidgetStateSaver *m_stateSaver;
 
 private slots:
   	void openDummyLogfile();

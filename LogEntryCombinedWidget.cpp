@@ -28,9 +28,6 @@ LogEntryCombinedWidget::LogEntryCombinedWidget( boost::shared_ptr<LogEntryTableM
     QObject::connect(m_table->selectionModel(), SIGNAL(selectionChanged ( const QItemSelection & , const QItemSelection & )),
                      SLOT(newSelection ( const QItemSelection &, const QItemSelection & )));
 
-    QObject::connect(this, SIGNAL(aboutToActivate()),
-                     this, SLOT(getFocused() ) );
-
     m_splitter->addWidget( m_table );
     m_splitter->addWidget( m_text );
 
@@ -45,17 +42,7 @@ LogEntryCombinedWidget::LogEntryCombinedWidget( boost::shared_ptr<LogEntryTableM
 
 void LogEntryCombinedWidget::setDockForFilter( QDockWidget *dock )
 {
-	m_dockFilterShouldDockedTo = dock;
-	if( isActiveWindow () )
-		getFocused();
-}
-
-void LogEntryCombinedWidget::getFocused()
-{
-	if( m_dockFilterShouldDockedTo != NULL )
-	{
-		m_dockFilterShouldDockedTo->setWidget( getTabFilterWidget() );
-	}
+    dock->setWidget( getTabFilterWidget() );
 }
 
 QTabWidget *LogEntryCombinedWidget::getTabFilterWidget()
@@ -102,6 +89,4 @@ void LogEntryCombinedWidget::newSelection ( const QItemSelection & selected, con
 LogEntryCombinedWidget::~LogEntryCombinedWidget()
 {
 	qDebug() << " Window deleted.";
-	if( m_myFilterTabs && m_dockFilterShouldDockedTo->widget() == m_myFilterTabs )
-		m_dockFilterShouldDockedTo->setWidget( NULL );
 }

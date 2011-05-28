@@ -15,10 +15,13 @@
 #include "LogData/LogEntryParser_Logfile.h"
 #include "LogEntryCombinedWidget.h"
 #include "LogEntryParser_log4cplusSocket.h"
+#include "GUITools/WidgetStateSaver.h"
+#include "GUITools/DockWidgetStateSaver.h"
 
 LogfileAnalyser::LogfileAnalyser(QWidget *parent)
     : QMainWindow(parent)
 	, m_myFilterDock( NULL )
+    , m_stateSaver( NULL )
 {
 	ui.setupUi(this);
 
@@ -33,6 +36,8 @@ LogfileAnalyser::LogfileAnalyser(QWidget *parent)
 	ui.ToolbarLog4cplus->addWidget( portLabel);
 	m_uiLog4cplusPort_Action = ui.ToolbarLog4cplus->addWidget( m_uiLog4cplusPort );
 
+	m_stateSaver = new WidgetStateSaver(this);
+
     QObject::connect(ui.actionOpenDummyLogger, SIGNAL(triggered()),
                      this, SLOT(openDummyLogfile()));
     QObject::connect(ui.actionAddEntries, SIGNAL(triggered()),
@@ -41,6 +46,31 @@ LogfileAnalyser::LogfileAnalyser(QWidget *parent)
                      this, SLOT(openLogfile()));
     QObject::connect(ui.actionOpenLog4cplusServer, SIGNAL(triggered()),
                      this, SLOT(openPort()));
+    QObject::connect( ui.mdiArea, SIGNAL( subWindowActivated ( QMdiSubWindow *) )
+                    , this, SLOT( subWindowActivated( QMdiSubWindow * ) ) );
+}
+
+void LogfileAnalyser::subWindowDestroyed( QObject *obj )
+{
+    qDebug() << "subWindowDestroyed";
+    // Window closed, remove docks
+    if( ui.mdiArea->subWindowList().size() == 0 )
+        m_stateSaver->switchState( NULL );
+    else
+    {
+        QMdiSubWindow *wnd = ui.mdiArea->activeSubWindow();
+        if( wnd )
+            m_stateSaver->switchState( wnd );
+        else
+            m_stateSaver->switchState( ui.mdiArea->subWindowList().front() );
+    }
+}
+
+void LogfileAnalyser::subWindowActivated( QMdiSubWindow *obj )
+{
+    qDebug() << "subWindowActivated";
+    if( obj != NULL )
+        m_stateSaver->switchState( obj );
 }
 
 LogfileAnalyser::~LogfileAnalyser()
@@ -79,7 +109,6 @@ void LogfileAnalyser::createWindowsFromParser(boost::shared_ptr<LogEntryParser> 
     wnd->setWindowTitle( parser->getName() );
 	wnd->show();
 
-
 	/*
 	 * We want to open the Dock the first time we ceate a window.
 	 * The advantage of doing so is the correct size for the inner
@@ -87,20 +116,24 @@ void LogfileAnalyser::createWindowsFromParser(boost::shared_ptr<LogEntryParser> 
 	 */
 	if( !m_myFilterDock )
 	{
-		m_myFilterDock = new QDockWidget(tr("FilterSettings"), this);
-		m_myFilterDock->setAllowedAreas(Qt::LeftDockWidgetArea | Qt::RightDockWidgetArea);
+        m_myFilterDock = new QDockWidget(tr("FilterSettings"), this);
+        m_myFilterDock->setAllowedAreas(Qt::LeftDockWidgetArea | Qt::RightDockWidgetArea);
+        m_stateSaver->addElementToWatch( m_myFilterDock
+                , DockWidgetStateSaver::generate() );
+
 		wnd->setDockForFilter(m_myFilterDock);
-		wnd->getFocused();
 		addDockWidget(Qt::RightDockWidgetArea, m_myFilterDock);
 	}
 	else
 	{
 		wnd->setDockForFilter(m_myFilterDock);
-		wnd->getFocused();
 	}
 
+    QObject::connect( wnd, SIGNAL( destroyed ( QObject *) )
+                    , this, SLOT( subWindowDestroyed( QObject * ) ) );
 
 	model->startModel();
+
 }
 
 void LogfileAnalyser::openDummyLogfile()
