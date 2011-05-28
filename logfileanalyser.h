@@ -1,9 +1,11 @@
 #ifndef LOGFILEANALYSER_H
 #define LOGFILEANALYSER_H
 
-#include <QtGui/QMainWindow>
-#include "ui_logfileanalyser.h"
 #include <boost/shared_ptr.hpp>
+
+#include <QtGui/QMainWindow>
+
+#include "ui_logfileanalyser.h"
 
 class LogEntryParser_dummy;
 class LogEntryTableModel;

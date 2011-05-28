@@ -1,5 +1,8 @@
 #include "logfileanalyser.h"
-#include <QMessageBox>
+
+#include <QtGui>
+#include <QtCore/QtCore>
+
 #include <boost/shared_ptr.hpp>
 
 #include "LogData/LogEntryParser_dummy.h"
@@ -8,8 +11,6 @@
 #include "Models/LogEntryTableModel.h"
 #include "LogEntryTableWindow.h"
 
-#include <QtGui>
-#include <QtCore/QtCore>
 #include "Models/StringCacheTreeModel.h"
 #include "LogData/LogEntryParser_Logfile.h"
 #include "LogEntryCombinedWidget.h"
