@@ -3,5 +3,6 @@ debug/*
 release/*
 ui_*.h
 moc_*
+qrc_*
 Makefile*
 LogfileAnalyser
