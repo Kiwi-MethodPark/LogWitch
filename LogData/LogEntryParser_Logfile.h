@@ -38,6 +38,7 @@ public:
 
 	virtual boost::shared_ptr<LogEntryParserModelConfiguration> getParserModelConfiguration() const;
 
+	QString getName() const{ return m_Name; }
 signals:
 	void newEntry( TSharedLogEntry );
 
@@ -69,6 +70,8 @@ private:
 	LogEntryFactory myFactory;
 
 	boost::shared_ptr<LogEntryParserModelConfiguration> m_myModelConfig;
+
+	QString m_Name;
 
 
 };

@@ -30,6 +30,8 @@ public:
 
 	virtual ~LogEntryParser_log4cplusSocket();
 
+	QString getName() const;
+
 	void startEmiting();
 
 	boost::shared_ptr<LogEntryParserModelConfiguration> getParserModelConfiguration() const;
@@ -54,6 +56,8 @@ private:
 	boost::shared_ptr<QString> m_loglevelStringWarn;
 	boost::shared_ptr<QString> m_loglevelStringDebug;
 	boost::shared_ptr<QString> m_loglevelStringTrace;
+
+	QString m_name;
 };
 
 class LogEntryParser_log4cplusSocket_Receiver

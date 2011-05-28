@@ -25,7 +25,9 @@ public:
 	LogEntryTableModel( boost::shared_ptr<LogEntryParser> parser );
 	virtual ~LogEntryTableModel();
 
-	void startModel();
+	QString getModelName() const { return m_ModelName; };
+
+	void startModel() ;
 
     int rowCount(const QModelIndex &parent) const;
 
@@ -55,6 +57,8 @@ private:
     boost::shared_ptr<LogEntryParser> m_entryLoader;
 
     static const int m_fixedFirstColumns = 3;
+
+    QString m_ModelName;
 };
 
 #endif /* LOGENTRYTABLEMODEL_H_ */

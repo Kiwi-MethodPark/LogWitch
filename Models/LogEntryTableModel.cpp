@@ -24,11 +24,12 @@ LogEntryTableModel::LogEntryTableModel( boost::shared_ptr<LogEntryParser> parser
 	, m_modelConfiguration( parser->getParserModelConfiguration() )
 	, m_dateTimeConversionString("dd.MM.yyyy hh:mm:ss.zzz")
 	, m_entryLoader( parser )
+	, m_ModelName("Untitled")
 {
     QObject::connect(dynamic_cast<QObject*>(parser.get()), SIGNAL(newEntry( TSharedLogEntry)),
                      this, SLOT(insertEntry( TSharedLogEntry )) );
 
-
+    m_ModelName = parser->getName();
 }
 
 LogEntryTableModel::~LogEntryTableModel()

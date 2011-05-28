@@ -26,6 +26,11 @@ public:
 	virtual ~LogEntryParser(){}
 
 	/**
+	 * This method returns a name which can be used to identify the origin, fpor eg. Server, logfilename, etc.
+	 */
+	virtual QString getName() const { return QString("Untitled"); }
+
+	/**
 	 * This starts the parser after you have connected to the signals.
 	 */
 	virtual void startEmiting() = 0;

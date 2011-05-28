@@ -75,6 +75,7 @@ void LogfileAnalyser::createWindowsFromParser(boost::shared_ptr<LogEntryParser> 
 
     wnd->setWindowState(Qt::WindowMaximized );
     wnd->setAttribute(Qt::WA_DeleteOnClose);
+    wnd->setWindowTitle( parser->getName() );
 	wnd->show();
 
 

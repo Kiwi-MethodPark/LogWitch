@@ -22,6 +22,7 @@ LogEntryParser_Logfile::LogEntryParser_Logfile( const QString &filename)
 	, lineMessageRegex( new QRegExp("^([\\d-]+\\s+[\\d\\,\\:]+)\\s+-\\s+(.*)\\s+-\\s+\\[(.*)\\]\\s+-\\s+(.*)$") )
 	, cellRegex( "\\s+-\\s+" )
 	, timeFormat( "yyyy-MM-dd HH:mm:ss,zzz" )
+	, m_Name( QFileInfo( filename ).fileName() )
 {
 	lineMessageRegex->setMinimal(true);
 

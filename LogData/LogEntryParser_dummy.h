@@ -35,6 +35,8 @@ public:
 
 	boost::shared_ptr<LogEntryParserModelConfiguration> getParserModelConfiguration() const;
 
+	QString getName() const {return QString("Dummylogger"); }
+
 signals:
 	void newEntry( TSharedLogEntry );
 

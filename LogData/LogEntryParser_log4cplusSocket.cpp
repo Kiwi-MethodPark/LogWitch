@@ -26,6 +26,7 @@
 
 LogEntryParser_log4cplusSocket::LogEntryParser_log4cplusSocket( int port )
 	:m_port(port)
+	,m_name( "Log4cplus Listener Port " + QString::number(port))
 {
 	// Preparing attributes in factory
 	myFactory.getLogEntryAttributeFactory()->addField("Loglevel");
@@ -89,6 +90,11 @@ void LogEntryParser_log4cplusSocket::newIncomingConnection()
     connect(this, SIGNAL(destroyed()), receiver, SLOT(shutdown()));
     connect(receiver, SIGNAL(newEntry(TSharedLogEntry)), this, SLOT(newEntryFromReceiver(TSharedLogEntry)));
     connect(receiver, SIGNAL(newEntry(std::vector<TSharedLogEntry> &)), this, SLOT(newEntryFromReceiver(std::vector<TSharedLogEntry> &)));
+}
+
+QString LogEntryParser_log4cplusSocket::getName() const
+{
+	return m_name;
 }
 
 LogEntryParser_log4cplusSocket_Receiver::LogEntryParser_log4cplusSocket_Receiver( LogEntryParser_log4cplusSocket *server, QTcpSocket *socket )
