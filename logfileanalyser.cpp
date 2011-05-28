@@ -21,13 +21,24 @@ LogfileAnalyser::LogfileAnalyser(QWidget *parent)
 {
 	ui.setupUi(this);
 
+	QString tooltipLog4CPlusPort("Port to listen for log4cplus socket appender");
+
+	QLabel *portLabel = new QLabel("Port: ");
+	m_uiLog4cplusPort = new QSpinBox( this );
+	m_uiLog4cplusPort->setToolTip(tooltipLog4CPlusPort);
+	m_uiLog4cplusPort->setMinimum( 1 );
+	m_uiLog4cplusPort->setMaximum(65535);
+	m_uiLog4cplusPort->setValue( 9998 );
+	ui.ToolbarLog4cplus->addWidget( portLabel);
+	m_uiLog4cplusPort_Action = ui.ToolbarLog4cplus->addWidget( m_uiLog4cplusPort );
+
     QObject::connect(ui.actionOpenDummyLogger, SIGNAL(triggered()),
                      this, SLOT(openDummyLogfile()));
     QObject::connect(ui.actionAddEntries, SIGNAL(triggered()),
                      this, SLOT(moreDummyLogfile()));
     QObject::connect(ui.actionOpen, SIGNAL(triggered()),
                      this, SLOT(openLogfile()));
-    QObject::connect(ui.startListen, SIGNAL(clicked()),
+    QObject::connect(ui.actionOpenLog4cplusServer, SIGNAL(triggered()),
                      this, SLOT(openPort()));
 }
 
@@ -49,7 +60,7 @@ void LogfileAnalyser::openLogfile()
 
 void LogfileAnalyser::openPort()
 {
-	int port = ui.listenPort->value();
+	int port = m_uiLog4cplusPort->value();
 	boost::shared_ptr<LogEntryParser_log4cplusSocket> socketParser( new LogEntryParser_log4cplusSocket( port ) );
 
 	createWindowsFromParser( socketParser );
