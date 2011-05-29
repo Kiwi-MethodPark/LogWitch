@@ -44,6 +44,8 @@ public:
 public slots:
 	void insertEntry( TSharedLogEntry entry );
 
+	void clearTable();
+
 private:
     typedef std::vector<TconstSharedLogEntry> TLogEntryTable;
 

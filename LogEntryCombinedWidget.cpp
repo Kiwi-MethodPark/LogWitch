@@ -45,6 +45,11 @@ void LogEntryCombinedWidget::setDockForFilter( QDockWidget *dock )
     dock->setWidget( getTabFilterWidget() );
 }
 
+void LogEntryCombinedWidget::clearTable( )
+{
+    m_model->clearTable();
+}
+
 QTabWidget *LogEntryCombinedWidget::getTabFilterWidget()
 {
 	if ( m_myFilterTabs == NULL )

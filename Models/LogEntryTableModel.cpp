@@ -137,6 +137,13 @@ QVariant LogEntryTableModel::headerData(int section, Qt::Orientation orientation
     return QVariant();
 }
 
+void LogEntryTableModel::clearTable()
+{
+    beginResetModel();
+    m_table.clear();
+    endResetModel();
+}
+
 void LogEntryTableModel::insertEntry( TSharedLogEntry entry )
 {
 	int newPos = m_table.size();
