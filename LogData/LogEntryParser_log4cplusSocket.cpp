@@ -89,7 +89,6 @@ void LogEntryParser_log4cplusSocket::newIncomingConnection()
 
     connect(this, SIGNAL(destroyed()), receiver, SLOT(shutdown()));
     connect(receiver, SIGNAL(newEntry(TSharedLogEntry)), this, SLOT(newEntryFromReceiver(TSharedLogEntry)));
-    connect(receiver, SIGNAL(newEntry(std::vector<TSharedLogEntry> &)), this, SLOT(newEntryFromReceiver(std::vector<TSharedLogEntry> &)));
 }
 
 QString LogEntryParser_log4cplusSocket::getName() const
