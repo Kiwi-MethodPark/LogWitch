@@ -21,7 +21,7 @@ DockWidgetStateSaver::DockWidgetStateSaver()
 {
 }
 
-boost::shared_ptr<ObjectState> DockWidgetStateSaver::dumpState( QObject *obj ) const
+boost::shared_ptr<ObjectState> DockWidgetStateSaver::dumpState( QObject *obj, QObject * ) const
 {
     qDebug() << "dumping state" << obj;
 
@@ -38,7 +38,7 @@ boost::shared_ptr<ObjectState> DockWidgetStateSaver::dumpState( QObject *obj ) c
     }
 }
 
-void DockWidgetStateSaver::replayState( QObject *obj, const ObjectState *stateP ) const
+void DockWidgetStateSaver::replayState( QObject *obj, QObject *, const ObjectState *stateP ) const
 {
     qDebug() << "Replaying state" << obj;
 

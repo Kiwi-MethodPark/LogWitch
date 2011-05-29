@@ -30,7 +30,7 @@ void WidgetStateSaver::addElementToWatch( QObject *obj,
         it = m_stateHistoryMap.insert(StateSaveMap::value_type( (QObject *) NULL, ObjectStateList() ) ).first;
     }
 
-    it->second.push_back( stateSaver->dumpState( obj ) );
+    it->second.push_back( stateSaver->dumpState( obj, NULL ) );
 }
 
 void WidgetStateSaver::storeState( QObject *obj )
@@ -41,7 +41,7 @@ void WidgetStateSaver::storeState( QObject *obj )
 
     for( it = m_myWatchedObjects.begin(); it != m_myWatchedObjects.end(); ++it )
     {
-        stateList.push_back( it->second->dumpState( it->first ) );
+        stateList.push_back( it->second->dumpState( it->first, m_lastObject ) );
     }
 
     m_stateHistoryMap.insert( StateSaveMap::value_type(obj, stateList ) );
@@ -60,13 +60,14 @@ void WidgetStateSaver::replayState( QObject *obj )
         ObjectStateList::iterator itStates;
         for( itStates = it->second.begin(); itStates != it->second.end(); ++itStates )
         {
-            (*itStates)->replayState();
+            (*itStates)->replayState( m_lastObject );
         }
     }
 }
 
 void WidgetStateSaver::deregisterFocusObject( QObject *end, bool applyDefauls )
 {
+    qDebug() << "DeregisterFocusObject" << end;
     if( applyDefauls )
         replayState( NULL );
 
@@ -82,6 +83,6 @@ void WidgetStateSaver::switchState( QObject *newObject)
 
     if( m_lastObject )
         storeState( m_lastObject );
-    replayState( newObject );
     m_lastObject = newObject;
+    replayState( newObject );
 }

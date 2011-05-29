@@ -24,12 +24,12 @@ public:
 	/**
 	 * An implementation should dump the state to the WidgetState here.
 	 */
-	virtual boost::shared_ptr<ObjectState> dumpState( QObject * ) const = 0;
+	virtual boost::shared_ptr<ObjectState> dumpState( QObject *objectToDump, QObject *parentalObject ) const = 0;
 
 	/**
 	 * Replays the previous saved state to the object.
 	 */
-	virtual void replayState( QObject *obj, const ObjectState *state ) const = 0;
+	virtual void replayState( QObject *objectToReplay, QObject *parentalObject, const ObjectState *state ) const = 0;
 };
 
 /**
@@ -43,7 +43,7 @@ public:
 
 	bool isValid() const{ return m_isValid; }
 
-	virtual void replayState( ) const { if( isValid() ) m_replayer->replayState( m_object, this ); }
+	virtual void replayState( QObject *parent ) const { if( isValid() ) m_replayer->replayState( m_object, parent, this ); }
 
 protected:
 	bool m_isValid;

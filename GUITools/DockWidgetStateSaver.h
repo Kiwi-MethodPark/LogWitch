@@ -24,8 +24,8 @@ public:
 	static boost::shared_ptr<DockWidgetStateSaver> generate();
 
 public:
-    boost::shared_ptr<ObjectState> dumpState( QObject *obj ) const;
-    void replayState( QObject *obj, const ObjectState *state ) const;
+    boost::shared_ptr<ObjectState> dumpState( QObject *obj, QObject * ) const;
+    void replayState( QObject *obj, QObject *, const ObjectState *state ) const;
 
 private:
     class state:
