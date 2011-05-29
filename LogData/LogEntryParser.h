@@ -40,6 +40,8 @@ public:
 	// This block is the later called signals methods.
 protected:
 	virtual void newEntry( TSharedLogEntry ) = 0;
+
+	virtual void signalError( QString error ) = 0;
 };
 
 #endif /* LOGENTRYPARSER_H_ */

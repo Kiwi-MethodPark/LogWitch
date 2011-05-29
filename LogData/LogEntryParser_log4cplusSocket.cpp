@@ -77,7 +77,10 @@ boost::shared_ptr<LogEntryParserModelConfiguration> LogEntryParser_log4cplusSock
 void LogEntryParser_log4cplusSocket::startEmiting()
 {
 	qDebug() << "Server listening on port: " << m_port;
-	listen ( QHostAddress::Any, m_port );
+	if( !listen ( QHostAddress::Any, m_port ) )
+	{
+	    emit signalError( "Listening on port " +QString::number( m_port) + " failed: "+ errorString() );
+	}
 }
 
 void LogEntryParser_log4cplusSocket::newIncomingConnection()

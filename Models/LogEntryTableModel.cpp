@@ -28,6 +28,8 @@ LogEntryTableModel::LogEntryTableModel( boost::shared_ptr<LogEntryParser> parser
 {
     QObject::connect(dynamic_cast<QObject*>(parser.get()), SIGNAL(newEntry( TSharedLogEntry)),
                      this, SLOT(insertEntry( TSharedLogEntry )) );
+    QObject::connect(dynamic_cast<QObject*>(parser.get()), SIGNAL(signalError( QString )),
+                     this, SLOT(signalErrorFromParser( QString )) );
 
     m_ModelName = parser->getName();
 }
@@ -40,6 +42,12 @@ LogEntryTableModel::~LogEntryTableModel()
 void LogEntryTableModel::startModel()
 {
 	m_entryLoader->startEmiting();
+}
+
+void LogEntryTableModel::signalErrorFromParser( QString error )
+{
+    qDebug() << "error from parser received: " << error;
+    emit signalError( error );
 }
 
 boost::shared_ptr<const LogEntryParserModelConfiguration> LogEntryTableModel::getParserModelConfiguration() const

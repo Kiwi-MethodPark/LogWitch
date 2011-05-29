@@ -87,6 +87,12 @@ TSharedLogEntry LogEntryParser_dummy::getNextLogEntry()
 	{
 		m_entries++;
 
+		if( m_entries == 20 )
+		{
+		    qDebug() << "emmiting error!";
+		    emit signalError(QString("This is a generated error from dummy parser!"));
+		}
+
 		entry = myFactory.generateLogEntry( QDateTime::currentDateTime(), QString("Message #").append(QString("%1").arg(m_entries))  );
 		entry->getAttributes().setAttribute( boost::shared_ptr<QString>(new QString("DEBUG") ), 0 );
 		if( (m_entries % 20) == 0 )

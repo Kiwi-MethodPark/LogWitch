@@ -62,7 +62,10 @@ boost::shared_ptr<LogEntryParserModelConfiguration> LogEntryParser_Logfile::getP
 void LogEntryParser_Logfile::init()
 {
     if (!logfile.open(QIODevice::ReadOnly | QIODevice::Text))
+    {
+        emit signalError("Unable to open text file in readonly and textmode!");
         return;
+    }
 
     logfileStream.setDevice( &logfile );
     logfileStreamReady = true;

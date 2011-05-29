@@ -28,6 +28,9 @@ LogEntryCombinedWidget::LogEntryCombinedWidget( boost::shared_ptr<LogEntryTableM
     QObject::connect(m_table->selectionModel(), SIGNAL(selectionChanged ( const QItemSelection & , const QItemSelection & )),
                      SLOT(newSelection ( const QItemSelection &, const QItemSelection & )));
 
+    QObject::connect(dynamic_cast<QObject*>(m_model.get()), SIGNAL(signalError( QString )),
+                     this, SLOT(errorFromModel( QString )) );
+
     m_splitter->addWidget( m_table );
     m_splitter->addWidget( m_text );
 
@@ -38,6 +41,25 @@ LogEntryCombinedWidget::LogEntryCombinedWidget( boost::shared_ptr<LogEntryTableM
     // Just generate the tab here, because we want to catch all filter entries.
     getTabFilterWidget();
     QMdiSubWindow::setAttribute(Qt::WA_DeleteOnClose,true);
+}
+
+void LogEntryCombinedWidget::errorFromModel( QString error )
+{
+    qDebug() << "error from model received: " << error;
+
+    QMessageBox msgBox;
+    QString errorText;
+    errorText+= "Erorr received: " + error;
+    msgBox.setText( errorText );
+    msgBox.setInformativeText("Close window now?");
+    msgBox.setStandardButtons(QMessageBox::Ignore | QMessageBox::Close );
+     msgBox.setDefaultButton(QMessageBox::Ignore);
+
+    int ret =  msgBox.exec();
+    if( ret == QMessageBox::Close )
+    {
+        this->deleteLater();
+    }
 }
 
 void LogEntryCombinedWidget::setDockForFilter( QDockWidget *dock )

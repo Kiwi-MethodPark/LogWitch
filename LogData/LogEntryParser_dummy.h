@@ -40,6 +40,8 @@ public:
 signals:
 	void newEntry( TSharedLogEntry );
 
+    void signalError( QString error );
+
 protected:
     void run();
 

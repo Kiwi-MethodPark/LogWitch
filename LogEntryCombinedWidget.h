@@ -34,6 +34,8 @@ private slots:
 
 	void clearTable( );
 
+	void errorFromModel( QString error );
+
 private:
 	boost::shared_ptr<LogEntryTableModel> m_model;
 

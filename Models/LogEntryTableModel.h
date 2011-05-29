@@ -46,6 +46,11 @@ public slots:
 
 	void clearTable();
 
+    void signalErrorFromParser( QString error );
+
+signals:
+    void signalError( QString error );
+
 private:
     typedef std::vector<TconstSharedLogEntry> TLogEntryTable;
 

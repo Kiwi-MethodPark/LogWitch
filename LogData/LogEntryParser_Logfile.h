@@ -42,6 +42,8 @@ public:
 signals:
 	void newEntry( TSharedLogEntry );
 
+    void signalError( QString error );
+
 private:
 	void init();
 
