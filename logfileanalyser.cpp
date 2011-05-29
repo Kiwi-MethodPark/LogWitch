@@ -17,6 +17,7 @@
 #include "LogEntryParser_log4cplusSocket.h"
 #include "GUITools/WidgetStateSaver.h"
 #include "GUITools/DockWidgetStateSaver.h"
+#include "GUITools/SignalMultiplexerStateApplier.h"
 
 LogfileAnalyser::LogfileAnalyser(QWidget *parent)
     : QMainWindow(parent)
@@ -37,6 +38,8 @@ LogfileAnalyser::LogfileAnalyser(QWidget *parent)
 	m_uiLog4cplusPort_Action = ui.ToolbarLog4cplus->addWidget( m_uiLog4cplusPort );
 
 	m_stateSaver = new WidgetStateSaver(this);
+    m_stateSaver->addElementToWatch( &m_signalMultiplexer
+            , SignalMultiplexerStateApplier::generate(&m_signalMultiplexer) );
 
     QObject::connect(ui.actionOpenDummyLogger, SIGNAL(triggered()),
                      this, SLOT(openDummyLogfile()));
@@ -105,11 +108,16 @@ void LogfileAnalyser::createWindowsFromParser(boost::shared_ptr<LogEntryParser> 
 	boost::shared_ptr<LogEntryTableModel> model( new LogEntryTableModel( parser ) );
 
 	LogEntryCombinedWidget *wnd = new LogEntryCombinedWidget( model, ui.mdiArea );
+    m_signalMultiplexer.setObject( wnd );
+    m_signalMultiplexer.connect( ui.actionClearLogTable, SIGNAL(triggered())
+            , wnd, SLOT(clearTable() ) );
 
     wnd->setWindowState(Qt::WindowMaximized );
     wnd->setAttribute(Qt::WA_DeleteOnClose);
     wnd->setWindowTitle( parser->getName() );
 	wnd->show();
+
+
 
 	/*
 	 * We want to open the Dock the first time we ceate a window.

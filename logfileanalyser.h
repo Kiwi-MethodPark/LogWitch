@@ -6,6 +6,7 @@
 #include <QtGui/QMainWindow>
 
 #include "ui_logfileanalyser.h"
+#include "GUITools/SignalMultiplexer.h"
 
 class LogEntryParser_dummy;
 class LogEntryTableModel;
@@ -41,6 +42,7 @@ private:
     QAction * m_uiLog4cplusPort_Action;
 
     WidgetStateSaver *m_stateSaver;
+    SignalMultiplexer m_signalMultiplexer;
 
 private slots:
   	void openDummyLogfile();
