@@ -17,7 +17,9 @@ QT += core \
     network
 
 # Input
-HEADERS += GUITools/DockWidgetStateSaver.h \
+HEADERS += GUITools/SignalMultiplexerStateApplier.h \
+    GUITools/SignalMultiplexer.h \
+    GUITools/DockWidgetStateSaver.h \
     GUITools/WidgetStateSaver.h \
     Assert.h \
     EntryToTextFormater.h \
@@ -44,7 +46,9 @@ HEADERS += GUITools/DockWidgetStateSaver.h \
     Models/StringCacheTreeItem.h \
     Models/StringCacheTreeModel.h
 FORMS += logfileanalyser.ui
-SOURCES += GUITools/DockWidgetStateSaver.cpp \
+SOURCES += GUITools/SignalMultiplexerStateApplier.cpp \
+    GUITools/SignalMultiplexer.cpp \
+    GUITools/DockWidgetStateSaver.cpp \
     GUITools/WidgetStateSaver.cpp \
     EntryToTextFormater_Logfile.cpp \
     LogEntryCombinedWidget.cpp \
