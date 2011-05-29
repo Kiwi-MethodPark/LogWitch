@@ -64,6 +64,8 @@ void LogfileAnalyser::subWindowDestroyed( QObject *obj )
         else
             m_stateSaver->switchState( ui.mdiArea->subWindowList().front() );
     }
+
+    m_stateSaver->deregisterFocusObject( obj, false );
 }
 
 void LogfileAnalyser::subWindowActivated( QMdiSubWindow *obj )
