@@ -7,11 +7,12 @@
 
 #include "LogEntryParser_Logfile.h"
 
- #include <QRegExp>
+#include <QRegExp>
+#include <QtCore/QtCore>
+
 #include "LogEntryFactory.h"
 #include "LogData/LogEntryAttributeFactory.h"
 #include "LogData/LogEntryAttributes.h"
-#include <QtCore/QtCore>
 #include "LogEntryParserModelConfiguration.h"
 #include "EntryToTextFormater_Logfile.h"
 
