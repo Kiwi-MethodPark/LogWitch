@@ -90,7 +90,13 @@ QTabWidget *LogEntryCombinedWidget::getTabFilterWidget()
 			if( strModel->getFilter() )
 				addFilter( strModel->getFilter() );
 
-			view->setModel(strModel);
+            QSortFilterProxyModel *proxyModel = new QSortFilterProxyModel(this);
+            proxyModel->setSourceModel(strModel);
+            proxyModel->sort ( 0 );
+            proxyModel->setSortCaseSensitivity ( Qt::CaseInsensitive );
+            proxyModel->setDynamicSortFilter ( true );
+
+			view->setModel(proxyModel);
 			tabs->addTab( view, m_model->getParserModelConfiguration()->getLogEntryAttributeFactory()->getDescription(attr));
 			view->show();
 		}
@@ -107,8 +113,6 @@ void LogEntryCombinedWidget::addFilter( boost::shared_ptr<LogEntryFilter> flt )
 
 void LogEntryCombinedWidget::newSelection ( const QItemSelection & selected, const QItemSelection & )
 {
-	qDebug() << "New selection of size: " << selected.size();
-
 	TconstSharedLogEntry entry = m_model->getEntryByIndex( m_table->mapToSource( selected.front().topLeft() ) );
 	m_text->setHtml( m_model->getParserModelConfiguration()->getEntryToTextFormater()->formatEntry( entry ) );
 }
