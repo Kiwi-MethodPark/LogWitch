@@ -5,11 +5,11 @@
  *      Author: sven
  */
 
-#ifndef ENTRYTOTEXTFORMATER_LOGFILE_H_
-#define ENTRYTOTEXTFORMATER_LOGFILE_H_
+#ifndef ENTRYTOTEXTFORMATERDEFAULT_H_
+#define ENTRYTOTEXTFORMATERDEFAULT_H_
 #include "EntryToTextFormater.h"
 
-class EntryToTextFormater_Logfile
+class EntryToTextFormaterDefault
 	: public EntryToTextFormater
 {
 public:

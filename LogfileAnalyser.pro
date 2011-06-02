@@ -17,13 +17,14 @@ QT += core \
     network
 
 # Input
-HEADERS += GUITools/SignalMultiplexerStateApplier.h \
+HEADERS += EntryToTextFormaterDefault.h \
+    EntryToTextFormaterLog4cplus.h \
+    GUITools/SignalMultiplexerStateApplier.h \
     GUITools/SignalMultiplexer.h \
     GUITools/DockWidgetStateSaver.h \
     GUITools/WidgetStateSaver.h \
     Assert.h \
     EntryToTextFormater.h \
-    EntryToTextFormater_Logfile.h \
     LogEntryCombinedWidget.h \
     LogEntryTableWindow.h \
     logfileanalyser.h \
@@ -46,11 +47,12 @@ HEADERS += GUITools/SignalMultiplexerStateApplier.h \
     Models/StringCacheTreeItem.h \
     Models/StringCacheTreeModel.h
 FORMS += logfileanalyser.ui
-SOURCES += GUITools/SignalMultiplexerStateApplier.cpp \
+SOURCES += EntryToTextFormaterDefault.cpp \
+    EntryToTextFormaterLog4cplus.cpp \
+    GUITools/SignalMultiplexerStateApplier.cpp \
     GUITools/SignalMultiplexer.cpp \
     GUITools/DockWidgetStateSaver.cpp \
     GUITools/WidgetStateSaver.cpp \
-    EntryToTextFormater_Logfile.cpp \
     LogEntryCombinedWidget.cpp \
     LogEntryTableWindow.cpp \
     logfileanalyser.cpp \

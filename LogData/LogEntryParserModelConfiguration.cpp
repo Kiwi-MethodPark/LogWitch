@@ -6,12 +6,15 @@
  */
 
 #include "LogEntryParserModelConfiguration.h"
+#include "EntryToTextFormaterDefault.h"
 
-LogEntryParserModelConfiguration::LogEntryParserModelConfiguration() {
-	// TODO Auto-generated constructor stub
+LogEntryParserModelConfiguration::LogEntryParserModelConfiguration()
+    : m_formater( new EntryToTextFormaterDefault )
+{
 
 }
 
-LogEntryParserModelConfiguration::~LogEntryParserModelConfiguration() {
-	// TODO Auto-generated destructor stub
+LogEntryParserModelConfiguration::~LogEntryParserModelConfiguration()
+{
+
 }

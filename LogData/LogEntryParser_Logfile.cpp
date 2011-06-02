@@ -14,7 +14,6 @@
 #include "LogData/LogEntryAttributeFactory.h"
 #include "LogData/LogEntryAttributes.h"
 #include "LogEntryParserModelConfiguration.h"
-#include "EntryToTextFormater_Logfile.h"
 
 LogEntryParser_Logfile::LogEntryParser_Logfile( const QString &filename)
 	: m_abort(false )
@@ -36,7 +35,6 @@ LogEntryParser_Logfile::LogEntryParser_Logfile( const QString &filename)
 	m_myModelConfig = boost::shared_ptr<LogEntryParserModelConfiguration>( new LogEntryParserModelConfiguration );
 	m_myModelConfig->setLogEntryAttributeFactory( myFactory.getLogEntryAttributeFactory() );
 	m_myModelConfig->setHierarchySplitString( 1, "\\.");
-	m_myModelConfig->setEntryToTextFormater( boost::shared_ptr<EntryToTextFormater>( new EntryToTextFormater_Logfile ) );
 
 	m_myModelConfig->setFieldWidthHint( 0, 70 ); // severity
 	m_myModelConfig->setFieldWidthHint( 1, 250 ); // component

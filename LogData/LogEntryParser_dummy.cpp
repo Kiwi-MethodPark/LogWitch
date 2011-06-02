@@ -9,7 +9,6 @@
 #include "LogData/LogEntry.h"
 #include "LogData/LogEntryAttributes.h"
 #include "LogData/LogEntryAttributeFactory.h"
-#include "EntryToTextFormater_Logfile.h"
 
 LogEntryParser_dummy::LogEntryParser_dummy()
 	: m_entries( 0 )
@@ -25,7 +24,6 @@ LogEntryParser_dummy::LogEntryParser_dummy()
 	m_myModelConfig = boost::shared_ptr<LogEntryParserModelConfiguration>( new LogEntryParserModelConfiguration );
 	m_myModelConfig->setLogEntryAttributeFactory( myFactory.getLogEntryAttributeFactory() );
 	m_myModelConfig->setHierarchySplitString( 1, "\\.");
-	m_myModelConfig->setEntryToTextFormater( boost::shared_ptr<EntryToTextFormater>( new EntryToTextFormater_Logfile ) );
 }
 
 LogEntryParser_dummy::~LogEntryParser_dummy()
