@@ -24,6 +24,10 @@ public:
 
 	TSharedConstQString getAttribute( int idx ) const;
 
+	const LogEntryAttributeFactory &getFactory() const { return *myFactory; }
+
+	const TSharedConstQString &operator []( int idx) const;
+
 private:
 	std::vector< TSharedConstQString > attributes;
 

@@ -30,3 +30,9 @@ boost::shared_ptr<const QString> LogEntryAttributes::getAttribute( int idx ) con
 {
 	return attributes[idx];
 }
+
+const TSharedConstQString &LogEntryAttributes::operator []( int idx) const
+{
+    return attributes[idx];
+}
+
