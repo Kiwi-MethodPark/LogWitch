@@ -156,5 +156,46 @@ void StringCacheTreeItem::nextChecked()
     m_checkedChilds = m_checkedSelf;
 }
 
+void StringCacheTreeItem::recursiveSetTree( Check c )
+{
+    recursiveSetTree( c, c );
+}
+
+void StringCacheTreeItem::recursiveSetTree( Check self, Check child )
+{
+    m_checkedChilds = child;
+    m_checkedSelf = self;
+    TItemVector::const_iterator it= m_childItems.begin();
+    for( ;it != m_childItems.end(); ++it )
+        (*it)->recursiveSetTree( self, child );
+}
+
+StringCacheTreeItem *StringCacheTreeItem::getRootElement()
+{
+    if( m_parentItem != NULL )
+        return m_parentItem->getRootElement();
+    else
+        return this;
+}
+
+void StringCacheTreeItem::checkOnlyThisElement( bool includeTreepath, Check child, Check self )
+{
+    // Move upwards and uncheck everything except the tree to this element.
+    if( m_parentItem != NULL )
+    {
+        m_checkedChilds = child;
+        m_checkedSelf = self;
+
+        TItemVector::const_iterator it = m_parentItem->m_childItems.begin();
+        for( ;it != m_parentItem->m_childItems.end(); ++it )
+        {
+            if( *it != this )
+            {
+                (*it)->m_checkedChilds = (*it)->m_checkedSelf = Unchecked;
+            }
+        }
+        m_parentItem->checkOnlyThisElement( includeTreepath, Inherit, includeTreepath ? Inherit : Unchecked );
+    }
+}
 
 

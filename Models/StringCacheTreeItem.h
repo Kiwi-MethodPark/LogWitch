@@ -80,12 +80,20 @@ public:
     }
 
     Check getCheckedSelf( ) { return m_checkedSelf; }
+    void setCheckedSelf( Check c ) { m_checkedSelf = c; }
     Check getCheckedChild( ) { return m_checkedChilds; }
 
     CheckState getCheckState( ) const;
 
     CheckState &getCheckState( CheckState &state, const StringCacheTreeItem *item ) const;
     void nextChecked();
+
+    void recursiveSetTree( Check self, Check child );
+    void recursiveSetTree( Check self );
+
+    StringCacheTreeItem *getRootElement();
+
+    void checkOnlyThisElement( bool includeTreepath = true, Check child = Checked, Check self=Checked);
 
 private:
     typedef std::vector< StringCacheTreeItem *> TItemVector;

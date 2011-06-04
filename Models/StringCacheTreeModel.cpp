@@ -71,31 +71,53 @@ QVariant StringCacheTreeModel::data(const QModelIndex &index, int role) const
 
 bool StringCacheTreeModel::setData( const QModelIndex &index, const QVariant& value, int role )
 {
-	qDebug() << "setData called with " << value;
 	if( !index.isValid())
 		return false;
 
-	if( role != Qt::CheckStateRole )
-	  return false;
-
-
-
-	StringCacheTreeItem *item = static_cast<StringCacheTreeItem*>( index.internalPointer() );
-	item->nextChecked();
-
-	QModelIndex node = index;
-	while( node.isValid() )
+	if( role == Qt::CheckStateRole || role == 512 )
 	{
-		emit dataChanged( node, node );
-		node = node.parent();
+        StringCacheTreeItem *item = static_cast<StringCacheTreeItem*>( index.internalPointer() );
+
+        if( role == 512 )
+        {
+
+            int val = value.toInt( );
+            qDebug() << "val = " << val;
+            if( val == 1)
+                item->setCheckedSelf( StringCacheTreeItem::Checked );
+            else if( val == 0 )
+                item->setCheckedSelf( StringCacheTreeItem::Unchecked );
+            else if( val == 2 )
+                item->checkOnlyThisElement( true );
+            else if( val == 3 )
+                item->checkOnlyThisElement( false );
+            else if( val == 4 )
+                item->getRootElement()->recursiveSetTree( StringCacheTreeItem::Inherit );
+            else if( val == 5 )
+                item->recursiveSetTree( StringCacheTreeItem::Inherit, StringCacheTreeItem::Inherit );
+            else if( val == 6 )
+                item->recursiveSetTree( StringCacheTreeItem::Unchecked, StringCacheTreeItem::Inherit );
+
+        }
+        else
+            item->nextChecked();
+
+        QModelIndex node = index;
+        while( node.isValid() )
+        {
+            emit dataChanged( node, node );
+            node = node.parent();
+        }
+
+        dataChangedToChildren(index);
+
+        m_myFilter->startChange();
+        updateFilters(item);
+        m_myFilter->endChange();
+        return true;
 	}
 
-   	dataChangedToChildren(index);
-
-   	m_myFilter->startChange();
-   	updateFilters(item);
-   	m_myFilter->endChange();
-	return true;
+	return false;
 }
 
 void StringCacheTreeModel::updateFilters( StringCacheTreeItem *item, bool forceSelect /*= false*/, bool forceDeselect /*= false*/ )

@@ -24,10 +24,23 @@ public:
 
     void addToTabs( QTabWidget *tabs, LogEntryCombinedWidget* widget  );
 
+public slots:
+    void contextMenuPopup( const QPoint &pos);
+
 private:
     boost::shared_ptr<const LogEntryParserModelConfiguration> m_config;
+
     StringCacheTreeModel *m_strModel;
     int m_attr;
+
+    QMenu *m_contextMenu;
+    QAction *m_resetSelectionsAct;
+    QAction *m_deselectThisAct;
+    QAction *m_selectThisAct;
+    QAction *m_selectOnlyThisWithPathAct;
+    QAction *m_selectOnlyThisWithoutPathAct;
+    QAction *m_checkTreeAct;
+    QAction *m_uncheckTreeAct;
 };
 
 #endif /* FILTERLISTVIEW_H_ */
