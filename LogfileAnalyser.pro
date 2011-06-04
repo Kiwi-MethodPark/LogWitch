@@ -17,7 +17,8 @@ QT += core \
     network
 
 # Input
-HEADERS += EntryToTextFormaterDefault.h \
+HEADERS += FilterListView.h \
+    EntryToTextFormaterDefault.h \
     EntryToTextFormaterLog4cplus.h \
     GUITools/SignalMultiplexerStateApplier.h \
     GUITools/SignalMultiplexer.h \
@@ -47,7 +48,8 @@ HEADERS += EntryToTextFormaterDefault.h \
     Models/StringCacheTreeItem.h \
     Models/StringCacheTreeModel.h
 FORMS += logfileanalyser.ui
-SOURCES += EntryToTextFormaterDefault.cpp \
+SOURCES += FilterListView.cpp \
+    EntryToTextFormaterDefault.cpp \
     EntryToTextFormaterLog4cplus.cpp \
     GUITools/SignalMultiplexerStateApplier.cpp \
     GUITools/SignalMultiplexer.cpp \

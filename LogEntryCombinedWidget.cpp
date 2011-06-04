@@ -13,7 +13,7 @@
 #include "EntryToTextFormater.h"
 #include "LogData/LogEntryParserModelConfiguration.h"
 #include "LogData/LogEntryAttributeFactory.h"
-#include "Models/StringCacheTreeModel.h"
+#include "FilterListView.h"
 
 LogEntryCombinedWidget::LogEntryCombinedWidget( boost::shared_ptr<LogEntryTableModel> model, QWidget *parent )
 	: QMdiSubWindow( parent )
@@ -81,24 +81,8 @@ QTabWidget *LogEntryCombinedWidget::getTabFilterWidget()
 		int attributes = m_model->getParserModelConfiguration()->getLogEntryAttributeFactory()->getNumberOfFields();
 		for(int attr = 0; attr < attributes; attr++ )
 		{
-			QTreeView *view = new QTreeView;
-			StringCacheTreeModel *strModel = new StringCacheTreeModel(view
-					, &m_model->getParserModelConfiguration()->getLogEntryAttributeFactory()->getCache(attr)
-					, attr
-					, m_model->getParserModelConfiguration()->getHierarchySplitString(attr) );
-
-			if( strModel->getFilter() )
-				addFilter( strModel->getFilter() );
-
-            QSortFilterProxyModel *proxyModel = new QSortFilterProxyModel(this);
-            proxyModel->setSourceModel(strModel);
-            proxyModel->sort ( 0 );
-            proxyModel->setSortCaseSensitivity ( Qt::CaseInsensitive );
-            proxyModel->setDynamicSortFilter ( true );
-
-			view->setModel(proxyModel);
-			tabs->addTab( view, m_model->getParserModelConfiguration()->getLogEntryAttributeFactory()->getDescription(attr));
-			view->show();
+		    FilterListView *view = new FilterListView( this, m_model->getParserModelConfiguration(), attr );
+		    view->addToTabs( tabs, this );
 		}
 		m_myFilterTabs = tabs;
 	}
