@@ -45,15 +45,13 @@ LogEntryCombinedWidget::LogEntryCombinedWidget( boost::shared_ptr<LogEntryTableM
 
 void LogEntryCombinedWidget::errorFromModel( QString error )
 {
-    qDebug() << "error from model received: " << error;
-
     QMessageBox msgBox;
     QString errorText;
     errorText+= "Erorr received: " + error;
     msgBox.setText( errorText );
     msgBox.setInformativeText("Close window now?");
     msgBox.setStandardButtons(QMessageBox::Ignore | QMessageBox::Close );
-     msgBox.setDefaultButton(QMessageBox::Ignore);
+    msgBox.setDefaultButton(QMessageBox::Ignore);
 
     int ret =  msgBox.exec();
     if( ret == QMessageBox::Close )

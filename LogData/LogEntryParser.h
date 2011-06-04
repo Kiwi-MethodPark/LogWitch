@@ -26,7 +26,7 @@ public:
 	virtual ~LogEntryParser(){}
 
 	/**
-	 * This method returns a name which can be used to identify the origin, fpor eg. Server, logfilename, etc.
+	 * This method returns a name which can be used to identify the origin, for eg. Server, logfilename, etc.
 	 */
 	virtual QString getName() const { return QString("Untitled"); }
 
