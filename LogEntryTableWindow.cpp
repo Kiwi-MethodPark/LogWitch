@@ -18,6 +18,7 @@ LogEntryTableWindow::LogEntryTableWindow( boost::shared_ptr<LogEntryTableModel> 
     m_proxyModel->setSourceModel(m_model.get());
 	setModel( m_proxyModel );
     this->horizontalHeader()->moveSection(1, model->columnCount( QModelIndex() )-1 );
+    this->horizontalHeader()->setMovable( true );
     this->verticalHeader()->setDefaultSectionSize( 20 );
     this->verticalHeader()->setResizeMode(QHeaderView::Fixed);
     this->verticalHeader()->hide();
