@@ -26,21 +26,9 @@ public:
 	/**
 	 * Returns if an entry field is a hierarchy and returns the string for a regex to split it.
 	 */
-	QString getHierarchySplitString( int idx ) const
-	{
-		if( idx >= 0 && idx < m_hierarchySplitstrings.size() )
-			return m_hierarchySplitstrings[idx];
-		else
-			return "";
-	}
+	QString getHierarchySplitString( int idx ) const;
 
-	void setHierarchySplitString( int idx, const QString & fmt)
-	{
-		if( idx >= m_hierarchySplitstrings.size() )
-			m_hierarchySplitstrings.resize(idx+1);
-
-		m_hierarchySplitstrings[idx] = fmt;
-	}
+	void setHierarchySplitString( int idx, const QString & fmt);
 
 	/**
 	 * Returns an entry to text formater for this types of entries.
@@ -56,21 +44,9 @@ public:
 
 	void setLogEntryAttributeFactory( boost::shared_ptr<LogEntryAttributeFactory> factory) { m_attr = factory;}
 
-	int getFieldWidthHint( int idx ) const
-	{
-		if( idx < (int)m_filedWidthHints.size() )
-			return m_filedWidthHints[idx] < 0 ? 150 : m_filedWidthHints[idx];
-		else
-			return 150;
-	}
+	int getFieldWidthHint( int idx ) const;
 
-	void setFieldWidthHint( int idx, int width )
-	{
-		while( idx >= (int)m_filedWidthHints.size() )
-			m_filedWidthHints.push_back(-1);
-
-		m_filedWidthHints[idx] = width;
-	}
+	void setFieldWidthHint( int idx, int width );
 
 private:
 	QVector<QString> m_hierarchySplitstrings;
