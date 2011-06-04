@@ -7,9 +7,12 @@
 
 #include "StringCacheTreeItem.h"
 
+#include <algorithm>
+
 StringCacheTreeItem::StringCacheTreeItem( TSharedConstQString originalString, TSharedConstQString str, StringCacheTreeItem *parent /* = NULL */ )
 	: m_parentItem( parent )
-	, m_checked( Child )
+	, m_checkedSelf( Inherit )
+    , m_checkedChilds( Inherit )
 	, m_string( str )
 	, m_stringOriginal( originalString )
 {
@@ -23,24 +26,31 @@ StringCacheTreeItem::~StringCacheTreeItem()
 
 void StringCacheTreeItem::appendChild( StringCacheTreeItem *child)
 {
-	m_childItems.append( child );
+	m_childItems.push_back( child );
 
 }
 
 StringCacheTreeItem* StringCacheTreeItem::child(int row)
 {
-	return m_childItems.value(row);
+	return m_childItems.at(row);
 }
 
 int StringCacheTreeItem::childCount() const
 {
-	return m_childItems.count();
+	return m_childItems.size();
 }
 
 int StringCacheTreeItem::row() const
 {
     if (m_parentItem)
-        return m_parentItem->m_childItems.indexOf( const_cast<StringCacheTreeItem*>(this) );
+    {
+        int idx = 0;
+        TItemVector::const_iterator it = std::find( m_parentItem->m_childItems.begin(), m_parentItem->m_childItems.end(), this );
+        if( it != m_parentItem->m_childItems.end() )
+            idx = it - m_parentItem->m_childItems.begin();
+
+        return idx;
+    }
 
     return 0;
 }
@@ -64,5 +74,87 @@ void StringCacheTreeItem::setOriginalString( TSharedConstQString str)
 {
 	m_stringOriginal = str;
 }
+
+StringCacheTreeItem::CheckState StringCacheTreeItem::getCheckState( ) const
+{
+    CheckState stateParentInherited;
+    if( this->m_checkedSelf == Unchecked )
+        stateParentInherited.checked = false;
+
+    // first determine inherited state ...
+    const StringCacheTreeItem *item = NULL;
+    for( item = this->m_parentItem; item != NULL; item = item->m_parentItem )
+    {
+        if( item->m_checkedChilds == Checked )
+        {
+            stateParentInherited.checked = true;
+            stateParentInherited.forced = true;
+        }
+        else if( item->m_checkedChilds == Unchecked )
+        {
+            stateParentInherited.checked = false;
+            stateParentInherited.forced = true;
+        }
+    }
+
+    // goto childs if not Forced ...
+    if( stateParentInherited.forced  || m_checkedChilds != Inherit )
+        return stateParentInherited;
+
+    getCheckState( stateParentInherited, this );
+
+    return stateParentInherited;
+}
+
+StringCacheTreeItem::CheckState &StringCacheTreeItem::getCheckState( StringCacheTreeItem::CheckState &state, const StringCacheTreeItem *item ) const
+ {
+     if( !(state.forced || state.partial) )
+     {
+         TItemVector::const_iterator it= item->m_childItems.begin();
+         for( ;it != item->m_childItems.end(); ++it )
+         {
+
+             if( (*it)->m_checkedSelf == Unchecked
+                     || ( (*it)->m_checkedChilds == Unchecked && (*it)->m_childItems.size() > 0 )  )
+             {
+                 state.partial = true;
+             }
+             else
+             {
+                 if( (*it)->m_checkedChilds == Inherit )
+                     getCheckState( state, *it );
+             }
+         }
+     }
+
+     return state;
+ }
+
+void StringCacheTreeItem::nextChecked()
+{
+    CheckState state = getCheckState();
+
+    if( state.forced )
+        return;
+
+    if( m_checkedSelf == Checked )
+    {
+        m_checkedSelf = Unchecked;
+    }
+    else if( m_checkedSelf == Unchecked )
+    {
+        m_checkedSelf = Inherit;
+    }
+    else if( m_checkedSelf == Inherit )
+    {
+        if( state.partial )
+            m_checkedSelf = Checked;
+        else
+            m_checkedSelf = Unchecked;
+    }
+
+    m_checkedChilds = m_checkedSelf;
+}
+
 
 

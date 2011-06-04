@@ -9,17 +9,39 @@
 #define STRINGCACHETREEITEM_H_
 
 #include <boost/shared_ptr.hpp>
-#include <QtCore/QList>
+#include <list>
 #include "Types.h"
 #include <QtCore/QtCore>
 
 class StringCacheTreeItem {
 public:
-	enum Check{
-		Child,
+	enum Check
+	{
+	    Inherit, // Inherit from parent or checked if top
 		Checked,
 		Unchecked
 	};
+
+//	enum CheckState
+//	{
+//	    ForcedChecked,
+//	    ForcedUnchecked,
+//	    Checked,
+//	    Unchecked,
+//	    PartialCheckedChilds_SelfChecked,
+//	    PartialCheckedChilds_SelfUnchecked
+//	};
+
+	class CheckState
+	{
+	public:
+	    CheckState() : forced( false ), checked( true ), partial(false ) { }
+
+	    bool forced;
+	    bool checked;
+	    bool partial;
+	};
+
 public:
 	StringCacheTreeItem( TSharedConstQString originalString, TSharedConstQString str, StringCacheTreeItem *parent = NULL );
 	virtual ~StringCacheTreeItem();
@@ -47,79 +69,31 @@ public:
 
     Qt::CheckState getChecked() const
     {
-    	Check c = getCheckedInt();
-    	if( c == Child )
+        CheckState c = getCheckState();
+
+    	if( c.partial )
     		return Qt::PartiallyChecked;
-    	else if( c == Checked )
+    	else if( c.checked )
     		return Qt::Checked;
     	else
     		return Qt::Unchecked;
     }
 
-    Check getCheckedNative( ) { return m_checked; }
+    Check getCheckedSelf( ) { return m_checkedSelf; }
+    Check getCheckedChild( ) { return m_checkedChilds; }
 
-    bool getForcedChecked( ) const
-    {
-    	if( m_parentItem )
-    	{
-    		if( m_parentItem->m_checked != Child )
-    			return true;
-    		else
-    			return m_parentItem->getForcedChecked();
-    	}
-    	else
-    		return false;
-    }
+    CheckState getCheckState( ) const;
 
-    Check getCheckedInt( bool childDir = true) const
-    {
-    	if( childDir )
-    	{
-			if( m_checked == Child )
-			{
-				if( m_childItems.empty() )
-					return Checked;
-				else
-				{
-					QList< StringCacheTreeItem *>::const_iterator it= m_childItems.constBegin();
-					for( ;it != m_childItems.constEnd(); ++it )
-					{
-						if( (*it)->getCheckedInt() == Unchecked || (*it)->getCheckedInt() == Child )
-							return Child;
-					}
-					return Checked;
-				}
-			}
-			else
-				return  m_checked;
-    	}
-    	else
-    	{
-    		return Checked;
-    	}
-    }
-
-    void nextChecked()
-    {
-    	Check c = getCheckedInt();
-    	if(c == Child )
-    	{
-    		if( m_childItems.empty() )
-    			m_checked = Unchecked;
-    		else
-    			m_checked = Checked;
-    	}
-    	else if( c == Checked)
-    		m_checked = Unchecked;
-    	else if( c == Unchecked)
-   			m_checked = Child;
-    }
+    CheckState &getCheckState( CheckState &state, const StringCacheTreeItem *item ) const;
+    void nextChecked();
 
 private:
-    QList< StringCacheTreeItem *> m_childItems;
+    typedef std::vector< StringCacheTreeItem *> TItemVector;
+    TItemVector m_childItems;
     StringCacheTreeItem *m_parentItem;
 
-    Check m_checked;
+    Check m_checkedSelf;
+    Check m_checkedChilds;
 
     TSharedConstQString m_string;
 

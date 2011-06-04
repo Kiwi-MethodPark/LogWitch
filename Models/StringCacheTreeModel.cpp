@@ -10,6 +10,7 @@
 #include <iostream>
 #include <QtCore/QtCore>
 #include "LogEntryRemoveFilter.h"
+#include <QtGui>
 
 StringCacheTreeModel::StringCacheTreeModel( QObject *parent, const StringCache * cache, int attributeId, const QString &splitString  )
 	: QAbstractItemModel( parent )
@@ -44,9 +45,19 @@ QVariant StringCacheTreeModel::data(const QModelIndex &index, int role) const
 
     StringCacheTreeItem *item = static_cast<StringCacheTreeItem*>(index.internalPointer());
 
-	if( role == Qt::CheckStateRole )
+    if( role == Qt::ForegroundRole )
+    {
+        StringCacheTreeItem::CheckState state = item->getCheckState();
+
+        if( state.checked )
+            return QBrush( Qt::darkGreen );
+        else
+            return QBrush( Qt::darkGray );
+    }
+    else if( role == Qt::CheckStateRole )
 	{
-		if( item->getForcedChecked() )
+        StringCacheTreeItem::CheckState state = item->getCheckState();
+		if( state.forced )
 			return QVariant();
 
 		return item->getChecked();
@@ -104,15 +115,17 @@ void StringCacheTreeModel::updateFilters( StringCacheTreeItem *item, bool forceS
 	{
 		if( item->getOriginalString() != m_undefinedString )
 		{
-			if( item->getCheckedNative() == StringCacheTreeItem::Unchecked  )
+			if( !item->getCheckState().checked )
 				m_myFilter->addEntry( item->getOriginalString() );
 			else
 				m_myFilter->removeEntry( item->getOriginalString() );
 		}
 
-		if( item->getCheckedNative() == StringCacheTreeItem::Unchecked )
+        StringCacheTreeItem::CheckState c = item->getCheckState();
+
+		if( c.forced && !c.checked )
 			forceDeselect = true;
-		else if( item->getCheckedNative() == StringCacheTreeItem::Checked )
+		else if( c.forced && c.checked )
 			forceSelect = true;
 	}
 
