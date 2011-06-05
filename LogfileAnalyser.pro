@@ -17,7 +17,17 @@ QT += core \
     network
 
 # Input
-HEADERS += FilterListView.h \
+HEADERS += ActionRules/RuleTable.h \
+    ActionRules/ActionRemoveRow.h \
+    ActionRules/ActionColorRow.h \
+    ActionRules/ValueGetterConstQString.h \
+    ActionRules/ValueGetterLogEntry.h \
+    ActionRules/ExpressionValueGetter.h \
+    ActionRules/ValueGetter.h \
+    ActionRules/Expression.h \
+    ActionRules/Rule.h \
+    ActionRules/Action.h \
+    FilterListView.h \
     EntryToTextFormaterDefault.h \
     EntryToTextFormaterLog4cplus.h \
     GUITools/SignalMultiplexerStateApplier.h \
@@ -48,7 +58,17 @@ HEADERS += FilterListView.h \
     Models/StringCacheTreeItem.h \
     Models/StringCacheTreeModel.h
 FORMS += logfileanalyser.ui
-SOURCES += FilterListView.cpp \
+SOURCES += ActionRules/RuleTable.cpp \
+    ActionRules/ActionRemoveRow.cpp \
+    ActionRules/ActionColorRow.cpp \
+    ActionRules/ValueGetterConstQString.cpp \
+    ActionRules/ValueGetterLogEntry.cpp \
+    ActionRules/ExpressionValueGetter.cpp \
+    ActionRules/ValueGetter.cpp \
+    ActionRules/Expression.cpp \
+    ActionRules/Rule.cpp \
+    ActionRules/Action.cpp \
+    FilterListView.cpp \
     EntryToTextFormaterDefault.cpp \
     EntryToTextFormaterLog4cplus.cpp \
     GUITools/SignalMultiplexerStateApplier.cpp \
