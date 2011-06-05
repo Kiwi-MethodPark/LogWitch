@@ -8,8 +8,9 @@
 #include "LogEntryParserModelConfiguration.h"
 #include "EntryToTextFormaterDefault.h"
 
-LogEntryParserModelConfiguration::LogEntryParserModelConfiguration()
+LogEntryParserModelConfiguration::LogEntryParserModelConfiguration( const QString &configurationString )
     : m_formater( new EntryToTextFormaterDefault )
+    , m_configurationString( configurationString )
 {
 
 }

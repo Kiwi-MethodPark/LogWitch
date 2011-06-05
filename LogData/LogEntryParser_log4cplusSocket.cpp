@@ -36,7 +36,7 @@ LogEntryParser_log4cplusSocket::LogEntryParser_log4cplusSocket( int port )
 	myFactory.getLogEntryAttributeFactory()->addField("NDC");
 	myFactory.getLogEntryAttributeFactory()->disallowAddingFields();
 
-	m_myModelConfig = boost::shared_ptr<LogEntryParserModelConfiguration>( new LogEntryParserModelConfiguration );
+	m_myModelConfig = boost::shared_ptr<LogEntryParserModelConfiguration>( new LogEntryParserModelConfiguration("log4cplus") );
 	m_myModelConfig->setLogEntryAttributeFactory( myFactory.getLogEntryAttributeFactory() );
 	m_myModelConfig->setHierarchySplitString( 1, "\\.");
 	m_myModelConfig->setEntryToTextFormater( boost::shared_ptr<EntryToTextFormater>( new EntryToTextFormaterLog4cplus ) );

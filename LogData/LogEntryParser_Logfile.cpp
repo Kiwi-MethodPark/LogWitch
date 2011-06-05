@@ -32,7 +32,7 @@ LogEntryParser_Logfile::LogEntryParser_Logfile( const QString &filename)
 	myFactory.getLogEntryAttributeFactory()->addField("File source");
 	myFactory.getLogEntryAttributeFactory()->disallowAddingFields();
 
-	m_myModelConfig = boost::shared_ptr<LogEntryParserModelConfiguration>( new LogEntryParserModelConfiguration );
+	m_myModelConfig = boost::shared_ptr<LogEntryParserModelConfiguration>( new LogEntryParserModelConfiguration("Logfile") );
 	m_myModelConfig->setLogEntryAttributeFactory( myFactory.getLogEntryAttributeFactory() );
 	m_myModelConfig->setHierarchySplitString( 1, "\\.");
 

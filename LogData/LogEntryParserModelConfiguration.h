@@ -20,7 +20,11 @@ class LogEntryAttributeFactory;
 class LogEntryParserModelConfiguration
 {
 public:
-	LogEntryParserModelConfiguration();
+    /**
+     * Constructs configuration.
+     * @param configurationString This string is an identifier to save and load default settings.
+     */
+	LogEntryParserModelConfiguration( const QString &configurationString );
 	virtual ~LogEntryParserModelConfiguration();
 
 	/**
@@ -56,6 +60,8 @@ private:
 	boost::shared_ptr<LogEntryAttributeFactory> m_attr;
 
 	std::vector<int> m_filedWidthHints;
+
+	const QString m_configurationString;
 };
 
 #endif /* LOGENTRYPARSERMODELCONFIGURATION_H_ */

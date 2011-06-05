@@ -21,7 +21,7 @@ LogEntryParser_dummy::LogEntryParser_dummy()
 	myFactory.getLogEntryAttributeFactory()->addField("EMPTY"); 	// add this to fit to EntryToTextFormater_Logfile
 	myFactory.getLogEntryAttributeFactory()->disallowAddingFields();
 
-	m_myModelConfig = boost::shared_ptr<LogEntryParserModelConfiguration>( new LogEntryParserModelConfiguration );
+	m_myModelConfig = boost::shared_ptr<LogEntryParserModelConfiguration>( new LogEntryParserModelConfiguration("DummyLogger") );
 	m_myModelConfig->setLogEntryAttributeFactory( myFactory.getLogEntryAttributeFactory() );
 	m_myModelConfig->setHierarchySplitString( 1, "\\.");
 }
