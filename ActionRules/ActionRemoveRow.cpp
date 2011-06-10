@@ -14,3 +14,13 @@ ActionRemoveRow::ActionRemoveRow()
 ActionRemoveRow::~ActionRemoveRow()
 {
 }
+
+QVariant ActionRemoveRow::toDisplay( int role ) const
+{
+    if( role == Qt::DisplayRole )
+    {
+        return QString( QObject::tr("'Remove Line") );
+    }
+
+    return QVariant();
+}

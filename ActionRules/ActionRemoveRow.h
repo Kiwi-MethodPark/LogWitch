@@ -15,6 +15,10 @@ class ActionRemoveRow
 public:
     ActionRemoveRow();
     ~ActionRemoveRow();
+
+    QVariant toDisplay( int role ) const;
+
+    void execute( ) const {};
 };
 
 #endif /* ACTIONREMOVEROW_H_ */
