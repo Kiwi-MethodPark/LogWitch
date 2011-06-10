@@ -14,7 +14,7 @@ class ExpressionValueGetter
     : public Expression
 {
 public:
-    ExpressionValueGetter( TconstSharedValueGetter &left, TconstSharedValueGetter &right );
+    ExpressionValueGetter( TconstSharedValueGetter left, TconstSharedValueGetter right );
     ~ExpressionValueGetter();
 
     virtual bool match( TconstSharedLogEntry &entry ) const;

@@ -8,7 +8,7 @@
 #include "ExpressionValueGetter.h"
 #include "ValueGetter.h"
 
-ExpressionValueGetter::ExpressionValueGetter( TconstSharedValueGetter &left, TconstSharedValueGetter &right )
+ExpressionValueGetter::ExpressionValueGetter( TconstSharedValueGetter left, TconstSharedValueGetter right )
     : m_left( left )
     , m_right( right )
 {

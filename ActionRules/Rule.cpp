@@ -7,7 +7,7 @@
 
 #include "Rule.h"
 
-Rule::Rule( TconstSharedExpression &expr, TconstSharedAction &action )
+Rule::Rule( TconstSharedExpression expr, TconstSharedAction action )
     : m_expr( expr )
     , m_action( action )
 {
