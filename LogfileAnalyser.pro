@@ -17,9 +17,15 @@ QT += core \
     network
 
 # Input
-HEADERS += ActionRules/RuleTable.h \
+HEADERS += ActionRules/FilterRuleSelectionWindow.h \
+    ActionRules/TableModelRulesCompiled.h \
+    ActionRules/FilterRuleCompiled.h \
+    ActionRules/DisplayItemData.h \
+    ActionRules/FilterRuleRaw.h \
+    ActionRules/TableModelRules.h \
+    ActionRules/ActionDataRewriter.h \
+    ActionRules/RuleTable.h \
     ActionRules/ActionRemoveRow.h \
-    ActionRules/ActionColorRow.h \
     ActionRules/ValueGetterConstQString.h \
     ActionRules/ValueGetterLogEntry.h \
     ActionRules/ExpressionValueGetter.h \
@@ -58,9 +64,14 @@ HEADERS += ActionRules/RuleTable.h \
     Models/StringCacheTreeItem.h \
     Models/StringCacheTreeModel.h
 FORMS += logfileanalyser.ui
-SOURCES += ActionRules/RuleTable.cpp \
+SOURCES += ActionRules/FilterRuleSelectionWindow.cpp \
+    ActionRules/TableModelRulesCompiled.cpp \
+    ActionRules/FilterRuleCompiled.cpp \
+    ActionRules/FilterRuleRaw.cpp \
+    ActionRules/TableModelRules.cpp \
+    ActionRules/ActionDataRewriter.cpp \
+    ActionRules/RuleTable.cpp \
     ActionRules/ActionRemoveRow.cpp \
-    ActionRules/ActionColorRow.cpp \
     ActionRules/ValueGetterConstQString.cpp \
     ActionRules/ValueGetterLogEntry.cpp \
     ActionRules/ExpressionValueGetter.cpp \

@@ -10,6 +10,7 @@
 #include "LogData/LogEntry.h"
 #include "LogData/LogEntryAttributes.h"
 #include "Assert.h"
+#include "ActionRules/ActionDataRewriter.h"
 
 LogEntryTableFilter::LogEntryTableFilter( QObject *parent)
 	: QSortFilterProxyModel( parent )
@@ -26,6 +27,30 @@ LogEntryTableFilter::~LogEntryTableFilter()
 void LogEntryTableFilter::addFilter( boost::shared_ptr<LogEntryFilter> flt )
 {
 	m_filterChain.addFilter( flt );
+}
+
+void LogEntryTableFilter::setRuleTable( TconstSharedRuleTable table )
+{
+    m_ruleTable = table;
+}
+
+QVariant LogEntryTableFilter::data(const QModelIndex &index, int role) const
+{
+    QVariant var = QSortFilterProxyModel::data( index, role );
+
+    if( m_ruleTable )
+    {
+        TconstSharedLogEntry entry = m_model->getEntryByIndex( mapToSource( index ) );
+        std::list<  TconstSharedActionDataRewriter > actions;
+        if( m_ruleTable->getMatchedActionsForType( actions, entry ) )
+        {
+            actions.back()->getData( var, role);
+        }
+    }
+
+    //index.row();
+
+    return var;
 }
 
 void LogEntryTableFilter::setSourceModel( QAbstractItemModel *model )

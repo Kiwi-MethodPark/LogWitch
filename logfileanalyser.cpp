@@ -18,6 +18,7 @@
 #include "GUITools/WidgetStateSaver.h"
 #include "GUITools/DockWidgetStateSaver.h"
 #include "GUITools/SignalMultiplexerStateApplier.h"
+#include "ActionRules/FilterRuleSelectionWindow.h"
 
 LogfileAnalyser::LogfileAnalyser(QWidget *parent)
     : QMainWindow(parent)
@@ -51,6 +52,14 @@ LogfileAnalyser::LogfileAnalyser(QWidget *parent)
                      this, SLOT(openPort()));
     QObject::connect( ui.mdiArea, SIGNAL( subWindowActivated ( QMdiSubWindow *) )
                     , this, SLOT( subWindowActivated( QMdiSubWindow * ) ) );
+
+
+
+
+    m_myFilterRulesDock = new QDockWidget(tr("Filter Rules"), this);
+    m_myFilterRulesDock->setAllowedAreas(Qt::AllDockWidgetAreas);
+    m_myFilterRulesDock->setWidget( new FilterRuleSelectionWindow( m_myFilterRulesDock ) );
+    addDockWidget(Qt::RightDockWidgetArea, m_myFilterRulesDock);
 }
 
 void LogfileAnalyser::subWindowDestroyed( QObject *obj )

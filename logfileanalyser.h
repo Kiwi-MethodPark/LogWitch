@@ -37,6 +37,7 @@ private:
     boost::shared_ptr<LogEntryParser_dummy> m_parser;
 
     QDockWidget *m_myFilterDock;
+    QDockWidget *m_myFilterRulesDock;
 
     QSpinBox *m_uiLog4cplusPort;
     QAction * m_uiLog4cplusPort_Action;

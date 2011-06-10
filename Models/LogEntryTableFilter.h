@@ -10,6 +10,7 @@
 
 #include <QSortFilterProxyModel>
 #include "LogEntryFilterChain.h"
+#include "ActionRules/RuleTable.h"
 
 class LogEntryTableModel;
 
@@ -22,7 +23,11 @@ public:
 
 	void setSourceModel( QAbstractItemModel *model );
 
+	QVariant data(const QModelIndex &index, int role) const;
+
 	void addFilter( boost::shared_ptr<LogEntryFilter> );
+
+	void setRuleTable( TconstSharedRuleTable table ) ;
 
 	virtual ~LogEntryTableFilter();
 
@@ -33,6 +38,8 @@ private:
 	LogEntryTableModel *m_model;
 
 	LogEntryFilterChain m_filterChain;
+
+	TconstSharedRuleTable m_ruleTable;
 };
 
 #endif /* LOGENTRYTABLEFILTER_H_ */
