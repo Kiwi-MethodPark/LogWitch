@@ -8,11 +8,15 @@
 #ifndef ACTION_H_
 #define ACTION_H_
 #include <boost/shared_ptr.hpp>
+#include <QtCore/QVariant>
+
+#include "ActionRules/DisplayItemData.h"
 
 /**
  * This is triggered by a specific incoming log message or new connection.
  */
 class Action
+    : public DisplayItemData
 {
 public:
     Action();
