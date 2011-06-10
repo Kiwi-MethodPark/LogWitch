@@ -18,7 +18,9 @@ public:
 
     ~ValueGetterConstQString();
 
-    virtual TSharedConstQString getValue( TconstSharedLogEntry &entry ) const = 0;
+    bool isValid( ) const { return true; };
+
+    virtual TSharedConstQString getValue( TconstSharedLogEntry &entry ) const;
 
 private:
     TSharedConstQString m_string;

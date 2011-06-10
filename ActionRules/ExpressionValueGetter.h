@@ -17,6 +17,8 @@ public:
     ExpressionValueGetter( TconstSharedValueGetter left, TconstSharedValueGetter right );
     ~ExpressionValueGetter();
 
+    bool isValid( ) const;
+
     virtual bool match( TconstSharedLogEntry &entry ) const;
 private:
     TconstSharedValueGetter m_left;

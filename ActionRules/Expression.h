@@ -14,6 +14,8 @@ class Expression
 public:
     virtual ~Expression();
 
+    virtual bool isValid( ) const = 0;
+
     virtual bool match( TconstSharedLogEntry &entry ) const = 0;
 };
 

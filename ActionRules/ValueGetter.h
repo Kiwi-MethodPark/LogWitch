@@ -17,6 +17,8 @@ class ValueGetter
 public:
     virtual ~ValueGetter();
 
+    virtual bool isValid( ) const = 0;
+
     virtual TSharedConstQString getValue( TconstSharedLogEntry &entry ) const = 0;
 };
 

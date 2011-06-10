@@ -23,3 +23,8 @@ bool ExpressionValueGetter::match( TconstSharedLogEntry &entry ) const
 {
     return *(m_left->getValue( entry )) == *(m_right->getValue( entry ));
 }
+
+bool ExpressionValueGetter::isValid( ) const
+{
+    return m_left->isValid() && m_right->isValid();
+}

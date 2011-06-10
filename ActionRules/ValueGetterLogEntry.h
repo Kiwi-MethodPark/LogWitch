@@ -38,7 +38,7 @@ private:
     int m_fieldId;
 };
 
-typedef boost::shared_ptr<ValueGetterLogEntry> TSharedAttributeDescriptor;
-typedef boost::shared_ptr<const ValueGetterLogEntry> TconstSharedAttributeDescriptor;
+typedef boost::shared_ptr<ValueGetterLogEntry> TSharedValueGetterLogEntry;
+typedef boost::shared_ptr<const ValueGetterLogEntry> TconstSharedValueGetterLogEntry;
 
 #endif /* VALUEGETTERLOGENTRY_H_ */
