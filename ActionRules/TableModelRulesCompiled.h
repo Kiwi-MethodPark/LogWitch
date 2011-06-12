@@ -39,10 +39,14 @@ public:
 
     Qt::ItemFlags flags(const QModelIndex & index ) const;
 
+    void appendRule( TSharedFilterRuleRaw rule );
 private:
-    std::vector<TSharedFilterRuleCompiled> m_table;
+    typedef std::vector<TSharedFilterRuleCompiled> TRuleTable;
+    TRuleTable m_table;
 
     static const int m_columnCount = 2;
+
+    TSharedConstLogEntryParserModelConfiguration m_configuration;
 
 };
 #endif /* TABLEMODELRULESCOMPILED_H_ */

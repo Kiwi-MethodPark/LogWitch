@@ -7,6 +7,8 @@
 
 #include "TableModelRulesCompiled.h"
 
+#include <boost/bind.hpp>
+
 #include "ActionRules/ActionDataRewriter.h"
 #include "ActionRules/FilterRuleCompiled.h"
 
@@ -44,23 +46,45 @@ QVariant TableModelRulesCompiled::data(const QModelIndex &index, int role) const
 
     TSharedFilterRuleCompiled row = m_table[index.row()];
 
+    if( !row->validWithinContext() )
+    {
+        if( !row->getDescription()->isExpressionOk() )
+        {
+            if( role == Qt::ToolTipRole )
+            {
+                return row->getDescription()->getExpressionError();
+            }
+            if( role == Qt::BackgroundColorRole )
+                return Qt::red;
+        }
+        else
+        {
+            if( role == Qt::ToolTipRole )
+            {
+                return QString("The expression is not valid within context. One or more fields are not defined within model.");
+            }
+            if( role == Qt::BackgroundColorRole )
+                return Qt::gray;
+        }
+    }
+
     if( index.column() == 0 )
     {
         if (role == Qt::DisplayRole)
         {
-            return row->parentRule->expressionAsString;
+            return row->getDescription()->expressionAsString();
         }
     }
     else if( index.column() == 1 )
     {
-        if( row->parentRule->actionDisplayer )
-        {
-            return row->parentRule->actionDisplayer->toDisplay( role );
-        }
-        else if (role == Qt::DisplayRole )
-        {
-            return row->parentRule->actionAsString;
-        }
+//        if( row->parentRule->actionDisplayer )
+//        {
+//            return row->parentRule->actionDisplayer->toDisplay( role );
+//        }
+//        else if (role == Qt::DisplayRole )
+//        {
+//            return row->parentRule->actionAsString;
+//        }
     }
 
     return QVariant();
@@ -93,4 +117,25 @@ bool TableModelRulesCompiled::setData( const QModelIndex &index, const QVariant&
         return false;
 
     return false;
+}
+
+TSharedConstFilterRuleRaw compiledToRaw (TSharedFilterRuleCompiled c)
+{
+  return c->getDescription();
+}
+
+void TableModelRulesCompiled::appendRule( TSharedFilterRuleRaw rule )
+{
+    // Check if we have already this entry
+    TRuleTable::iterator it;
+    it = std::find_if(m_table.begin(), m_table.end(), boost::bind( &compiledToRaw, _1 ) == rule );
+    if( it != m_table.end() )
+        return;
+
+    TSharedFilterRuleCompiled cr( new FilterRuleCompiled( rule, m_configuration ) );
+
+    int newPos = m_table.size();
+    beginInsertRows( QModelIndex(), newPos, newPos );
+    m_table.push_back( cr );
+    endInsertRows();
 }
