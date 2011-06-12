@@ -30,6 +30,8 @@ public:
 
     TSharedConstQString getValue( TconstSharedLogEntry &entry ) const;
 
+    std::ostream &out( std::ostream &o, bool extended = false ) const;
+
 private:
     QString m_name;
 

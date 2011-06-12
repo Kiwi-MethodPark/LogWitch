@@ -28,3 +28,21 @@ bool ExpressionValueGetter::isValid( ) const
 {
     return m_left->isValid() && m_right->isValid();
 }
+
+std::ostream &ExpressionValueGetter::out( std::ostream &o, bool extended ) const
+{
+    if( extended )
+    {
+        o << "ExprVG{";
+        m_left->out( o, extended );
+        o << " == ";
+        m_right->out( o, extended );
+        o << "}";
+    }
+    else
+    {
+        o << *m_left << " == " << *m_right;
+    }
+
+    return o;
+}

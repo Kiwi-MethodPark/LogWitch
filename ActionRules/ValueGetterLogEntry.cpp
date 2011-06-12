@@ -47,3 +47,17 @@ int ValueGetterLogEntry::getID( ) const
 {
     return m_fieldId;
 }
+
+std::ostream &ValueGetterLogEntry::out( std::ostream &o, bool extended ) const
+{
+    if( extended )
+    {
+        o << "ValueGetterLogEntry{"<< m_name.toStdString() << "}";
+        return o;
+    }
+    else
+    {
+        o << m_name.toStdString();
+        return o;
+    }
+}

@@ -20,6 +20,8 @@ public:
     bool isValid( ) const;
 
     virtual bool match( TconstSharedLogEntry &entry ) const;
+
+    std::ostream &out( std::ostream &o, bool extended = false ) const;
 private:
     TconstSharedValueGetter m_left;
     TconstSharedValueGetter m_right;

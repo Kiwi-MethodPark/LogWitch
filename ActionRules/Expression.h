@@ -17,7 +17,11 @@ public:
     virtual bool isValid( ) const = 0;
 
     virtual bool match( TconstSharedLogEntry &entry ) const = 0;
+
+    virtual std::ostream &out( std::ostream &o, bool extended = false ) const = 0;
 };
+
+std::ostream& operator<< (std::ostream &o, const Expression &e);
 
 typedef boost::shared_ptr<Expression> TSharedExpression;
 typedef boost::shared_ptr<const Expression> TconstSharedExpression;

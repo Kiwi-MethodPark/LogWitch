@@ -29,3 +29,17 @@ TSharedConstQString ValueGetterConstQString::getValue( TconstSharedLogEntry & ) 
 {
     return m_string;
 }
+
+std::ostream &ValueGetterConstQString::out( std::ostream &o, bool extended ) const
+{
+    if( extended )
+    {
+        o << "ValueGetterConstQString{"<< "\"" << m_string->toStdString() << "\"" << "}";
+        return o;
+    }
+    else
+    {
+        o << "\"" << m_string->toStdString() << "\"";
+        return o;
+    }
+}
