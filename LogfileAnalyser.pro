@@ -17,7 +17,8 @@ QT += core \
     network
 
 # Input
-HEADERS += ActionRules/FilterRuleSelectionWindow.h \
+HEADERS += ActionRules/ExpressionParser.h \
+    ActionRules/FilterRuleSelectionWindow.h \
     ActionRules/TableModelRulesCompiled.h \
     ActionRules/FilterRuleCompiled.h \
     ActionRules/DisplayItemData.h \
@@ -64,7 +65,8 @@ HEADERS += ActionRules/FilterRuleSelectionWindow.h \
     Models/StringCacheTreeItem.h \
     Models/StringCacheTreeModel.h
 FORMS += logfileanalyser.ui
-SOURCES += ActionRules/FilterRuleSelectionWindow.cpp \
+SOURCES += ActionRules/ExpressionParser.cpp \
+    ActionRules/FilterRuleSelectionWindow.cpp \
     ActionRules/TableModelRulesCompiled.cpp \
     ActionRules/FilterRuleCompiled.cpp \
     ActionRules/FilterRuleRaw.cpp \
