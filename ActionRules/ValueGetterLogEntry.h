@@ -14,14 +14,14 @@
 #include "LogData/LogEntry.h"
 #include "Types.h"
 #include "ValueGetter.h"
+#include "LogEntryParserModelConfiguration.h"
 
-class LogEntryParserModelConfiguration;
 
 class ValueGetterLogEntry
     : public ValueGetter
 {
 public:
-    ValueGetterLogEntry( const QString &name, boost::shared_ptr<const LogEntryParserModelConfiguration> configuration  );
+    ValueGetterLogEntry( const QString &name, TSharedConstLogEntryParserModelConfiguration configuration  );
     virtual ~ValueGetterLogEntry();
 
     bool isValid( ) const;
@@ -35,7 +35,7 @@ public:
 private:
     QString m_name;
 
-    boost::shared_ptr<const LogEntryParserModelConfiguration> m_configuration;
+    TSharedConstLogEntryParserModelConfiguration m_configuration;
 
     int m_fieldId;
 };

@@ -27,4 +27,8 @@ private:
     TconstSharedValueGetter m_right;
 };
 
+
+typedef boost::shared_ptr<ExpressionValueGetter> TSharedExpressionValueGetter;
+typedef boost::shared_ptr<const ExpressionValueGetter> TconstSharedExpressionValueGetter;
+
 #endif /* EXPRESSIONVALUEGETTER_H_ */

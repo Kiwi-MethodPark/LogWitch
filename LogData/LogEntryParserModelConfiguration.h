@@ -64,4 +64,7 @@ private:
 	const QString m_configurationString;
 };
 
+typedef boost::shared_ptr<LogEntryParserModelConfiguration> TSharedLogEntryParserModelConfiguration;
+typedef boost::shared_ptr<const LogEntryParserModelConfiguration> TSharedConstLogEntryParserModelConfiguration;
+
 #endif /* LOGENTRYPARSERMODELCONFIGURATION_H_ */
