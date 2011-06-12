@@ -99,7 +99,7 @@ namespace expressionParser
    template <typename Iterator>
    struct expression_grammar : qi::grammar<Iterator, TSharedExpression(), ascii::space_type>
    {
-       expression_grammar() : expression_grammar::base_type(expression)
+       expression_grammar( TSharedConstLogEntryParserModelConfiguration cfg) : expression_grammar::base_type(expression)
        {
            using qi::lit;
            using qi::lexeme;
@@ -114,8 +114,6 @@ namespace expressionParser
            function<detail::constructPartialExpVG> constructPartialExpVG;
            function<detail::setRightToExpVG> setRightToExpVG;
 
-           TSharedConstLogEntryParserModelConfiguration m_configuration;
-
            expression = expressionVG[_val = _1];
 
            expressionVG = vg_LogEntry[ constructPartialExpVG(_val, _1 )] >> "==" >> vg_ConstString[setRightToExpVG(_val, _1 )]
@@ -127,7 +125,7 @@ namespace expressionParser
            unquotedQString %=  +(alpha) ;
 
            vg_ConstString = quotedQString[createVGConstString(_val,_1)];
-           vg_LogEntry = unquotedQString[createVGLogEntry(_val,_1,m_configuration)];
+           vg_LogEntry = unquotedQString[createVGLogEntry(_val,_1,cfg)];
        }
 
        qi::rule<Iterator,  QString(), ascii::space_type> quotedQString;
@@ -140,38 +138,63 @@ namespace expressionParser
    };
 }
 
-ExpressionParser::ExpressionParser( const QString &expression )
+ExpressionParser::ExpressionParser( TSharedConstLogEntryParserModelConfiguration cfg )
+    : m_cfg( cfg )
+{
+
+}
+
+bool ExpressionParser::parse(  const QString &expression )
 {
     std::string str = expression.toStdString();
 
     typedef expressionParser::expression_grammar<std::string::const_iterator> exp_grammar;
-    exp_grammar expGram; // Our grammar
-    TSharedExpression exp; // Our tree
+    exp_grammar expGram( m_cfg ); // Our grammar
 
     using boost::spirit::ascii::space;
     std::string::const_iterator iter = str.begin();
     std::string::const_iterator end = str.end();
-    bool r = phrase_parse(iter, end, expGram, space, exp);
+    bool r = phrase_parse(iter, end, expGram, space, m_expression);
 
     if (r && iter == end)
     {
-     std::cout << "-------------------------\n";
-     std::cout << "Parsing succeeded\n";
-     std::cout << *exp << std::endl;
-     std::cout << "-------------------------\n";
-     std::cout << "- Extended: -\n";
-     exp->out( std::cout, true );
-     std::cout << "-------------------------\n";
+        std::cout << "-------------------------\n";
+        std::cout << "Parsing succeeded\n";
+        std::cout << *m_expression << std::endl;
+        std::cout << "-------------------------\n";
+        std::cout << "- Extended: -\n";
+        m_expression->out( std::cout, true );
+        std::cout << "-------------------------\n";
+        m_error = "";
     }
     else
     {
-     std::string::const_iterator some = iter+30;
-     std::string context(iter, (some>end)?end:some);
-     std::cout << "-------------------------\n";
-     std::cout << "Parsing failed\n";
-     std::cout << "stopped at: \": " << context << "...\"\n";
-     std::cout << "-------------------------\n";
+        m_expression = TSharedExpression();
+        std::string::const_iterator some = iter+30;
+        std::string context(iter, (some>end)?end:some);
+        std::cout << "-------------------------\n";
+        std::cout << "Parsing failed\n";
+        std::cout << "stopped at: \": " << context << "...\"\n";
+        std::cout << "-------------------------\n";
+        m_error = QString::fromStdString( "Parsing failed near: " + context );
     }
+
+    return isValid();
+}
+
+const QString &ExpressionParser::getError() const
+{
+    return m_error;
+}
+
+TSharedExpression ExpressionParser::get() const
+{
+    return m_expression;
+}
+
+bool ExpressionParser::isValid() const
+{
+    return m_expression;
 }
 
 ExpressionParser::~ExpressionParser()

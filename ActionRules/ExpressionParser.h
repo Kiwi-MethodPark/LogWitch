@@ -8,12 +8,38 @@
 #ifndef EXPRESSIONPARSER_H_
 #define EXPRESSIONPARSER_H_
 #include <Qt/qstring.h>
+#include "LogEntryParserModelConfiguration.h"
+#include "ActionRules/Expression.h"
 
 class ExpressionParser
 {
 public:
-    ExpressionParser( const QString &expression );
+    ExpressionParser( TSharedConstLogEntryParserModelConfiguration cfg = TSharedConstLogEntryParserModelConfiguration() );
     virtual ~ExpressionParser();
+
+    /**
+     * Parse an expression and returns true if sucessfull.
+     */
+    bool parse(  const QString &expression );
+
+    /**
+     * Returns the last parsed Expression
+     */
+    TSharedExpression get() const;
+
+    /**
+     * Returns true if the last expression was parsed sucessfull.
+     */
+    bool isValid() const;
+
+    const QString &getError() const;
+
+private:
+    TSharedExpression m_expression;
+
+    TSharedConstLogEntryParserModelConfiguration m_cfg;
+
+    QString m_error;
 };
 
 #endif /* EXPRESSIONPARSER_H_ */
