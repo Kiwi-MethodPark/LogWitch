@@ -18,16 +18,23 @@ typedef boost::shared_ptr<FilterRuleCompiled> TSharedFilterRuleCompiled;
 typedef boost::shared_ptr<const FilterRuleCompiled> TSharedConstFilterRuleCompiled;
 
 class FilterRuleCompiled
+: public QObject
 {
+    Q_OBJECT
 public:
-    FilterRuleCompiled();
+    FilterRuleCompiled(TSharedConstFilterRuleRaw desc, TSharedConstLogEntryParserModelConfiguration cfg );
     ~FilterRuleCompiled();
 
     /**
      *  If the expression is valid within the current
-     *  context (parser) this holds the compiled expression.
+     * context, getExpression returns the expression.
      */
-    TSharedExpression compiledExpression;
+    TSharedExpression getExpression() const;
+
+    /**
+     * Return true if the rule is compileable and valid within the current context.
+     */
+    bool validWithinContext() const;
 
     /**
      * If the action is compileable within the current context
@@ -37,18 +44,33 @@ public:
      */
     TconstSharedAction compiledAction;
 
-    /**
-     *  This is the parent filtering rule (the parent is always the rule from the pool).
-     *  This pool holds all rules and from this pool a rule will be compiled to the
-     *  different contexts.
-     */
-    TSharedConstFilterRuleRaw parentRule;
+    TSharedConstFilterRuleRaw getDescription() const;
+
 
     /// This is the complete rule bounded to a given context.
     TSharedRule compiledRule;
 
     /// This is an additional flag if this rule is used in the current context.
     bool isActive;
+
+signals:
+    void changed();
+
+protected slots:
+    void parseRule();
+
+private:
+
+    /**
+     *  This is the parent filtering rule (the parent is always the rule from the pool).
+     *  This pool holds all rules and from this pool a rule will be compiled to the
+     *  different contexts.
+     */
+    TSharedConstFilterRuleRaw m_rawRule;
+
+    ExpressionParser m_expression;
+
+
 };
 
 #endif /* FILTERRULECOMPILED_H_ */

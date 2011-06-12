@@ -17,7 +17,8 @@ QT += core \
     network
 
 # Input
-HEADERS += ActionRules/ExpressionParser.h \
+HEADERS += ActionRules/CompiledRulesStateSaver.h \
+    ActionRules/ExpressionParser.h \
     ActionRules/FilterRuleSelectionWindow.h \
     ActionRules/TableModelRulesCompiled.h \
     ActionRules/FilterRuleCompiled.h \
@@ -65,7 +66,8 @@ HEADERS += ActionRules/ExpressionParser.h \
     Models/StringCacheTreeItem.h \
     Models/StringCacheTreeModel.h
 FORMS += logfileanalyser.ui
-SOURCES += ActionRules/ExpressionParser.cpp \
+SOURCES += ActionRules/CompiledRulesStateSaver.cpp \
+    ActionRules/ExpressionParser.cpp \
     ActionRules/FilterRuleSelectionWindow.cpp \
     ActionRules/TableModelRulesCompiled.cpp \
     ActionRules/FilterRuleCompiled.cpp \

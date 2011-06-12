@@ -39,6 +39,8 @@ public:
 
     Qt::ItemFlags flags(const QModelIndex & index ) const;
 
+    TSharedFilterRuleRaw getRaw(const QModelIndex &index)const;
+
 private:
     std::vector<TSharedFilterRuleRaw> m_table;
 

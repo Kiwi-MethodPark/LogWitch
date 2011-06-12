@@ -13,17 +13,17 @@ TableModelRules::TableModelRules( QObject *parent )
 {
     TSharedFilterRuleRaw row = TSharedFilterRuleRaw( new FilterRuleRaw );
     row->actionAsString = "Rewrite(FG:yellow)";
-    row->expressionAsString = "Severity == \"DEBUG\"";
+    row->expressionAsString("Severity == \"DEBUG\"");
     m_table.push_back( row );
 
     row = TSharedFilterRuleRaw( new FilterRuleRaw );
     row->actionAsString = "Rewrite(FG:green)";
-    row->expressionAsString = "Severity == \"TRACE\"";
+    row->expressionAsString("Severity == \"TRACE\"");
     m_table.push_back( row );
 
     row = TSharedFilterRuleRaw( new FilterRuleRaw );
     row->actionAsString = "Rewrite(FG:red)";
-    row->expressionAsString = "Severity == \"FATAL\"";
+    row->expressionAsString("Severity == \"FATAL\"");
     m_table.push_back( row );
 
 //    TSharedTableRow row( new tableRow );
@@ -51,16 +51,29 @@ int TableModelRules::columnCount(const QModelIndex &parent) const
     return m_columnCount;
 }
 
+TSharedFilterRuleRaw TableModelRules::getRaw(const QModelIndex &index) const
+{
+    if (!index.isValid())
+        return TSharedFilterRuleRaw();
+    if (index.column() >= m_columnCount
+         || index.column() < 0
+         || index.row() < 0
+         || index.row() >= (m_table.size() ) )
+        return TSharedFilterRuleRaw();
+
+    return m_table[index.row()];
+}
+
 QVariant TableModelRules::data(const QModelIndex &index, int role) const
 {
     if (!index.isValid())
-     return QVariant();
+        return QVariant();
 
     if (index.column() >= m_columnCount
          || index.column() < 0
          || index.row() < 0
          || index.row() >= (m_table.size() ) )
-     return QVariant();
+        return QVariant();
 
     TSharedConstFilterRuleRaw row = m_table[index.row()];
 
@@ -68,7 +81,19 @@ QVariant TableModelRules::data(const QModelIndex &index, int role) const
     {
         if (role == Qt::DisplayRole || role == Qt::EditRole)
         {
-            return row->expressionAsString;
+            return row->expressionAsString();
+        }
+
+        if( !row->isExpressionOk())
+        {
+            if( role == Qt::BackgroundColorRole )
+            {
+                return Qt::red;
+            }
+            if( role == Qt::ToolTipRole )
+            {
+                return row->getExpressionError();
+            }
         }
     }
     else if( index.column() == 1 )
@@ -112,6 +137,8 @@ QVariant TableModelRules::headerData(int section, Qt::Orientation orientation, i
     return QVariant();
 }
 
+
+
 bool TableModelRules::setData( const QModelIndex &index, const QVariant& value , int role  )
 {
     if( !index.isValid())
@@ -130,7 +157,7 @@ bool TableModelRules::setData( const QModelIndex &index, const QVariant& value ,
 
     if( index.column() == 0 )
     {
-        row->expressionAsString = value.toString();
+        row->expressionAsString( value.toString() );
         return true;
     }
     else if( index.column() == 1 )
