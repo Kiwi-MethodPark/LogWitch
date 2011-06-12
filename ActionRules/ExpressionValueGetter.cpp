@@ -14,9 +14,20 @@ ExpressionValueGetter::ExpressionValueGetter( TconstSharedValueGetter left, Tcon
 {
 }
 
+ExpressionValueGetter::ExpressionValueGetter( TconstSharedValueGetter left )
+    : m_left( left )
+    , m_right(  )
+{
+}
+
 ExpressionValueGetter::~ExpressionValueGetter()
 {
 
+}
+
+void ExpressionValueGetter::setRight( TconstSharedValueGetter right )
+{
+    m_right = right;
 }
 
 bool ExpressionValueGetter::match( TconstSharedLogEntry &entry ) const
@@ -26,7 +37,7 @@ bool ExpressionValueGetter::match( TconstSharedLogEntry &entry ) const
 
 bool ExpressionValueGetter::isValid( ) const
 {
-    return m_left->isValid() && m_right->isValid();
+    return m_left && m_left->isValid() && m_right && m_right->isValid();
 }
 
 std::ostream &ExpressionValueGetter::out( std::ostream &o, bool extended ) const

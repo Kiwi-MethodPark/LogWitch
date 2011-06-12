@@ -14,8 +14,11 @@ class ExpressionValueGetter
     : public Expression
 {
 public:
+    ExpressionValueGetter( TconstSharedValueGetter left );
     ExpressionValueGetter( TconstSharedValueGetter left, TconstSharedValueGetter right );
     ~ExpressionValueGetter();
+
+    void setRight( TconstSharedValueGetter right );
 
     bool isValid( ) const;
 
