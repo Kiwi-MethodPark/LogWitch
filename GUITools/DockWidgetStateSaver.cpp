@@ -47,7 +47,7 @@ void DockWidgetStateSaver::replayState( QObject *obj, QObject *, const ObjectSta
 
     if( wi && st )
     {
-        qDebug() << "Replaying old widget: " << wi->widget();
+        qDebug() << "Replaying old widget: " << st->m_dockWidget;
         wi->setWidget( st->m_dockWidget );
     }
     else

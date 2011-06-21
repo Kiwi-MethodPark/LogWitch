@@ -9,6 +9,7 @@
 #define LOGENTRYCOMBINEDWIDGET_H_
 #include <QtGui>
 #include <boost/shared_ptr.hpp>
+#include "ActionRules/CompiledRulesStateSaver.h"
 
 class LogEntryTableModel;
 class LogEntryTableWindow;
@@ -26,6 +27,8 @@ public:
 	void addFilter( boost::shared_ptr<LogEntryFilter> flt );
 
 	QTabWidget *getTabFilterWidget();
+
+	TSharedCompiledRulesStateSaver getCompiledRules();
 
 	void setDockForFilter( QDockWidget *dock );
 

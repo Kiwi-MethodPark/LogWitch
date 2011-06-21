@@ -8,7 +8,6 @@
 #include "FilterRuleRaw.h"
 
 FilterRuleRaw::FilterRuleRaw()
-: actionOk( false )
 {
 }
 
@@ -38,3 +37,36 @@ bool FilterRuleRaw::isExpressionOk() const
     return m_expressionParser.isValid();
 }
 
+void FilterRuleRaw::actionString( const QString &act)
+{
+    m_actionAsString = act;
+    m_actionParser.parse( m_actionAsString);
+    emit changed();
+}
+
+TconstSharedDisplayItemData FilterRuleRaw::getActionDisplayer() const
+{
+    return m_actionParser.get();
+}
+
+const QString &FilterRuleRaw::actionString() const
+{
+    return m_actionAsString;
+}
+
+
+bool FilterRuleRaw::isActionOk() const
+{
+    return m_actionParser.isValid();
+}
+
+
+const QString &FilterRuleRaw::getActionError() const
+{
+    return m_actionParser.getError();
+}
+
+TSharedAction FilterRuleRaw::getCompiledAction() const
+{
+    return m_actionParser.get();
+}

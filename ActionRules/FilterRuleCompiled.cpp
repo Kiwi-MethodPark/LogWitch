@@ -8,7 +8,8 @@
 #include "FilterRuleCompiled.h"
 
 FilterRuleCompiled::FilterRuleCompiled( TSharedConstFilterRuleRaw desc, TSharedConstLogEntryParserModelConfiguration cfg )
-: m_rawRule( desc )
+: m_isActive( true )
+, m_rawRule( desc )
 , m_expression( cfg )
 {
     parseRule();
@@ -34,8 +35,21 @@ bool FilterRuleCompiled::validWithinContext() const
 void FilterRuleCompiled::parseRule()
 {
     m_expression.parse( m_rawRule->expressionAsString() );
+    if( m_expression.isValid() && m_rawRule->isActionOk() && m_rawRule->getCompiledAction() )
+    {
+        m_compiledRule.reset( new Rule( m_expression.get(), m_rawRule->getCompiledAction() ) );
+    }
+    else
+        m_compiledRule.reset();
+
     emit changed();
 }
+
+TSharedRule FilterRuleCompiled::getCompiledRule()
+{
+    return m_compiledRule;
+}
+
 TSharedConstFilterRuleRaw FilterRuleCompiled::getDescription() const
 {
     return m_rawRule;

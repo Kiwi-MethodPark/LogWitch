@@ -53,6 +53,11 @@ QVariant LogEntryTableFilter::data(const QModelIndex &index, int role) const
     return var;
 }
 
+LogEntryTableModel *LogEntryTableFilter::getSourceModel() const
+{
+    return m_model;
+}
+
 void LogEntryTableFilter::setSourceModel( QAbstractItemModel *model )
 {
 	QSortFilterProxyModel::setSourceModel( model );

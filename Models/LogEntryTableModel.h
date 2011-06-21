@@ -13,6 +13,7 @@
 #include <QAbstractTableModel>
 #include <QtCore/QtCore>
 #include "LogData/LogEntry.h"
+#include "LogEntryParserModelConfiguration.h"
 
 class LogEntryParser;
 class LogEntryParserModelConfiguration;
@@ -39,7 +40,7 @@ public:
 
     TconstSharedLogEntry getEntryByIndex( const QModelIndex &index ) const;
 
-    boost::shared_ptr<const LogEntryParserModelConfiguration> getParserModelConfiguration() const;
+    TSharedConstLogEntryParserModelConfiguration getParserModelConfiguration() const;
 
 public slots:
 	void insertEntry( TSharedLogEntry entry );
@@ -56,7 +57,7 @@ private:
 
     TLogEntryTable m_table;
 
-    boost::shared_ptr<const LogEntryParserModelConfiguration> m_modelConfiguration;
+    TSharedConstLogEntryParserModelConfiguration m_modelConfiguration;
 
     QString m_dateTimeConversionString;
 

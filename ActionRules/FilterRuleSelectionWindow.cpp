@@ -9,10 +9,12 @@
 #include <QtGui>
 #include "ActionRules/TableModelRules.h"
 #include "ActionRules/TableModelRulesCompiled.h"
+#include "ActionRules/CompiledRulesStateSaver.h"
+#include "Models/LogEntryTableFilter.h"
 
 FilterRuleSelectionWindow::FilterRuleSelectionWindow( QWidget* parent )
 : QSplitter( Qt::Vertical, parent )
-, m_compiledRules( new CompiledRulesStateSaver )
+, m_compiledRules( )
 {
     m_ruleView = new QTableView(  );
     m_ruleView->verticalHeader()->setDefaultSectionSize( 20 );
@@ -22,20 +24,23 @@ FilterRuleSelectionWindow::FilterRuleSelectionWindow( QWidget* parent )
     m_ruleView->setSelectionBehavior(QAbstractItemView::SelectRows);
     m_ruleView->setSelectionMode( QAbstractItemView::ExtendedSelection );
     addWidget( m_ruleView );
+    addWidget( new QLabel ( tr("Context missing - open or select a Logger window to add rules."), this ) );
+    //addWidget( generateNewParserWindow() );
+    QList<int> he; he << 300 << 500;
+    setSizes ( he );
+    setStretchFactor ( 0, 10 );
+    setStretchFactor ( 1, 10 );
+}
 
-    QToolBar* toolBar = new QToolBar( this);
-    QAction *addSelectedRules = toolBar->addAction("add");
+void FilterRuleSelectionWindow::setWindow( TSharedCompiledRulesStateSaver state )
+{
+    state->connectActions( this );
+    m_compiledRules = state;
 
-    QObject::connect(addSelectedRules, SIGNAL(triggered()),
-                     this, SLOT(addSelectionToCompiled()));
+    for( int i = 1; i < count(); i++ )
+        widget( i )->hide();
 
-    QVBoxLayout* vbox = new QVBoxLayout(this);
-    vbox->addWidget(toolBar);
-    vbox->addWidget(m_compiledRules->m_compiledRuleView);
-    QWidget* widget = new QWidget(this); //This is the pane
-    widget->setLayout(vbox);
-
-    addWidget( widget );
+    addWidget( state->m_displayWidget );
 }
 
 void FilterRuleSelectionWindow::addSelectionToCompiled()

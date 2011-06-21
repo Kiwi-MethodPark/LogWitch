@@ -24,7 +24,7 @@ class TableModelRulesCompiled
 {
     Q_OBJECT
 public:
-    TableModelRulesCompiled( QObject *parent );
+    TableModelRulesCompiled( QObject *parent, TSharedConstLogEntryParserModelConfiguration cfg );
     virtual ~TableModelRulesCompiled();
 
     int rowCount(const QModelIndex &parent) const;

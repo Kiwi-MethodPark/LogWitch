@@ -12,8 +12,9 @@
 #include "ActionRules/ActionDataRewriter.h"
 #include "ActionRules/FilterRuleCompiled.h"
 
-TableModelRulesCompiled::TableModelRulesCompiled( QObject *parent )
+TableModelRulesCompiled::TableModelRulesCompiled( QObject *parent, TSharedConstLogEntryParserModelConfiguration cfg )
     :QAbstractTableModel( parent )
+    , m_configuration( cfg )
 {
 }
 
@@ -77,14 +78,31 @@ QVariant TableModelRulesCompiled::data(const QModelIndex &index, int role) const
     }
     else if( index.column() == 1 )
     {
-//        if( row->parentRule->actionDisplayer )
-//        {
-//            return row->parentRule->actionDisplayer->toDisplay( role );
-//        }
-//        else if (role == Qt::DisplayRole )
-//        {
-//            return row->parentRule->actionAsString;
-//        }
+        if( role == Qt::EditRole )
+        {
+            return row->getDescription()->actionString();
+        }
+
+        if( !row->getDescription()->isActionOk())
+        {
+            if( role == Qt::BackgroundColorRole )
+            {
+                return Qt::red;
+            }
+            if( role == Qt::ToolTipRole )
+            {
+                return row->getDescription()->getActionError();
+            }
+        }
+
+        if( row->getDescription()->getActionDisplayer() )
+        {
+            return row->getDescription()->getActionDisplayer()->toDisplay( role );
+        }
+        else if (role == Qt::DisplayRole )
+        {
+            return row->getDescription()->actionString();
+        }
     }
 
     return QVariant();

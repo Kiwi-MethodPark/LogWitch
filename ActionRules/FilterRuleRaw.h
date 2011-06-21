@@ -12,6 +12,7 @@
 
 #include "ActionRules/DisplayItemData.h"
 #include "ActionRules/ExpressionParser.h"
+#include "ActionParser.h"
 
 class FilterRuleRaw;
 typedef boost::shared_ptr<FilterRuleRaw> TSharedFilterRuleRaw;
@@ -48,16 +49,33 @@ public:
      */
     const QString &getExpressionError() const;
 
-    /// This is the action in the common string notation.
-    QString actionAsString;
+    /**
+     * Sets a new string for an action.
+     */
+    void actionString( const QString &act);
 
-    bool actionOk;
+    /**
+     * Retrieve the string for the action.
+     */
+    const QString &actionString() const;
+
+    /**
+     * Returns true if actionString is parsable to an Action object.
+     */
+    bool isActionOk() const;
+
+    /**
+     * If isActionOk is false, this function retrieves the error.
+     */
+    const QString &getActionError() const;
 
     /**
      * This holds an action drawer which knows how to draw the current
      * actionAsString in a more human readable way.
      */
-    TconstSharedDisplayItemData actionDisplayer;
+    TconstSharedDisplayItemData getActionDisplayer() const;
+
+    TSharedAction getCompiledAction() const;
 
 signals:
     void changed ();
@@ -68,6 +86,10 @@ private:
 
     ExpressionParser m_expressionParser;
 
+    /// This is the action in the common string notation.
+    QString m_actionAsString;
+
+    ActionParser m_actionParser;
 };
 
 #endif /* FILTERRULERAW_H_ */

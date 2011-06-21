@@ -50,7 +50,7 @@ void LogEntryTableModel::signalErrorFromParser( QString error )
     emit signalError( error );
 }
 
-boost::shared_ptr<const LogEntryParserModelConfiguration> LogEntryTableModel::getParserModelConfiguration() const
+TSharedConstLogEntryParserModelConfiguration LogEntryTableModel::getParserModelConfiguration() const
 {
 	return m_modelConfiguration;
 }

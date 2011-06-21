@@ -53,12 +53,10 @@ LogfileAnalyser::LogfileAnalyser(QWidget *parent)
     QObject::connect( ui.mdiArea, SIGNAL( subWindowActivated ( QMdiSubWindow *) )
                     , this, SLOT( subWindowActivated( QMdiSubWindow * ) ) );
 
-
-
-
     m_myFilterRulesDock = new QDockWidget(tr("Filter Rules"), this);
     m_myFilterRulesDock->setAllowedAreas(Qt::AllDockWidgetAreas);
-    m_myFilterRulesDock->setWidget( new FilterRuleSelectionWindow( m_myFilterRulesDock ) );
+    m_myfilterRuleSelectionWidget = new FilterRuleSelectionWindow( m_myFilterRulesDock );
+    m_myFilterRulesDock->setWidget( m_myfilterRuleSelectionWidget );
     addDockWidget(Qt::RightDockWidgetArea, m_myFilterRulesDock);
 }
 
@@ -152,6 +150,9 @@ void LogfileAnalyser::createWindowsFromParser(boost::shared_ptr<LogEntryParser> 
                     , this, SLOT( subWindowDestroyed( QObject * ) ) );
 
 	model->startModel();
+
+	TSharedCompiledRulesStateSaver state = wnd->getCompiledRules();
+	m_myfilterRuleSelectionWidget->setWindow( state );
 
 }
 

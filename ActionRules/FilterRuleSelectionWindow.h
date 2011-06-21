@@ -12,6 +12,9 @@
 #include "ActionRules/TableModelRulesCompiled.h"
 #include "ActionRules/CompiledRulesStateSaver.h"
 
+class CompiledRulesStateSaver;
+class LogEntryTableFilter;
+
 class FilterRuleSelectionWindow
 : public QSplitter
 {
@@ -20,6 +23,8 @@ public:
     FilterRuleSelectionWindow( QWidget* parent = NULL );
     virtual ~FilterRuleSelectionWindow();
 
+    void setWindow( TSharedCompiledRulesStateSaver state );
+
 public slots:
     void addSelectionToCompiled();
 
@@ -27,7 +32,7 @@ private:
     QTableView *m_ruleView;
     TableModelRules *m_rulesModel;
 
-    CompiledRulesStateSaver *m_compiledRules;
+    TSharedCompiledRulesStateSaver m_compiledRules;
 };
 
 #endif /* FILTERRULESELECTIONWINDOW_H_ */

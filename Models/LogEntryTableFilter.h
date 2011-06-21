@@ -23,6 +23,8 @@ public:
 
 	void setSourceModel( QAbstractItemModel *model );
 
+	LogEntryTableModel *getSourceModel() const;
+
 	QVariant data(const QModelIndex &index, int role) const;
 
 	void addFilter( boost::shared_ptr<LogEntryFilter> );
@@ -30,6 +32,7 @@ public:
 	void setRuleTable( TconstSharedRuleTable table ) ;
 
 	virtual ~LogEntryTableFilter();
+
 
 protected:
 	bool filterAcceptsRow ( int source_row, const QModelIndex & source_parent ) const;

@@ -16,6 +16,7 @@ class QDockWidget;
 class QSpinBox;
 class WidgetStateSaver;
 class QMdiSubWindow;
+class FilterRuleSelectionWindow;
 
 class LogfileAnalyser : public QMainWindow
 {
@@ -38,6 +39,8 @@ private:
 
     QDockWidget *m_myFilterDock;
     QDockWidget *m_myFilterRulesDock;
+
+    FilterRuleSelectionWindow *m_myfilterRuleSelectionWidget;
 
     QSpinBox *m_uiLog4cplusPort;
     QAction * m_uiLog4cplusPort_Action;

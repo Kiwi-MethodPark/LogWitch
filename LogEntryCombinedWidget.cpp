@@ -62,7 +62,7 @@ void LogEntryCombinedWidget::errorFromModel( QString error )
 
 void LogEntryCombinedWidget::setDockForFilter( QDockWidget *dock )
 {
-    dock->setWidget( getTabFilterWidget() );
+    dock->setWidget( getTabFilterWidget( ) );
 }
 
 void LogEntryCombinedWidget::clearTable( )
@@ -86,6 +86,12 @@ QTabWidget *LogEntryCombinedWidget::getTabFilterWidget()
 	}
 
 	return m_myFilterTabs;
+}
+
+TSharedCompiledRulesStateSaver LogEntryCombinedWidget::getCompiledRules()
+{
+    return TSharedCompiledRulesStateSaver( new CompiledRulesStateSaver( m_model->getParserModelConfiguration() ) );
+    //return TSharedCompiledRulesStateSaver( new CompiledRulesStateSaver( TSharedConstLogEntryParserModelConfiguration() ) );
 }
 
 void LogEntryCombinedWidget::addFilter( boost::shared_ptr<LogEntryFilter> flt )

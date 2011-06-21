@@ -11,18 +11,29 @@
 #include <QtGui>
 #include <boost/shared_ptr.hpp>
 #include "ActionRules/TableModelRulesCompiled.h"
+#include "Models/LogEntryTableModel.h"
+#include "LogEntryParserModelConfiguration.h"
+
+class FilterRuleSelectionWindow;
 
 class CompiledRulesStateSaver
 : public QObject
 {
     Q_OBJECT
 public:
-    CompiledRulesStateSaver();
+    CompiledRulesStateSaver(  TSharedConstLogEntryParserModelConfiguration cfg );
     ~CompiledRulesStateSaver();
+
+    void connectActions( FilterRuleSelectionWindow *wnd );
 
     QTableView *m_compiledRuleView;
     TableModelRulesCompiled *m_rulesCompiledModel;
 
+    QWidget *m_displayWidget;
+
+private:
+    bool m_connected;
+    QAction *m_addSelectedRules;
 };
 
 typedef boost::shared_ptr<CompiledRulesStateSaver> TSharedCompiledRulesStateSaver;

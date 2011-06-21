@@ -41,17 +41,15 @@ public:
      * this holds the compiled action.
      * At the moment an action is always compileable, so this
      * can be used also for rendering the action for the display.
+     *
+     * Actually actions does not need any context.
      */
-    TconstSharedAction compiledAction;
+    // TconstSharedAction compiledAction;
 
     TSharedConstFilterRuleRaw getDescription() const;
 
-
     /// This is the complete rule bounded to a given context.
-    TSharedRule compiledRule;
-
-    /// This is an additional flag if this rule is used in the current context.
-    bool isActive;
+    TSharedRule getCompiledRule();
 
 signals:
     void changed();
@@ -60,7 +58,6 @@ protected slots:
     void parseRule();
 
 private:
-
     /**
      *  This is the parent filtering rule (the parent is always the rule from the pool).
      *  This pool holds all rules and from this pool a rule will be compiled to the
@@ -70,7 +67,7 @@ private:
 
     ExpressionParser m_expression;
 
-
+    TSharedRule m_compiledRule;
 };
 
 #endif /* FILTERRULECOMPILED_H_ */

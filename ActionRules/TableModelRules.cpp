@@ -12,27 +12,19 @@ TableModelRules::TableModelRules( QObject *parent )
     :QAbstractTableModel( parent )
 {
     TSharedFilterRuleRaw row = TSharedFilterRuleRaw( new FilterRuleRaw );
-    row->actionAsString = "Rewrite(FG:yellow)";
+    row->actionString( "Rewrite(FG:yellow)" );
     row->expressionAsString("Severity == \"DEBUG\"");
     m_table.push_back( row );
 
     row = TSharedFilterRuleRaw( new FilterRuleRaw );
-    row->actionAsString = "Rewrite(FG:green)";
+    row->actionString("Rewrite(FG:green)");
     row->expressionAsString("Severity == \"TRACE\"");
     m_table.push_back( row );
 
     row = TSharedFilterRuleRaw( new FilterRuleRaw );
-    row->actionAsString = "Rewrite(FG:red)";
+    row->actionString("Rewrite(FG:red)");
     row->expressionAsString("Severity == \"FATAL\"");
     m_table.push_back( row );
-
-//    TSharedTableRow row( new tableRow );
-//    row->expression = "Severity == \"DEBUG\"";
-//    TSharedActionDataRewriter action( new ActionDataRewriter );
-//    action->addChangeSet( Qt::yellow, Qt::ForegroundRole );
-//    row->action = action;
-//    m_table.push_back( row );
-//    m_executorTable.push_back( TSharedTableExecutor(new tableExecutor) );
 }
 
 TableModelRules::~TableModelRules()
@@ -100,16 +92,28 @@ QVariant TableModelRules::data(const QModelIndex &index, int role) const
     {
         if( role == Qt::EditRole )
         {
-            return row->actionAsString;
+            return row->actionString();
         }
 
-        if( row->actionDisplayer )
+        if( !row->isActionOk())
         {
-            return row->actionDisplayer->toDisplay( role );
+            if( role == Qt::BackgroundColorRole )
+            {
+                return Qt::red;
+            }
+            if( role == Qt::ToolTipRole )
+            {
+                return row->getActionError();
+            }
+        }
+
+        if( row->getActionDisplayer() )
+        {
+            return row->getActionDisplayer()->toDisplay( role );
         }
         else if (role == Qt::DisplayRole )
         {
-            return row->actionAsString;
+            return row->actionString();
         }
     }
 
@@ -162,7 +166,7 @@ bool TableModelRules::setData( const QModelIndex &index, const QVariant& value ,
     }
     else if( index.column() == 1 )
     {
-        row->actionAsString = value.toString();
+        row->actionString( value.toString() );
         return true;
     }
 
