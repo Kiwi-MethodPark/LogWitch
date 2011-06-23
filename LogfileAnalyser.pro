@@ -17,7 +17,8 @@ QT += core \
     network
 
 # Input
-HEADERS += LogData/ObjectCache.hxx \
+HEADERS += LogData/LogEntryAttributeNames.h \
+    LogData/ObjectCache.hxx \
     ActionRules/ActionParser.h \
     GUITools/WidgetSaver.hpp \
     ActionRules/CompiledRulesStateSaver.h \
@@ -68,7 +69,8 @@ HEADERS += LogData/ObjectCache.hxx \
     Models/StringCacheTreeItem.h \
     Models/StringCacheTreeModel.h
 FORMS += logfileanalyser.ui
-SOURCES += ActionRules/ActionParser.cpp \
+SOURCES += LogData/LogEntryAttributeNames.cpp \
+    ActionRules/ActionParser.cpp \
     ActionRules/CompiledRulesStateSaver.cpp \
     ActionRules/ExpressionParser.cpp \
     ActionRules/FilterRuleSelectionWindow.cpp \

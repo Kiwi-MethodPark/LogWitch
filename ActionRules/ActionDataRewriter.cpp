@@ -77,7 +77,7 @@ void ActionDataRewriter::addChangeSet( const QVariant &var, int role, const QStr
         int fieldCount = m_cfg->getLogEntryAttributeFactory()->getNumberOfFields();
         for( int i = 0; i < fieldCount; i++ )
         {
-            if( column == m_cfg->getLogEntryAttributeFactory()->getDescription( i ) )
+            if( column == m_cfg->getLogEntryAttributeFactory()->getDescShort( i ) )
             {
                 m_changes.insert( TChangeSet::value_type(rc_key(role, i),var) );
                 break;

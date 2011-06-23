@@ -22,6 +22,7 @@
 #include "LogEntryAttributeFactory.h"
 #include "LogEntryFactory.h"
 #include "LogEntryParserModelConfiguration.h"
+#include "LogEntryAttributeNames.h"
 
 
 LogEntryParser_log4cplusSocket::LogEntryParser_log4cplusSocket( int port )
@@ -29,15 +30,16 @@ LogEntryParser_log4cplusSocket::LogEntryParser_log4cplusSocket( int port )
 	,m_name( "Log4cplus Listener Port " + QString::number(port))
 {
 	// Preparing attributes in factory
-	myFactory.getLogEntryAttributeFactory()->addField("Number",false);
-	myFactory.getLogEntryAttributeFactory()->addField("Timestamp",false);
-	myFactory.getLogEntryAttributeFactory()->addField("Message",false);
+    LogEntryAttributeNames names;
+	myFactory.getLogEntryAttributeFactory()->addField(names.attDescNumber,false);
+	myFactory.getLogEntryAttributeFactory()->addField(names.attDescTimestamp,false);
+	myFactory.getLogEntryAttributeFactory()->addField(names.attDescMessage,false);
 
-	myFactory.getLogEntryAttributeFactory()->addField("Loglevel",true);
-	myFactory.getLogEntryAttributeFactory()->addField("Component",true);
-	myFactory.getLogEntryAttributeFactory()->addField("File source",true);
-	myFactory.getLogEntryAttributeFactory()->addField("Thread",true);
-	myFactory.getLogEntryAttributeFactory()->addField("NDC",true);
+	myFactory.getLogEntryAttributeFactory()->addField(names.attDescLoglevel,true);
+	myFactory.getLogEntryAttributeFactory()->addField(names.attDescLogger,true);
+	myFactory.getLogEntryAttributeFactory()->addField(names.attDescFileSource,true);
+	myFactory.getLogEntryAttributeFactory()->addField(names.attDescThread,true);
+	myFactory.getLogEntryAttributeFactory()->addField(names.attDescNDC,true);
 	myFactory.getLogEntryAttributeFactory()->disallowAddingFields();
 
 	m_myModelConfig = boost::shared_ptr<LogEntryParserModelConfiguration>( new LogEntryParserModelConfiguration("log4cplus") );

@@ -39,7 +39,7 @@ ValueGetterLogEntry::ValueGetterLogEntry(const QString &name, TSharedConstLogEnt
         int fieldCount = m_configuration->getLogEntryAttributeFactory()->getNumberOfFields();
         for( int i = 0; i < fieldCount; i++ )
         {
-            if( m_name == m_configuration->getLogEntryAttributeFactory()->getDescription( i ) )
+            if( m_name == m_configuration->getLogEntryAttributeFactory()->getDescShort( i ) )
             {
                 m_fieldId = i;
                 break;
@@ -57,7 +57,7 @@ void ValueGetterLogEntry::setName( const QString &name )
         int fieldCount = m_configuration->getLogEntryAttributeFactory()->getNumberOfFields();
         for( int i = 0; i < fieldCount; i++ )
         {
-            if( m_name == m_configuration->getLogEntryAttributeFactory()->getDescription( i ) )
+            if( m_name == m_configuration->getLogEntryAttributeFactory()->getDescShort( i ) )
             {
                 m_fieldId = i;
                 break;

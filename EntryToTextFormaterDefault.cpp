@@ -24,7 +24,7 @@ QString EntryToTextFormaterDefault::formatEntry( TconstSharedLogEntry entry ) co
     for( int i = 0; i < entry->getAttributes().getFactory().getNumberOfFields(); i++ )
     {
         if( i != messageId )
-            str << "<b>" << entry->getAttributes().getFactory().getDescription(i) << ":</b> " << *entry->getAttributes()[i] << "<br/>";
+            str << "<b>" << entry->getAttributes().getFactory().getDescLong(i) << ":</b> " << *entry->getAttributes()[i] << "<br/>";
     }
 
     if( entry->getAttributes().getFactory().getNumberOfFields() > messageId)

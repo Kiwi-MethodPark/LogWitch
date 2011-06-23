@@ -36,10 +36,15 @@ void LogEntryAttributeFactory::disallowAddingFields()
 	m_disallowAddingFields = true;
 }
 
-void LogEntryAttributeFactory::addField( const QString &description, bool cacheField )
+void LogEntryAttributeFactory::addField( const QString &descShort, const QString &descLong, bool cacheField )
+{
+    addField( std::pair<QString,QString>(descShort,descLong), cacheField );
+}
+
+void LogEntryAttributeFactory::addField( const std::pair<QString,QString> &desc, bool cacheField )
 {
 	LFA_ASSERT( !disallowAddingFields, "Adding fields is not allowed!" );
-	fieldDescriptions.push_back( description );
+	fieldDescriptions.push_back( desc );
 
 	if( cacheField )
 	    fieldCaches.push_back( boost::shared_ptr< ObjectCache<ObjectCacheQStringSignaller> >( new ObjectCache<ObjectCacheQStringSignaller> ) );
@@ -55,11 +60,18 @@ int LogEntryAttributeFactory::getNumberOfFields( ) const
 	return fieldDescriptions.size();
 }
 
-const QString& LogEntryAttributeFactory::getDescription( int idx ) const
+const QString& LogEntryAttributeFactory::getDescLong( int idx ) const
 {
 	LFA_ASSERT_D( m_disallowAddingFields, "Getting descriptions of fields only allowed if all fields are added!" );
-	return fieldDescriptions[idx];
+	return fieldDescriptions[idx].second;
 }
+
+const QString& LogEntryAttributeFactory::getDescShort( int idx ) const
+{
+	LFA_ASSERT_D( m_disallowAddingFields, "Getting descriptions of fields only allowed if all fields are added!" );
+	return fieldDescriptions[idx].first;
+}
+
 
 GetObjectIF<ObjectCacheQStringSignaller>& LogEntryAttributeFactory::getCache( int idx )
 {

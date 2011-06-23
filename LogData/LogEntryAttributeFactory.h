@@ -36,7 +36,9 @@ public:
 	/**
 	 * Adds a field with a given description to the attributes list.
 	 */
-	void addField( const QString &description, bool cacheField );
+	void addField( const QString &descShort, const QString &descLong, bool cacheField );
+
+	void addField( const std::pair<QString,QString> &desc, bool cacheField );
 
 	/**
 	 * Returns the total numbers of fields.
@@ -46,7 +48,12 @@ public:
 	/**
 	 * Returns the description for a given field idx.
 	 */
-	const QString& getDescription( int idx ) const;
+	const QString& getDescLong( int idx ) const;
+
+	/**
+	 * Returns the internal name, which is used for filter rules.
+	 */
+	const QString& getDescShort( int idx ) const;
 
 	/**
 	 * Returns the corresponding string cache.
@@ -62,7 +69,7 @@ public:
 	void disallowAddingFields();
 
 private:
-	std::vector<QString> fieldDescriptions;
+	std::vector<std::pair<QString,QString> > fieldDescriptions;
 
 	std::vector< boost::shared_ptr<GetObjectIF<ObjectCacheQStringSignaller> > > fieldCaches;
 

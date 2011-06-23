@@ -68,7 +68,7 @@ void FilterListView::addToTabs( QTabWidget *tabs, LogEntryCombinedWidget* widget
     if( m_strModel->getFilter() )
         widget->addFilter( m_strModel->getFilter() );
 
-    tabs->addTab( this, m_config->getLogEntryAttributeFactory()->getDescription(m_attr) );
+    tabs->addTab( this, m_config->getLogEntryAttributeFactory()->getDescLong(m_attr) );
     show();
 }
 

@@ -107,7 +107,7 @@ QVariant LogEntryTableModel::headerData(int section, Qt::Orientation orientation
     {
 		if (orientation == Qt::Horizontal)
 		{
-			return m_modelConfiguration->getLogEntryAttributeFactory()->getDescription( section );
+			return m_modelConfiguration->getLogEntryAttributeFactory()->getDescLong( section );
 		}
     }
     else if( role == 512 )

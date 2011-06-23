@@ -9,6 +9,7 @@
 #include "LogData/LogEntry.h"
 #include "LogData/LogEntryAttributes.h"
 #include "LogData/LogEntryAttributeFactory.h"
+#include "LogEntryAttributeNames.h"
 
 LogEntryParser_dummy::LogEntryParser_dummy()
 	: m_entries( 0 )
@@ -16,12 +17,13 @@ LogEntryParser_dummy::LogEntryParser_dummy()
 	, m_count( 12 )
 {
 	// Preparing attributes factory
-    myFactory.getLogEntryAttributeFactory()->addField("Number",false);
-    myFactory.getLogEntryAttributeFactory()->addField("Timestamp",false);
-    myFactory.getLogEntryAttributeFactory()->addField("Message",false);
+    LogEntryAttributeNames names;
+    myFactory.getLogEntryAttributeFactory()->addField(names.attDescNumber,false);
+    myFactory.getLogEntryAttributeFactory()->addField(names.attDescTimestamp,false);
+    myFactory.getLogEntryAttributeFactory()->addField(names.attDescMessage,false);
 
-	myFactory.getLogEntryAttributeFactory()->addField("Loglevel",true);
-	myFactory.getLogEntryAttributeFactory()->addField("Source",true);
+	myFactory.getLogEntryAttributeFactory()->addField(names.attDescLoglevel,true);
+	myFactory.getLogEntryAttributeFactory()->addField(names.attDescLogger,true);
 	myFactory.getLogEntryAttributeFactory()->disallowAddingFields();
 
 	m_myModelConfig = boost::shared_ptr<LogEntryParserModelConfiguration>( new LogEntryParserModelConfiguration("DummyLogger") );
