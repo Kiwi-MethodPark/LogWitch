@@ -18,6 +18,7 @@ FilterRuleSelectionWindow::FilterRuleSelectionWindow( QWidget* parent )
 {
     m_ruleView = new QTableView(  );
     m_ruleView->verticalHeader()->setDefaultSectionSize( 20 );
+    m_ruleView->horizontalHeader()->setDefaultSectionSize( 190 );
     m_ruleView->verticalHeader()->setResizeMode(QHeaderView::Fixed);
     m_rulesModel = new TableModelRules( m_ruleView );
     m_ruleView->setModel( m_rulesModel );

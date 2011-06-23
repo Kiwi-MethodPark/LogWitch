@@ -25,6 +25,7 @@ CompiledRulesStateSaver::CompiledRulesStateSaver(  TSharedConstLogEntryParserMod
    m_compiledRuleView = new QTableView(m_displayWidget );
    m_compiledRuleView->verticalHeader()->setDefaultSectionSize( 20 );
    m_compiledRuleView->verticalHeader()->setResizeMode(QHeaderView::Fixed);
+   m_compiledRuleView->horizontalHeader()->setDefaultSectionSize( 190 );
    m_rulesCompiledModel = new TableModelRulesCompiled( m_compiledRuleView, cfg, ruleTable );
    m_compiledRuleView->setModel( m_rulesCompiledModel );
    vbox->addWidget(m_compiledRuleView);
