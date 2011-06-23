@@ -32,6 +32,15 @@ signals:
     void newElement( TSharedConstQString );
 };
 
+template<class SIGNALLER>
+class GetObjectIF
+{
+public:
+    typedef typename SIGNALLER::shStType StType;
+
+    StType virtual getObject( StType in ) = 0;
+};
+
 /**
  * This class caches strings for usage. The class is a container
  * which gives a new string or a cached ptr to the already saved string.
@@ -41,6 +50,7 @@ signals:
 template<class SIGNALLER>
 class ObjectCache
 	: public SIGNALLER
+	, public GetObjectIF<SIGNALLER>
 {
 	typedef typename SIGNALLER::StType OBJ;
 public:
@@ -66,10 +76,30 @@ private:
 	TMyCache cache;
 };
 
+/**
+ * This class does not do any caching, it just passes the got object through.
+ */
+template<class SIGNALLER>
+class ObjectPasser
+    : public SIGNALLER
+    , public GetObjectIF<SIGNALLER>
+{
+    typedef typename SIGNALLER::StType OBJ;
+public:
+    typedef typename SIGNALLER::shStType StType;
+
+    /**
+     * Returns the cached object if in is already within the cache, otherwise
+     * in will be added to the cache and returned.
+     * @param in Object passing in
+     */
+    StType getObject( StType in );
+};
+
+
 template<class SIGNALLER>
 ObjectCache<SIGNALLER>::ObjectCache()
 { }
-
 
 template<class SIGNALLER>
 typename ObjectCache<SIGNALLER>::StType ObjectCache<SIGNALLER>::getObject( typename ObjectCache<SIGNALLER>::StType str )
@@ -81,5 +111,10 @@ typename ObjectCache<SIGNALLER>::StType ObjectCache<SIGNALLER>::getObject( typen
     return *(rv.first);
 }
 
+template<class SIGNALLER>
+typename ObjectPasser<SIGNALLER>::StType ObjectPasser<SIGNALLER>::getObject( typename ObjectPasser<SIGNALLER>::StType str )
+{
+    return str;
+}
 
 #endif /* STRINGCACHE_H_ */
