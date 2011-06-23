@@ -16,6 +16,7 @@
 
 #include "ActionRules/Action.h"
 #include "ActionRules/FilterRuleCompiled.h"
+#include "ActionRules/RuleTable.h"
 
 using boost::shared_ptr;
 
@@ -24,7 +25,7 @@ class TableModelRulesCompiled
 {
     Q_OBJECT
 public:
-    TableModelRulesCompiled( QObject *parent, TSharedConstLogEntryParserModelConfiguration cfg );
+    TableModelRulesCompiled( QObject *parent, TSharedConstLogEntryParserModelConfiguration cfg, TSharedRuleTable ruleTable  );
     virtual ~TableModelRulesCompiled();
 
     int rowCount(const QModelIndex &parent) const;
@@ -50,6 +51,11 @@ private:
      * The configuration this table is for.
      */
     TSharedConstLogEntryParserModelConfiguration m_configuration;
+
+    /**
+     * This is the executive element which is the table for filtering.
+     */
+    TSharedRuleTable m_ruleTable;
 
 };
 #endif /* TABLEMODELRULESCOMPILED_H_ */

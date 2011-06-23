@@ -41,6 +41,11 @@ LogEntryTableWindow::LogEntryTableWindow( boost::shared_ptr<LogEntryTableModel> 
 	}
 }
 
+void LogEntryTableWindow::setRuleTable( TconstSharedRuleTable table )
+{
+    m_proxyModel->setRuleTable( table );
+}
+
 void LogEntryTableWindow::addFilter( boost::shared_ptr<LogEntryFilter> flt )
 {
 	m_proxyModel->addFilter( flt );

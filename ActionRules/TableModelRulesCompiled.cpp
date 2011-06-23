@@ -12,9 +12,10 @@
 #include "ActionRules/ActionDataRewriter.h"
 #include "ActionRules/FilterRuleCompiled.h"
 
-TableModelRulesCompiled::TableModelRulesCompiled( QObject *parent, TSharedConstLogEntryParserModelConfiguration cfg )
+TableModelRulesCompiled::TableModelRulesCompiled( QObject *parent, TSharedConstLogEntryParserModelConfiguration cfg, TSharedRuleTable ruleTable )
     :QAbstractTableModel( parent )
     , m_configuration( cfg )
+    , m_ruleTable( ruleTable )
 {
 }
 

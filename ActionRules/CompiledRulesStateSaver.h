@@ -21,7 +21,7 @@ class CompiledRulesStateSaver
 {
     Q_OBJECT
 public:
-    CompiledRulesStateSaver(  TSharedConstLogEntryParserModelConfiguration cfg );
+    CompiledRulesStateSaver(  TSharedConstLogEntryParserModelConfiguration cfg, TSharedRuleTable ruleTable );
     ~CompiledRulesStateSaver();
 
     void connectActions( FilterRuleSelectionWindow *wnd );

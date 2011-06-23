@@ -90,8 +90,9 @@ QTabWidget *LogEntryCombinedWidget::getTabFilterWidget()
 
 TSharedCompiledRulesStateSaver LogEntryCombinedWidget::getCompiledRules()
 {
-    return TSharedCompiledRulesStateSaver( new CompiledRulesStateSaver( m_model->getParserModelConfiguration() ) );
-    //return TSharedCompiledRulesStateSaver( new CompiledRulesStateSaver( TSharedConstLogEntryParserModelConfiguration() ) );
+    TSharedRuleTable ruleTable( new RuleTable );
+    m_table->setRuleTable( ruleTable );
+    return TSharedCompiledRulesStateSaver( new CompiledRulesStateSaver( m_model->getParserModelConfiguration(), ruleTable ) );
 }
 
 void LogEntryCombinedWidget::addFilter( boost::shared_ptr<LogEntryFilter> flt )

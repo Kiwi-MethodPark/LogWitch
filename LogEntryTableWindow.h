@@ -9,6 +9,7 @@
 #define LOGENTRYTABLEWINDOW_H_
 #include <QtGui>
 #include <boost/shared_ptr.hpp>
+#include "ActionRules/RuleTable.h"
 
 class LogEntryTableModel;
 class QSortFilterProxyModel;
@@ -27,11 +28,10 @@ public:
 
 	void addFilter( boost::shared_ptr<LogEntryFilter> flt );
 
+	void setRuleTable( TconstSharedRuleTable table );
+
 protected:
 	void updateGeometries();
-
-
-
 
 private:
 	boost::shared_ptr<LogEntryTableModel> m_model;
@@ -39,8 +39,6 @@ private:
 	QTableView m_tableView;
 
 	LogEntryTableFilter *m_proxyModel;
-
-
 };
 
 #endif /* LOGENTRYTABLEWINDOW_H_ */
