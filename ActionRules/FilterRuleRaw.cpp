@@ -65,8 +65,3 @@ const QString &FilterRuleRaw::getActionError() const
 {
     return m_actionParser.getError();
 }
-
-TSharedAction FilterRuleRaw::getCompiledAction() const
-{
-    return m_actionParser.get();
-}

@@ -115,7 +115,7 @@ namespace actionParser
     template <typename Iterator>
     struct action_grammar : qi::grammar<Iterator, TSharedAction(), ascii::space_type>
     {
-        action_grammar( ) : action_grammar::base_type(action)
+        action_grammar( TSharedConstLogEntryParserModelConfiguration cfg ) : action_grammar::base_type(action)
         {
             using qi::lit;
             using qi::lexeme;
@@ -156,7 +156,8 @@ namespace actionParser
 }
 
 
-ActionParser::ActionParser()
+ActionParser::ActionParser( TSharedConstLogEntryParserModelConfiguration cfg )
+: m_cfg( cfg )
 {
 }
 
@@ -169,7 +170,7 @@ bool ActionParser::parse(  const QString &expression )
 {
     std::string str = expression.toStdString();
     typedef actionParser::action_grammar<std::string::const_iterator> exp_grammar;
-    exp_grammar expGram; // Our grammar
+    exp_grammar expGram( m_cfg ); // Our grammar
 
     using boost::spirit::ascii::space;
     std::string::const_iterator iter = str.begin();

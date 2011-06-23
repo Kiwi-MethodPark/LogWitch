@@ -31,6 +31,12 @@ public:
      * @return returns true if var was modified, otherwise false.
      */
     virtual bool modifyData( QVariant &var,  int column, int role) const;
+
+    /**
+     * Returns true if the compiled action is valid within the given context.
+     * An invalid action can be displayed, but not executed in this context.
+     */
+    virtual bool isValid() const;
 };
 
 typedef boost::shared_ptr<Action> TSharedAction;

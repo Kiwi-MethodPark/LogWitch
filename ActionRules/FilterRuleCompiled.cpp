@@ -10,6 +10,7 @@
 FilterRuleCompiled::FilterRuleCompiled( TSharedConstFilterRuleRaw desc, TSharedConstLogEntryParserModelConfiguration cfg )
 : m_rawRule( desc )
 , m_expression( cfg )
+, m_action( cfg )
 {
     parseRule();
 
@@ -28,15 +29,17 @@ TSharedExpression FilterRuleCompiled::getExpression() const
 
 bool FilterRuleCompiled::validWithinContext() const
 {
-    return m_expression.isValid() && m_expression.get()->isValid();
+    return m_expression.isValid() && m_expression.get()->isValid()
+            && m_action.isValid() && m_action.get()->isValid();
 }
 
 void FilterRuleCompiled::parseRule()
 {
+    m_action.parse( m_rawRule->actionString() );
     m_expression.parse( m_rawRule->expressionAsString() );
-    if( m_expression.isValid() && m_rawRule->isActionOk() && m_rawRule->getCompiledAction() )
+    if( m_expression.isValid() && m_action.isValid() )
     {
-        m_compiledRule.reset( new Rule( m_expression.get(), m_rawRule->getCompiledAction() ) );
+        m_compiledRule.reset( new Rule( m_expression.get(), m_action.get() ) );
     }
     else
         m_compiledRule.reset();

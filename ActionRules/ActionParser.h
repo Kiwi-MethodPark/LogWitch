@@ -11,11 +11,12 @@
 #include <QtCore>
 
 #include "ActionRules/Action.h"
+#include "LogEntryParserModelConfiguration.h"
 
 class ActionParser
 {
 public:
-    ActionParser();
+    ActionParser( TSharedConstLogEntryParserModelConfiguration cfg = TSharedConstLogEntryParserModelConfiguration());
     virtual ~ActionParser();
 
     /**
@@ -42,6 +43,8 @@ private:
     TSharedAction m_action;
 
     QString m_error;
+
+    TSharedConstLogEntryParserModelConfiguration m_cfg;
 };
 
 #endif /* ACTIONPARSER_H_ */

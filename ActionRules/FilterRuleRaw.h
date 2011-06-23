@@ -75,8 +75,6 @@ public:
      */
     TconstSharedDisplayItemData getActionDisplayer() const;
 
-    TSharedAction getCompiledAction() const;
-
 signals:
     void changed ();
 

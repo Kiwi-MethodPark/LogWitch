@@ -32,6 +32,11 @@ public:
     TSharedExpression getExpression() const;
 
     /**
+     * Returns the action compiled within this context.
+     */
+    TSharedAction getAction() const;
+
+    /**
      * Return true if the rule is compileable and valid within the current context.
      */
     bool validWithinContext() const;
@@ -66,6 +71,8 @@ private:
     TSharedConstFilterRuleRaw m_rawRule;
 
     ExpressionParser m_expression;
+
+    ActionParser m_action;
 
     TSharedRule m_compiledRule;
 };

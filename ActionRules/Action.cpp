@@ -22,3 +22,8 @@ bool Action::modifyData( QVariant &,  int , int ) const
 {
     return false;
 }
+
+bool Action::isValid() const
+{
+    return true;
+}
