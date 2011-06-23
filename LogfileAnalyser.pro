@@ -17,7 +17,8 @@ QT += core \
     network
 
 # Input
-HEADERS += ActionRules/ActionParser.h \
+HEADERS += LogData/ObjectCache.hxx \
+    ActionRules/ActionParser.h \
     GUITools/WidgetSaver.hpp \
     ActionRules/CompiledRulesStateSaver.h \
     ActionRules/ExpressionParser.h \
@@ -59,7 +60,6 @@ HEADERS += ActionRules/ActionParser.h \
     LogData/LogEntryParser_log4cplusSocket.h \
     LogData/LogEntryParser_Logfile.h \
     LogData/LogEntryParserModelConfiguration.h \
-    LogData/StringCache.h \
     Models/LogEntryFilter.h \
     Models/LogEntryFilterChain.h \
     Models/LogEntryRemoveFilter.h \
@@ -105,7 +105,6 @@ SOURCES += ActionRules/ActionParser.cpp \
     LogData/LogEntryParser_log4cplusSocket.cpp \
     LogData/LogEntryParser_Logfile.cpp \
     LogData/LogEntryParserModelConfiguration.cpp \
-    LogData/StringCache.cpp \
     Models/LogEntryFilter.cpp \
     Models/LogEntryFilterChain.cpp \
     Models/LogEntryRemoveFilter.cpp \

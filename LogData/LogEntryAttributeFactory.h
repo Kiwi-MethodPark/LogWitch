@@ -14,7 +14,8 @@
 
 
 class QString;
-class StringCache;
+class ObjectCacheQStringSignaller;
+template <class T> class ObjectCache;
 class LogEntryAttributes;
 
 /**
@@ -48,11 +49,11 @@ public:
 	const QString& getDescription( int idx ) const;
 
 	/**
-	 * Returns the correspinding string cache.
+	 * Returns the corresponding string cache.
 	 */
-	StringCache& getCache( int idx );
+	ObjectCache<ObjectCacheQStringSignaller>& getCache( int idx );
 
-	const StringCache& getCache( int idx ) const;
+	const ObjectCache<ObjectCacheQStringSignaller>& getCache( int idx ) const;
 
 	/**
 	 * Disallows adding fields and enables the usage of all getter
@@ -63,7 +64,7 @@ public:
 private:
 	std::vector<QString> fieldDescriptions;
 
-	std::vector< boost::shared_ptr<StringCache> > fieldCaches;
+	std::vector< boost::shared_ptr<ObjectCache<ObjectCacheQStringSignaller> > > fieldCaches;
 
 	std::vector< TSharedConstQString > defaultLine;
 

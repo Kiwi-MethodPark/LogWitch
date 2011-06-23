@@ -12,7 +12,7 @@
 #include "LogEntryRemoveFilter.h"
 #include <QtGui>
 
-StringCacheTreeModel::StringCacheTreeModel( QObject *parent, const StringCache * cache, int attributeId, const QString &splitString  )
+StringCacheTreeModel::StringCacheTreeModel( QObject *parent, const ObjectCache<ObjectCacheQStringSignaller> * cache, int attributeId, const QString &splitString  )
 	: QAbstractItemModel( parent )
 	, m_splitRegex( )
 	, m_myFilter( new LogEntryRemoveFilter(attributeId) )
@@ -24,7 +24,7 @@ StringCacheTreeModel::StringCacheTreeModel( QObject *parent, const StringCache *
 	if( !splitString.isEmpty() )
 		m_splitRegex.reset( new QRegExp( splitString ) );
 
-    QObject::connect(cache, SIGNAL(newStringElement( TSharedConstQString )),
+    QObject::connect(cache, SIGNAL(newElement( TSharedConstQString )),
                      this, SLOT(newStringElement( TSharedConstQString ) ) );
 }
 

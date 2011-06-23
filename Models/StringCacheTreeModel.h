@@ -7,7 +7,7 @@
 
 #ifndef STRINGCACHETREEMODEL_H_
 #define STRINGCACHETREEMODEL_H_
-#include "LogData/StringCache.h"
+#include "LogData/ObjectCache.hxx"
 #include <QAbstractTableModel>
 #include "StringCacheTreeItem.h"
 #include <QRegExp>
@@ -21,7 +21,7 @@ class StringCacheTreeModel
 {
 	Q_OBJECT
 public:
-	StringCacheTreeModel( QObject *parent, const StringCache * cache, int attributeId, const QString &splitString = QString() );
+	StringCacheTreeModel( QObject *parent, const ObjectCache<ObjectCacheQStringSignaller> * cache, int attributeId, const QString &splitString = QString() );
 	virtual ~StringCacheTreeModel();
 
     QVariant data(const QModelIndex &index, int role) const;

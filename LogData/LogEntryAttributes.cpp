@@ -10,7 +10,7 @@
 #include <QString>
 
 #include "LogData/LogEntryAttributeFactory.h"
-#include "LogData/StringCache.h"
+#include "LogData/ObjectCache.hxx"
 
 LogEntryAttributes::LogEntryAttributes( LogEntryAttributeFactory *factory, const std::vector<TSharedConstQString > &defAttributes  )
 	: attributes( defAttributes )
@@ -23,7 +23,7 @@ LogEntryAttributes::~LogEntryAttributes() {
 
 void LogEntryAttributes::setAttribute( TSharedConstQString str, int idx )
 {
-	attributes[idx] = myFactory->getCache(idx).getString( str );
+	attributes[idx] = myFactory->getCache(idx).getObject( str );
 }
 
 boost::shared_ptr<const QString> LogEntryAttributes::getAttribute( int idx ) const
