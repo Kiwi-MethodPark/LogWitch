@@ -12,7 +12,6 @@
 #include <QtCore/QObject>
 #include "Types.h"
 
-
 /**
  * This is a cache signaller class compatible with QT using const QString
  * as storage type.
@@ -34,6 +33,7 @@ signals:
 
 template<class SIGNALLER>
 class GetObjectIF
+	: public SIGNALLER
 {
 public:
     typedef typename SIGNALLER::shStType StType;
@@ -49,8 +49,7 @@ public:
  */
 template<class SIGNALLER>
 class ObjectCache
-	: public SIGNALLER
-	, public GetObjectIF<SIGNALLER>
+	: public GetObjectIF<SIGNALLER>
 {
 	typedef typename SIGNALLER::StType OBJ;
 public:
@@ -81,8 +80,7 @@ private:
  */
 template<class SIGNALLER>
 class ObjectPasser
-    : public SIGNALLER
-    , public GetObjectIF<SIGNALLER>
+    : public GetObjectIF<SIGNALLER>
 {
     typedef typename SIGNALLER::StType OBJ;
 public:
