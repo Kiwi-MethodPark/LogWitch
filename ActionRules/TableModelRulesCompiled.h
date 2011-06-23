@@ -42,8 +42,8 @@ public:
 
     void appendRule( TSharedFilterRuleRaw rule );
 private:
-    typedef std::vector<TSharedFilterRuleCompiled> TRuleTable;
-    TRuleTable m_table;
+    typedef std::vector<TSharedFilterRuleCompiled> TCompiledRulesTable;
+    TCompiledRulesTable m_table;
 
     static const int m_columnCount = 2;
 

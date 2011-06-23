@@ -146,7 +146,7 @@ TSharedConstFilterRuleRaw compiledToRaw (TSharedFilterRuleCompiled c)
 void TableModelRulesCompiled::appendRule( TSharedFilterRuleRaw rule )
 {
     // Check if we have already this entry
-    TRuleTable::iterator it;
+    TCompiledRulesTable::iterator it;
     it = std::find_if(m_table.begin(), m_table.end(), boost::bind( &compiledToRaw, _1 ) == rule );
     if( it != m_table.end() )
         return;
