@@ -32,6 +32,8 @@ void LogEntryTableFilter::addFilter( boost::shared_ptr<LogEntryFilter> flt )
 void LogEntryTableFilter::setRuleTable( TconstSharedRuleTable table )
 {
     m_ruleTable = table;
+    QObject::connect( m_ruleTable.get(), SIGNAL(changed()),
+            this, SLOT(invalidate()));
 }
 
 QVariant LogEntryTableFilter::data(const QModelIndex &index, int role) const

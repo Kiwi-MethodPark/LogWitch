@@ -41,6 +41,10 @@ public:
     Qt::ItemFlags flags(const QModelIndex & index ) const;
 
     void appendRule( TSharedFilterRuleRaw rule );
+
+public slots:
+    void updateFilterRuleTable();
+
 private:
     typedef std::vector<TSharedFilterRuleCompiled> TCompiledRulesTable;
     TCompiledRulesTable m_table;

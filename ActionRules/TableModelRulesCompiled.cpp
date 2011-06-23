@@ -143,6 +143,24 @@ TSharedConstFilterRuleRaw compiledToRaw (TSharedFilterRuleCompiled c)
   return c->getDescription();
 }
 
+void TableModelRulesCompiled::updateFilterRuleTable()
+{
+    qDebug() << "TableModelRulesCompiled::updateFilterRuleTable()";
+    m_ruleTable->beginChange();
+    m_ruleTable->clear();
+
+    TCompiledRulesTable::iterator it;
+    for( it = m_table.begin(); it != m_table.end(); ++it)
+    {
+        TSharedRule rule = (*it)->getCompiledRule();
+        if( rule )
+            m_ruleTable->addRule( rule );
+    }
+    m_ruleTable->endChange();
+
+    reset();
+}
+
 void TableModelRulesCompiled::appendRule( TSharedFilterRuleRaw rule )
 {
     // Check if we have already this entry
@@ -156,5 +174,9 @@ void TableModelRulesCompiled::appendRule( TSharedFilterRuleRaw rule )
     int newPos = m_table.size();
     beginInsertRows( QModelIndex(), newPos, newPos );
     m_table.push_back( cr );
+    QObject::connect( cr.get(), SIGNAL(changed())
+            , this, SLOT(updateFilterRuleTable()));
     endInsertRows();
+
+    updateFilterRuleTable();
 }

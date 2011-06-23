@@ -46,6 +46,8 @@ public:
 
     void addRule( TSharedRule &rule );
 
+    void clear();
+
     // TActionList getActionsForEntry( TconstSharedLogEntry &entry ) const;
     template <class T>
     bool getMatchedActionsForType( std::list<T> &actions, TconstSharedLogEntry &entry ) const
@@ -60,11 +62,15 @@ public:
         return !actions.empty();
     }
 
-signals:
     void beginChange();
     void endChange();
+signals:
+    void changed();
 
 private:
+    void dataChanged();
+
+    bool m_onChange;
 
     TRuleList m_rules;
 };
