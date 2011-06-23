@@ -60,6 +60,7 @@ private:
 	boost::shared_ptr<QString> m_loglevelStringTrace;
 
 	QString m_name;
+
 };
 
 class LogEntryParser_log4cplusSocket_Receiver
@@ -91,6 +92,8 @@ private:
 	bool m_stateReadSize;
 
 	LogEntryParser_log4cplusSocket *m_server;
+
+    int m_logEntryNumber;
 };
 
 #endif /* LOGENTRYPARSER_LOG4CPLUSSOCKET_H_ */

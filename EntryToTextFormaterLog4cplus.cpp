@@ -19,22 +19,21 @@ QString EntryToTextFormaterLog4cplus::formatEntry( TconstSharedLogEntry entry ) 
     QTextStream str( &out );
     QString tmp;
 
-    str << "<b>Timestamp:</b> " << entry->getTimestamp().toString( "dd.MM.yyyy hh:mm:ss.zzz" ) << "<br/>";
-
     // retrieve the attributes from the factory ...
     if( entry->getAttributes().getFactory().getNumberOfFields() == 5 )
     {
-        str << "<b>Loglevel:</b> " << *entry->getAttributes()[0] << "<br/>";
-        str << "<b>Component:</b> " << *entry->getAttributes()[1] << "<br/>";
-        str << "<b>File source:</b> " << *entry->getAttributes()[2] << "<br/>";
-        str << "<b>Thread:</b> " <<  *entry->getAttributes()[3]<< "<br/>";
-        str << "<b>Nested diagnostic content:</b> " << *entry->getAttributes()[4] << "<br/>";
+        str << "<b>Timestamp:</b> " << *entry->getAttributes()[1] << "<br/>";
+        str << "<b>Loglevel:</b> " << *entry->getAttributes()[3] << "<br/>";
+        str << "<b>Component:</b> " << *entry->getAttributes()[4] << "<br/>";
+        str << "<b>File source:</b> " << *entry->getAttributes()[5] << "<br/>";
+        str << "<b>Thread:</b> " <<  *entry->getAttributes()[6]<< "<br/>";
+        str << "<b>Nested diagnostic content:</b> " << *entry->getAttributes()[7] << "<br/>";
+        tmp = *entry->getAttributes()[2];
+        str << "<b>Message:</b><p> <pre> " << tmp.replace("\n","<br/>") << "</pre></p>";
     }
     else
         str << "<b>The attribute entry type seems to be incorrect! Please check.</b><br/>";
 
-    tmp = entry->getMessage();
-    str << "<b>Message:</b><p> <pre> " << tmp.replace("\n","<br/>") << "</pre></p>";
 
     return out;
 }

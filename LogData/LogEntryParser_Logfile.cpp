@@ -23,22 +23,30 @@ LogEntryParser_Logfile::LogEntryParser_Logfile( const QString &filename)
 	, cellRegex( "\\s+-\\s+" )
 	, timeFormat( "yyyy-MM-dd HH:mm:ss,zzz" )
 	, m_Name( QFileInfo( filename ).fileName() )
+    , m_logEntryNumber( 0 )
 {
 	lineMessageRegex->setMinimal(true);
 
 	// Preparing attributes in factory
-	myFactory.getLogEntryAttributeFactory()->addField("Severity");
-	myFactory.getLogEntryAttributeFactory()->addField("Component");
-	myFactory.getLogEntryAttributeFactory()->addField("File source");
+    myFactory.getLogEntryAttributeFactory()->addField("Number",false);
+    myFactory.getLogEntryAttributeFactory()->addField("Timestamp",false);
+    myFactory.getLogEntryAttributeFactory()->addField("Message",false);
+
+	myFactory.getLogEntryAttributeFactory()->addField("Severity", true);
+	myFactory.getLogEntryAttributeFactory()->addField("Component", true);
+	myFactory.getLogEntryAttributeFactory()->addField("File source", true);
 	myFactory.getLogEntryAttributeFactory()->disallowAddingFields();
 
 	m_myModelConfig = boost::shared_ptr<LogEntryParserModelConfiguration>( new LogEntryParserModelConfiguration("Logfile") );
 	m_myModelConfig->setLogEntryAttributeFactory( myFactory.getLogEntryAttributeFactory() );
 	m_myModelConfig->setHierarchySplitString( 1, "\\.");
 
-	m_myModelConfig->setFieldWidthHint( 0, 70 ); // severity
-	m_myModelConfig->setFieldWidthHint( 1, 250 ); // component
-	m_myModelConfig->setFieldWidthHint( 2, 150 ); // file source
+    m_myModelConfig->setFieldWidthHint( 0, 60 ); // number
+    m_myModelConfig->setFieldWidthHint( 1, 180 ); // timestamp
+    m_myModelConfig->setFieldWidthHint( 2, 500 ); // message
+	m_myModelConfig->setFieldWidthHint( 3, 70 ); // severity
+	m_myModelConfig->setFieldWidthHint( 4, 250 ); // component
+	m_myModelConfig->setFieldWidthHint( 5, 150 ); // file source
 }
 
 LogEntryParser_Logfile::~LogEntryParser_Logfile()
@@ -122,25 +130,27 @@ TSharedLogEntry LogEntryParser_Logfile::getNextLogEntry()
 					{
 						//qDebug() << "Appending Message to last entry = " << message;
 
-						entry->setMessage( message );
+						entry->getAttributes().setAttribute( TSharedConstQString( new QString( QString("%1").arg(++m_logEntryNumber) ) ), 0 );
+						entry->getAttributes().setAttribute( boost::shared_ptr<QString>(new QString(message) ), 2 );
 						entryComplete = true;
 						entryReturn = entry;
 					}
 
-					QDateTime timestamp( QDateTime::fromString ( lineMessageRegex->cap(1), timeFormat ) );
+					entry = myFactory.generateLogEntry( );
 
-					entry = myFactory.generateLogEntry( timestamp );
+					entry->getAttributes().setAttribute( boost::shared_ptr<QString>(
+					        new QString( QDateTime::fromString ( lineMessageRegex->cap(1), timeFormat ).toString("dd.MM.yyyy hh:mm:ss.zzz")) ), 1 );
 					// File Source
-					entry->getAttributes().setAttribute( boost::shared_ptr<QString>(new QString(lineMessageRegex->cap(3)) ), 2 );
+					entry->getAttributes().setAttribute( boost::shared_ptr<QString>(new QString(lineMessageRegex->cap(3)) ), 5 );
 					message = lineMessageRegex->cap(4);
 
 					QStringList lst = lineMessageRegex->cap(2).split( cellRegex );
 					if( lst.size() >= 2 )
 					{
 						// Severity
-						entry->getAttributes().setAttribute( boost::shared_ptr<QString>(new QString(lst[0]) ), 0 );
+						entry->getAttributes().setAttribute( boost::shared_ptr<QString>(new QString(lst[0]) ), 3 );
 						// Component
-						entry->getAttributes().setAttribute( boost::shared_ptr<QString>(new QString(lst[1]) ), 1 );
+						entry->getAttributes().setAttribute( boost::shared_ptr<QString>(new QString(lst[1]) ), 4 );
 					}
 
 					/*

@@ -64,13 +64,13 @@ int LogEntryTableModel::rowCount(const QModelIndex &parent) const
 int LogEntryTableModel::columnCount(const QModelIndex &parent) const
 {
 	Q_UNUSED(parent);
-	int value = m_modelConfiguration->getLogEntryAttributeFactory()->getNumberOfFields( ) + m_fixedFirstColumns;
+	int value = m_modelConfiguration->getLogEntryAttributeFactory()->getNumberOfFields( );
 	return value;
 }
 
 TconstSharedLogEntry LogEntryTableModel::getEntryByIndex( const QModelIndex &index ) const
 {
-    if (index.column() >= (m_modelConfiguration->getLogEntryAttributeFactory()->getNumberOfFields( ) + m_fixedFirstColumns )
+    if (index.column() >= (m_modelConfiguration->getLogEntryAttributeFactory()->getNumberOfFields( ) )
     		|| index.column() < 0
     		|| index.row() < 0
     		|| index.row() >= (m_table.size() ) )
@@ -84,7 +84,7 @@ QVariant LogEntryTableModel::data(const QModelIndex &index, int role) const
     if (!index.isValid())
         return QVariant();
 
-    if (index.column() >= (m_modelConfiguration->getLogEntryAttributeFactory()->getNumberOfFields( ) + m_fixedFirstColumns )
+    if (index.column() >= (m_modelConfiguration->getLogEntryAttributeFactory()->getNumberOfFields( ) )
     		|| index.column() < 0
     		|| index.row() < 0
     		|| index.row() >= (m_table.size() ) )
@@ -93,51 +93,28 @@ QVariant LogEntryTableModel::data(const QModelIndex &index, int role) const
     if (role == Qt::DisplayRole)
     {
     	TconstSharedLogEntry entry = m_table[index.row()];
-
-    	if( index.column() == 0 )
-    		return index.row() + 1;
-    	if( index.column() == 2 )
-    		return entry->getTimestamp().toString( m_dateTimeConversionString  );
-    	if( index.column() == 1 )
-    		return entry->getMessage();
-
-
-    	return *(entry->getAttributes().getAttribute(index.column()-m_fixedFirstColumns ));
+    	return *(entry->getAttributes().getAttribute(index.column() ));
     }
     return QVariant();
 }
 
 QVariant LogEntryTableModel::headerData(int section, Qt::Orientation orientation, int role) const
 {
-    if (section >= (m_modelConfiguration->getLogEntryAttributeFactory()->getNumberOfFields( ) + m_fixedFirstColumns) || section < 0)
+    if (section >= (m_modelConfiguration->getLogEntryAttributeFactory()->getNumberOfFields( ) ) || section < 0)
         return QVariant();
 
     if (role == Qt::DisplayRole)
     {
 		if (orientation == Qt::Horizontal)
 		{
-			if( section == 0 )
-				return tr("Nr.");
-			if( section == 2 )
-				return tr("Timestamp");
-			if( section == 1 )
-				return tr("Message text");
-
-			return m_modelConfiguration->getLogEntryAttributeFactory()->getDescription( section-m_fixedFirstColumns );
+			return m_modelConfiguration->getLogEntryAttributeFactory()->getDescription( section );
 		}
     }
     else if( role == 512 )
     {
     	int rVal = 150;
 
-    	if( section == 0 )
-    		rVal = 60;
-    	else if( section == 1 )
-    		rVal = 500;
-    	else if( section == 2 )
-    		rVal = 180;
-    	else
-    		rVal = m_modelConfiguration->getFieldWidthHint( section - m_fixedFirstColumns );
+  		rVal = m_modelConfiguration->getFieldWidthHint( section );
 
     	return rVal;
     }

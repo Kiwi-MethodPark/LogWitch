@@ -15,7 +15,7 @@
 
 class QString;
 class ObjectCacheQStringSignaller;
-template <class T> class ObjectCache;
+template <class T> class GetObjectIF;
 class LogEntryAttributes;
 
 /**
@@ -36,7 +36,7 @@ public:
 	/**
 	 * Adds a field with a given description to the attributes list.
 	 */
-	void addField( const QString &description );
+	void addField( const QString &description, bool cacheField );
 
 	/**
 	 * Returns the total numbers of fields.
@@ -51,9 +51,9 @@ public:
 	/**
 	 * Returns the corresponding string cache.
 	 */
-	ObjectCache<ObjectCacheQStringSignaller>& getCache( int idx );
+	GetObjectIF<ObjectCacheQStringSignaller>& getCache( int idx );
 
-	const ObjectCache<ObjectCacheQStringSignaller>& getCache( int idx ) const;
+	const GetObjectIF<ObjectCacheQStringSignaller>& getCache( int idx ) const;
 
 	/**
 	 * Disallows adding fields and enables the usage of all getter
@@ -64,7 +64,7 @@ public:
 private:
 	std::vector<QString> fieldDescriptions;
 
-	std::vector< boost::shared_ptr<ObjectCache<ObjectCacheQStringSignaller> > > fieldCaches;
+	std::vector< boost::shared_ptr<GetObjectIF<ObjectCacheQStringSignaller> > > fieldCaches;
 
 	std::vector< TSharedConstQString > defaultLine;
 

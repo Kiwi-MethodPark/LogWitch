@@ -18,24 +18,15 @@ class LogEntryAttributes;
 
 class LogEntry {
 public:
-	LogEntry(const QDateTime &date, boost::shared_ptr<LogEntryAttributes> attr,  const QString &message );
+	LogEntry( boost::shared_ptr<LogEntryAttributes> attr );
 
 	const LogEntryAttributes &getAttributes() const;
 
 	LogEntryAttributes &getAttributes();
 
-	const QDateTime &getTimestamp() const;
-
-	const QString &getMessage() const;
-
-	void setMessage(const QString &str) {message = str; };
-
 private:
-	QDateTime timestamp;
-
 	boost::shared_ptr<LogEntryAttributes> indexedLogEntries;
 
-	QString message;
 };
 
 typedef boost::shared_ptr<LogEntry> TSharedLogEntry;

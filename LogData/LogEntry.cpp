@@ -7,10 +7,8 @@
 
 #include "LogEntry.h"
 
-LogEntry::LogEntry(const QDateTime &date, boost::shared_ptr<LogEntryAttributes> attr, const QString &message )
-	: timestamp( date )
-	, indexedLogEntries( attr )
-	, message( message )
+LogEntry::LogEntry(const boost::shared_ptr<LogEntryAttributes> attr )
+	: indexedLogEntries( attr )
 {
 
 }
@@ -23,14 +21,4 @@ const LogEntryAttributes &LogEntry::getAttributes() const
 LogEntryAttributes &LogEntry::getAttributes()
 {
 	return *indexedLogEntries;
-}
-
-const QDateTime &LogEntry::getTimestamp() const
-{
-	return timestamp;
-}
-
-const QString &LogEntry::getMessage() const
-{
-	return message;
 }

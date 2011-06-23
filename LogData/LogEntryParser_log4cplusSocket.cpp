@@ -29,11 +29,15 @@ LogEntryParser_log4cplusSocket::LogEntryParser_log4cplusSocket( int port )
 	,m_name( "Log4cplus Listener Port " + QString::number(port))
 {
 	// Preparing attributes in factory
-	myFactory.getLogEntryAttributeFactory()->addField("Loglevel");
-	myFactory.getLogEntryAttributeFactory()->addField("Component");
-	myFactory.getLogEntryAttributeFactory()->addField("File source");
-	myFactory.getLogEntryAttributeFactory()->addField("Thread");
-	myFactory.getLogEntryAttributeFactory()->addField("NDC");
+	myFactory.getLogEntryAttributeFactory()->addField("Number",false);
+	myFactory.getLogEntryAttributeFactory()->addField("Timestamp",false);
+	myFactory.getLogEntryAttributeFactory()->addField("Message",false);
+
+	myFactory.getLogEntryAttributeFactory()->addField("Loglevel",true);
+	myFactory.getLogEntryAttributeFactory()->addField("Component",true);
+	myFactory.getLogEntryAttributeFactory()->addField("File source",true);
+	myFactory.getLogEntryAttributeFactory()->addField("Thread",true);
+	myFactory.getLogEntryAttributeFactory()->addField("NDC",true);
 	myFactory.getLogEntryAttributeFactory()->disallowAddingFields();
 
 	m_myModelConfig = boost::shared_ptr<LogEntryParserModelConfiguration>( new LogEntryParserModelConfiguration("log4cplus") );
@@ -41,11 +45,14 @@ LogEntryParser_log4cplusSocket::LogEntryParser_log4cplusSocket( int port )
 	m_myModelConfig->setHierarchySplitString( 1, "\\.");
 	m_myModelConfig->setEntryToTextFormater( boost::shared_ptr<EntryToTextFormater>( new EntryToTextFormaterLog4cplus ) );
 
-	m_myModelConfig->setFieldWidthHint( 0, 70 ); // severity
-	m_myModelConfig->setFieldWidthHint( 1, 250 ); // component
-	m_myModelConfig->setFieldWidthHint( 2, 150 ); // file source
-	m_myModelConfig->setFieldWidthHint( 3, 70 ); // thread
-	m_myModelConfig->setFieldWidthHint( 4, 100 ); // NDC
+	m_myModelConfig->setFieldWidthHint( 0, 60 ); // number
+	m_myModelConfig->setFieldWidthHint( 1, 180 ); // timestamp
+	m_myModelConfig->setFieldWidthHint( 2, 500 ); // message
+	m_myModelConfig->setFieldWidthHint( 3, 70 ); // severity
+	m_myModelConfig->setFieldWidthHint( 4, 250 ); // component
+	m_myModelConfig->setFieldWidthHint( 5, 150 ); // file source
+	m_myModelConfig->setFieldWidthHint( 6, 70 ); // thread
+	m_myModelConfig->setFieldWidthHint( 7, 100 ); // NDC
 
 	m_loglevelStringOff.reset(new QString("OFF"));
 	m_loglevelStringFatal.reset(new QString("FATAL"));
@@ -103,6 +110,7 @@ LogEntryParser_log4cplusSocket_Receiver::LogEntryParser_log4cplusSocket_Receiver
 	: m_socket( socket )
 	, m_stateReadSize( true )
 	, m_server(server)
+    , m_logEntryNumber( 0 )
 {
 	qDebug() << "new receiver created";
 	m_socket->setParent( this );
@@ -176,8 +184,7 @@ TSharedLogEntry LogEntryParser_log4cplusSocket_Receiver::bufferToEntry()
 	timestamp = timestamp.addMSecs(qint64(event.getTimestamp().getTime()) * 1000 + ((qint64( event.getTimestamp().usec()/1000)%1000) ) );
 #endif
 
-	TSharedLogEntry entry = m_server->myFactory.generateLogEntry( timestamp );
-	entry->setMessage( QString( event.getMessage().c_str() ) );
+	TSharedLogEntry entry = m_server->myFactory.generateLogEntry( );
 
 	boost::shared_ptr<QString> logLevel = m_server->m_loglevelStringOff;
 	if( event.getLogLevel() >= log4cplus::OFF_LOG_LEVEL )
@@ -193,13 +200,16 @@ TSharedLogEntry LogEntryParser_log4cplusSocket_Receiver::bufferToEntry()
 	else if( event.getLogLevel() >= log4cplus::TRACE_LOG_LEVEL )
 		logLevel = m_server->m_loglevelStringTrace;
 
-	entry->getAttributes().setAttribute( logLevel , 0 );
-	entry->getAttributes().setAttribute( TSharedConstQString(new QString( event.getLoggerName().c_str() ) ), 1 );
+	entry->getAttributes().setAttribute( TSharedConstQString( new QString( QString("%1").arg(++m_logEntryNumber) ) ) , 0 );
+	entry->getAttributes().setAttribute( TSharedConstQString( new QString( timestamp.toString("dd.MM.yyyy hh:mm:ss.zzz") ) ), 1 );
+	entry->getAttributes().setAttribute( TSharedConstQString( new QString( event.getMessage().c_str() ) ), 2 );
+	entry->getAttributes().setAttribute( TSharedConstQString( logLevel ), 3 );
+	entry->getAttributes().setAttribute( TSharedConstQString(new QString( event.getLoggerName().c_str() ) ), 4 );
 	TSharedQString source = TSharedQString( new QString( event.getFile().c_str() ) );
 	(*source) = (*source) + ":" + QString::number( event.getLine() );
-	entry->getAttributes().setAttribute( source, 2 );
-	entry->getAttributes().setAttribute( TSharedConstQString( new QString( event.getThread().c_str() ) ), 3 );
-	entry->getAttributes().setAttribute( TSharedConstQString( new QString( event.getNDC().c_str() ) ), 4 );
+	entry->getAttributes().setAttribute( source, 5 );
+	entry->getAttributes().setAttribute( TSharedConstQString( new QString( event.getThread().c_str() ) ), 6 );
+	entry->getAttributes().setAttribute( TSharedConstQString( new QString( event.getNDC().c_str() ) ), 7 );
 	return entry;
 }
 
