@@ -15,6 +15,11 @@
 class CompiledRulesStateSaver;
 class LogEntryTableFilter;
 
+/**
+ * This is the Widget which is responsible for displaying the filter rules in
+ * raw format and also the compiled ones. This window also handles the interaction
+ * between them, for e.g. adding from the raw rules to the compiled rules.
+ */
 class FilterRuleSelectionWindow
 : public QSplitter
 {

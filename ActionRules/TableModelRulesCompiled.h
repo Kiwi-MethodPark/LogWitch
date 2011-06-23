@@ -46,6 +46,9 @@ private:
 
     static const int m_columnCount = 2;
 
+    /**
+     * The configuration this table is for.
+     */
     TSharedConstLogEntryParserModelConfiguration m_configuration;
 
 };

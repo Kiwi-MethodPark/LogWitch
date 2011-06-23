@@ -18,7 +18,7 @@ public:
     virtual ~ExpressionParser();
 
     /**
-     * Parse an expression and returns true if sucessfull.
+     * Parse an expression and returns true if successful.
      */
     bool parse(  const QString &expression );
 
@@ -28,7 +28,7 @@ public:
     TSharedExpression get() const;
 
     /**
-     * Returns true if the last expression was parsed sucessfull.
+     * Returns true if the last expression was parsed successful.
      */
     bool isValid() const;
 
