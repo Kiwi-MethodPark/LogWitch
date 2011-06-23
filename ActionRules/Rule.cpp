@@ -17,6 +17,11 @@ Rule::~Rule()
 {
 }
 
+bool Rule::isValid() const
+{
+    return m_expr->isValid() && m_action->isValid();
+}
+
 bool Rule::checkRule( TconstSharedLogEntry &entry ) const
 {
     return m_expr->match( entry );

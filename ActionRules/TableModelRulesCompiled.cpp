@@ -153,7 +153,7 @@ void TableModelRulesCompiled::updateFilterRuleTable()
     for( it = m_table.begin(); it != m_table.end(); ++it)
     {
         TSharedRule rule = (*it)->getCompiledRule();
-        if( rule )
+        if( rule && rule->isValid() )
             m_ruleTable->addRule( rule );
     }
     m_ruleTable->endChange();
