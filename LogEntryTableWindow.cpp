@@ -21,17 +21,6 @@ LogEntryTableWindow::LogEntryTableWindow( boost::shared_ptr<LogEntryTableModel> 
 {
     m_proxyModel = new LogEntryTableFilter(this);
     m_proxyModel->setSourceModel(m_model.get());
-    TSharedRuleTable rules( new RuleTable );
-    TconstSharedValueGetter left( new ValueGetterConstQString("DEBUG") );
-    TconstSharedValueGetterLogEntry right( new ValueGetterLogEntry("Severity", m_model->getParserModelConfiguration() ) );
-    if( !right->isValid() )
-        qDebug() << "Something is going wrong!!";
-    TconstSharedExpression expr( new ExpressionValueGetter( left, right ) );
-    TSharedActionDataRewriter action( new ActionDataRewriter( ) );
-    action->addChangeSet( Qt::darkMagenta, Qt::ForegroundRole );
-    TSharedRule rule( new Rule( expr, action ) );
-    rules->addRule( rule );
-    m_proxyModel->setRuleTable( (TconstSharedRuleTable)rules );
 
 	setModel( m_proxyModel );
     this->horizontalHeader()->moveSection(1, model->columnCount( QModelIndex() )-1 );
