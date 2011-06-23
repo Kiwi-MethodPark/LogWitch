@@ -51,6 +51,7 @@ namespace actionParser
     namespace ascii = boost::spirit::ascii;
 
     typedef std::pair<int, QVariant> TRoleVariantPair;
+    typedef std::pair<QString, TRoleVariantPair> TColumnRoleVariantPair;
 
     namespace detail
     {
@@ -66,12 +67,12 @@ namespace actionParser
         };
         struct constructEmptyActionDataRewriter
         {
-            template <typename S1>
+            template <typename S1, typename S2>
             struct result { typedef void type; };
 
-            void operator()(TSharedActionDataRewriter& entry ) const
+            void operator()(TSharedActionDataRewriter& entry, TSharedConstLogEntryParserModelConfiguration cfg ) const
             {
-                entry = TSharedActionDataRewriter( new ActionDataRewriter );
+                entry = TSharedActionDataRewriter( new ActionDataRewriter( cfg ) );
             }
         };
         struct addRewriteRule
@@ -82,6 +83,11 @@ namespace actionParser
             void operator()(TSharedActionDataRewriter& entry, const TRoleVariantPair & rule ) const
             {
                 entry->addChangeSet( rule.second, rule.first );
+            }
+
+            void operator()(TSharedActionDataRewriter& entry, const TColumnRoleVariantPair & rule ) const
+            {
+                entry->addChangeSet( rule.second.second, rule.second.first, rule.first );
             }
         };
     }
@@ -135,21 +141,30 @@ namespace actionParser
                     | qi::eps [ constructEmptyAction(_val) ];
 
             actionDataRewriter =
-                    qi::eps [constructEmptyActionDataRewriter(_val)]
+                    qi::eps [constructEmptyActionDataRewriter(_val, cfg)]
                     >> "Rewrite("
-                    >>  rewriteRule [ addRewriteRule(_val, _1)] % ','
+                    >>  ( rewriteRule [ addRewriteRule(_val, _1)]
+                           | rewriteRuleColumn [ addRewriteRule(_val, _1)]
+                        ) % ','
                     >> ')' ;
 
            rewriteRule = qColorRoles >> ':' >> qColorSymb;
+
+
+           rewriteRuleColumn = unquotedQString  >> ':' >> rewriteRule;
+
+           //quotedQString %= lexeme['"' >> +(char_ - '"') >> '"'];
+           unquotedQString %=  +(alpha) ;
         }
 
         // qi::rule<Iterator,  QString(), ascii::space_type> quotedQString;
-        // qi::rule<Iterator,  QString(), ascii::space_type> unquotedQString;
+        qi::rule<Iterator,  QString(), ascii::space_type> unquotedQString;
 
         qi::rule<Iterator, TSharedAction(), ascii::space_type> action;
         qi::rule<Iterator, TSharedActionDataRewriter(), ascii::space_type> actionDataRewriter;
 
         qi::rule<Iterator, TRoleVariantPair(), ascii::space_type> rewriteRule;
+        qi::rule<Iterator, TColumnRoleVariantPair(), ascii::space_type> rewriteRuleColumn;
 
         // qi::rule<Iterator, QColor(), ascii::space_type> color;
     };

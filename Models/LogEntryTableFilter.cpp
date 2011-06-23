@@ -46,9 +46,11 @@ QVariant LogEntryTableFilter::data(const QModelIndex &index, int role) const
         std::list<  TconstSharedActionDataRewriter > actions;
         if( m_ruleTable->getMatchedActionsForType( actions, entry ) )
         {
+            QModelIndex srcIdx = mapToSource( index );
+
             std::list<  TconstSharedActionDataRewriter >::iterator it;
             for( it = actions.begin(); it != actions.end(); ++it  )
-                (*it)->modifyData( var, index.column(), role);
+                (*it)->modifyData( var, srcIdx.column(), role);
         }
     }
 
