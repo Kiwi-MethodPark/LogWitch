@@ -8,8 +8,7 @@
 #include "FilterRuleCompiled.h"
 
 FilterRuleCompiled::FilterRuleCompiled( TSharedConstFilterRuleRaw desc, TSharedConstLogEntryParserModelConfiguration cfg )
-: m_isActive( true )
-, m_rawRule( desc )
+: m_rawRule( desc )
 , m_expression( cfg )
 {
     parseRule();
