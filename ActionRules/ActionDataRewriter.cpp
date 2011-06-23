@@ -16,12 +16,12 @@ ActionDataRewriter::~ActionDataRewriter()
 {
 }
 
-bool ActionDataRewriter::getData( QVariant &variant, int role ) const
+bool ActionDataRewriter::modifyData( QVariant &var,  int , int role) const
 {
     TChangeSet::const_iterator it = m_changes.find( role );
     if( it != m_changes.end() )
     {
-        variant = it->second;
+        var = it->second;
         return true;
     }
 

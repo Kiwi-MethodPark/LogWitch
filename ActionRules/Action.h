@@ -22,7 +22,15 @@ public:
     Action();
     virtual ~Action();
 
-    virtual void execute( ) const = 0;
+    /**
+     * With this the data row can be modified.
+     *
+     * @param var incoming original data to modify or leave.
+     * @param column number of the column the data is from
+     * @param role the role which this var is for.
+     * @return returns true if var was modified, otherwise false.
+     */
+    virtual bool modifyData( QVariant &var,  int column, int role) const;
 };
 
 typedef boost::shared_ptr<Action> TSharedAction;

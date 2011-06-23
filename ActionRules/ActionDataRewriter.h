@@ -20,14 +20,11 @@ public:
     ActionDataRewriter();
     ~ActionDataRewriter();
 
-    bool getData( QVariant &var,  int role) const;
+    bool modifyData( QVariant &var,  int column, int role) const;
 
     void addChangeSet( const QVariant &var, int role );
 
     QVariant toDisplay( int role ) const;
-
-    void execute( ) const {};
-
 private:
     typedef std::map<int,QVariant> TChangeSet;
     TChangeSet m_changes;
