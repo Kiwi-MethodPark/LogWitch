@@ -21,7 +21,6 @@ HEADERS += GUITools/GetSetStateSaver.hxx \
     LogData/LogEntryAttributeNames.h \
     LogData/ObjectCache.hxx \
     ActionRules/ActionParser.h \
-    GUITools/WidgetSaver.hpp \
     ActionRules/CompiledRulesStateSaver.h \
     ActionRules/ExpressionParser.h \
     ActionRules/FilterRuleSelectionWindow.h \
