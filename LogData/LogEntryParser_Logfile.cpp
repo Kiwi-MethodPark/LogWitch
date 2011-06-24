@@ -41,7 +41,7 @@ LogEntryParser_Logfile::LogEntryParser_Logfile( const QString &filename)
 
 	m_myModelConfig = boost::shared_ptr<LogEntryParserModelConfiguration>( new LogEntryParserModelConfiguration("Logfile") );
 	m_myModelConfig->setLogEntryAttributeFactory( myFactory.getLogEntryAttributeFactory() );
-	m_myModelConfig->setHierarchySplitString( 1, "\\.");
+	m_myModelConfig->setHierarchySplitString( 4, "\\.");
 
     m_myModelConfig->setFieldWidthHint( 0, 60 ); // number
     m_myModelConfig->setFieldWidthHint( 1, 180 ); // timestamp

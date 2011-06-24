@@ -28,7 +28,7 @@ LogEntryParser_dummy::LogEntryParser_dummy()
 
 	m_myModelConfig = boost::shared_ptr<LogEntryParserModelConfiguration>( new LogEntryParserModelConfiguration("DummyLogger") );
 	m_myModelConfig->setLogEntryAttributeFactory( myFactory.getLogEntryAttributeFactory() );
-	m_myModelConfig->setHierarchySplitString( 1, "\\.");
+	m_myModelConfig->setHierarchySplitString( 4, "\\.");
 
     m_myModelConfig->setFieldWidthHint( 0, 60 ); // number
     m_myModelConfig->setFieldWidthHint( 1, 180 ); // timestamp

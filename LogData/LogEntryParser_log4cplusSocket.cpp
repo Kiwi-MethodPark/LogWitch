@@ -44,7 +44,7 @@ LogEntryParser_log4cplusSocket::LogEntryParser_log4cplusSocket( int port )
 
 	m_myModelConfig = boost::shared_ptr<LogEntryParserModelConfiguration>( new LogEntryParserModelConfiguration("log4cplus") );
 	m_myModelConfig->setLogEntryAttributeFactory( myFactory.getLogEntryAttributeFactory() );
-	m_myModelConfig->setHierarchySplitString( 1, "\\.");
+	m_myModelConfig->setHierarchySplitString( 4, "\\.");
 	m_myModelConfig->setEntryToTextFormater( boost::shared_ptr<EntryToTextFormater>( new EntryToTextFormaterLog4cplus ) );
 
 	m_myModelConfig->setFieldWidthHint( 0, 60 ); // number
