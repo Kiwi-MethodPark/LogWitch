@@ -8,20 +8,44 @@
 #ifndef DOCKWIDGETSTATESAVER_H_
 #define DOCKWIDGETSTATESAVER_H_
 
-#include <boost/weak_ptr.hpp>
+#include <boost/enable_shared_from_this.hpp>
+#include <QtGui>
+#include <QtCore>
 
 #include "WidgetStateSaver.h"
 
-class QWidget;
+/**
+ * This is the type definition template to use the GetSetStateSaver for the
+ * QDockWidget class. It saves the widget inside it.
+ */
+struct DockWidgetStateSaverTypes
+{
+public:
+    typedef QDockWidget ObjectToSet;
+    typedef QWidget value;
 
-class DockWidgetStateSaver
+    static value *get( ObjectToSet *obj ) { return obj->widget(); }
+    static void set( ObjectToSet *obj, value *s ) { obj->setWidget( s ); }
+};
+
+/**
+ * This class is a get set state saver. This state saver works with object
+ * getter/setter of the type T::ObjectToSet. This is the object from which
+ * the state should be saved. The object type to save is T::value.
+ * The GetSetStateSaver uses the static function value *T::get( T::ObjectToSet *)
+ * to retrieve the object and the static function void set( ObjectToSet *obj, value *s )
+ * to restore the saved state.
+ */
+template<class T>
+class GetSetStateSaver
 	: public ObjectStateSavingInterface
+	, public boost::enable_shared_from_this<GetSetStateSaver<T> >
 {
 private:
-	DockWidgetStateSaver();
+	GetSetStateSaver();
 
 public:
-	static boost::shared_ptr<DockWidgetStateSaver> generate();
+	static boost::shared_ptr<GetSetStateSaver<T> > generate();
 
 public:
     boost::shared_ptr<ObjectState> dumpState( QObject *obj, QObject * ) const;
@@ -31,15 +55,63 @@ private:
     class state:
         public ObjectState
     {
-        friend class DockWidgetStateSaver;
+        friend class GetSetStateSaver<T>;
     public:
 
-        state( boost::shared_ptr<ObjectStateSavingInterface> ptr, QObject *dock, QWidget *widget ): ObjectState( ptr, dock ), m_dockWidget( widget ) { }
+        state( boost::shared_ptr<const ObjectStateSavingInterface> ptr, QObject *dock, typename T::value *widget )
+            : ObjectState( ptr, dock ), m_widget( widget ) { }
     private:
-        QWidget *m_dockWidget;
+        typename T::value *m_widget;
     };
-
-    boost::weak_ptr<DockWidgetStateSaver> m_ptrToMyself;
 };
+
+template<class T>
+boost::shared_ptr<GetSetStateSaver<T> > GetSetStateSaver<T>::generate()
+{
+    shared_ptr<GetSetStateSaver<T> > obj( new GetSetStateSaver<T>() );
+    return obj;
+}
+
+template<class T>
+GetSetStateSaver<T>::GetSetStateSaver()
+{
+}
+
+template<class T>
+boost::shared_ptr<ObjectState> GetSetStateSaver<T>::dumpState( QObject *obj, QObject * ) const
+{
+    qDebug() << "dumping state" << obj;
+
+    typename T::ObjectToSet *wi = dynamic_cast<typename T::ObjectToSet *>(obj);
+    if( wi )
+    {
+        qDebug() << "Saving old widget: " << T::get( wi );
+        return boost::shared_ptr<ObjectState>(new state( this->shared_from_this(), obj, T::get( wi ) ));
+    }
+    else
+    {
+        qDebug() << "Ignoring: Cast failed";
+        return boost::shared_ptr<ObjectState>(new ObjectState());
+    }
+}
+
+template<class T>
+void GetSetStateSaver<T>::replayState( QObject *obj, QObject *, const ObjectState *stateP ) const
+{
+    qDebug() << "Replaying state" << obj;
+
+    typename T::ObjectToSet *wi = dynamic_cast<typename T::ObjectToSet *>(obj);
+    const state *st = dynamic_cast<const state *>(stateP);
+
+    if( wi && st )
+    {
+        qDebug() << "Replaying old widget: " << st->m_widget;
+        T::set( wi, st->m_widget );
+    }
+    else
+        qDebug() << "Ignoring: Cast failed";
+}
+
+typedef GetSetStateSaver<DockWidgetStateSaverTypes> DockWidgetStateSaver;
 
 #endif /* DOCKWIDGETSTATESAVER_H_ */

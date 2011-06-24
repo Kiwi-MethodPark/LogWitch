@@ -39,7 +39,7 @@ class ObjectState
 {
 public:
 	ObjectState() : m_isValid( false ) { }
-	ObjectState( boost::shared_ptr<ObjectStateSavingInterface> replayer, QObject *obj ) : m_isValid( true ), m_object( obj ), m_replayer( replayer ) { }
+	ObjectState( boost::shared_ptr<const ObjectStateSavingInterface> replayer, QObject *obj ) : m_isValid( true ), m_object( obj ), m_replayer( replayer ) { }
 
 	bool isValid() const{ return m_isValid; }
 
@@ -50,7 +50,7 @@ protected:
 
 	QObject *m_object;
 
-	boost::shared_ptr<ObjectStateSavingInterface> m_replayer;
+	boost::shared_ptr<const ObjectStateSavingInterface> m_replayer;
 };
 
 
