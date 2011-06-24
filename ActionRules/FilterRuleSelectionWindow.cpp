@@ -35,13 +35,34 @@ FilterRuleSelectionWindow::FilterRuleSelectionWindow( QWidget* parent )
 
 void FilterRuleSelectionWindow::setWindow( TSharedCompiledRulesStateSaver state )
 {
-    state->connectActions( this );
-    m_compiledRules = state;
+    if( !state )
+    {
+        m_compiledRules.reset();
 
-    for( int i = 1; i < count(); i++ )
-        widget( i )->hide();
+        for( int i = 2; i < count(); i++ )
+            widget( i )->hide();
+        widget( 1 )->show();
+    }
+    else
+    {
+        state->connectActions( this );
+        m_compiledRules = state;
 
-    addWidget( state->m_displayWidget );
+        for( int i = 1; i < count(); i++ )
+        {
+            if( widget(i) != state->m_displayWidget)
+                widget( i )->hide();
+            else
+                widget( i )->show();
+        }
+
+        addWidget( state->m_displayWidget );
+    }
+}
+
+TSharedCompiledRulesStateSaver FilterRuleSelectionWindow::getWindow( )
+{
+    return m_compiledRules;
 }
 
 void FilterRuleSelectionWindow::addSelectionToCompiled()

@@ -28,7 +28,19 @@ public:
     FilterRuleSelectionWindow( QWidget* parent = NULL );
     virtual ~FilterRuleSelectionWindow();
 
+    /**
+     * This displays a previously hidden window or adds a new one.
+     * If an empty pointer is set as state, the window will switch
+     * to the inital case.
+     */
     void setWindow( TSharedCompiledRulesStateSaver state );
+
+    /**
+     * This returns the currently active state for the window to restore
+     * it via setWindow. If no window was set before, it returns a
+     * empty pointer.
+     */
+    TSharedCompiledRulesStateSaver getWindow( );
 
 public slots:
     void addSelectionToCompiled();
@@ -38,6 +50,16 @@ private:
     TableModelRules *m_rulesModel;
 
     TSharedCompiledRulesStateSaver m_compiledRules;
+};
+
+class FilterRuleSelWndStateSaverTypes
+{
+public:
+    typedef FilterRuleSelectionWindow ObjectToSet;
+    typedef TSharedCompiledRulesStateSaver value;
+
+    static value get( ObjectToSet *obj ) { return obj->getWindow(); }
+    static void set( ObjectToSet *obj, value s ) { obj->setWindow( s ); }
 };
 
 #endif /* FILTERRULESELECTIONWINDOW_H_ */

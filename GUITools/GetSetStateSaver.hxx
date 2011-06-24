@@ -22,10 +22,10 @@ struct DockWidgetStateSaverTypes
 {
 public:
     typedef QDockWidget ObjectToSet;
-    typedef QWidget value;
+    typedef QWidget* value;
 
-    static value *get( ObjectToSet *obj ) { return obj->widget(); }
-    static void set( ObjectToSet *obj, value *s ) { obj->setWidget( s ); }
+    static value get( ObjectToSet *obj ) { return obj->widget(); }
+    static void set( ObjectToSet *obj, value s ) { obj->setWidget( s ); }
 };
 
 /**
@@ -58,10 +58,10 @@ private:
         friend class GetSetStateSaver<T>;
     public:
 
-        state( boost::shared_ptr<const ObjectStateSavingInterface> ptr, QObject *dock, typename T::value *widget )
+        state( boost::shared_ptr<const ObjectStateSavingInterface> ptr, QObject *dock, typename T::value widget )
             : ObjectState( ptr, dock ), m_widget( widget ) { }
     private:
-        typename T::value *m_widget;
+        typename T::value m_widget;
     };
 };
 

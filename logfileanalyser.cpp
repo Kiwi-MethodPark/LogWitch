@@ -58,6 +58,9 @@ LogfileAnalyser::LogfileAnalyser(QWidget *parent)
     m_myfilterRuleSelectionWidget = new FilterRuleSelectionWindow( m_myFilterRulesDock );
     m_myFilterRulesDock->setWidget( m_myfilterRuleSelectionWidget );
     addDockWidget(Qt::RightDockWidgetArea, m_myFilterRulesDock);
+
+    m_stateSaver->addElementToWatch( m_myfilterRuleSelectionWidget
+            , GetSetStateSaver<FilterRuleSelWndStateSaverTypes>::generate() );
 }
 
 void LogfileAnalyser::subWindowDestroyed( QObject *obj )
