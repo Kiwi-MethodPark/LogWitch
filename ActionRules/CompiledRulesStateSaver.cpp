@@ -20,12 +20,15 @@ CompiledRulesStateSaver::CompiledRulesStateSaver(  TSharedConstLogEntryParserMod
 
    QToolBar* toolBar = new QToolBar( m_compiledRuleView);
    m_addSelectedRules = toolBar->addAction("add");
+   m_removeSelectedRules = toolBar->addAction("remove");
    vbox->addWidget(toolBar);
 
    m_compiledRuleView = new QTableView(m_displayWidget );
    m_compiledRuleView->verticalHeader()->setDefaultSectionSize( 20 );
    m_compiledRuleView->verticalHeader()->setResizeMode(QHeaderView::Fixed);
    m_compiledRuleView->horizontalHeader()->setDefaultSectionSize( 190 );
+   m_compiledRuleView->setSelectionBehavior(QAbstractItemView::SelectRows);
+   m_compiledRuleView->setSelectionMode( QAbstractItemView::ExtendedSelection );
    m_rulesCompiledModel = new TableModelRulesCompiled( m_compiledRuleView, cfg, ruleTable );
    m_compiledRuleView->setModel( m_rulesCompiledModel );
    vbox->addWidget(m_compiledRuleView);
@@ -38,6 +41,8 @@ void CompiledRulesStateSaver::connectActions( FilterRuleSelectionWindow *wnd )
 
     QObject::connect(m_addSelectedRules, SIGNAL(triggered()),
                      wnd, SLOT(addSelectionToCompiled()));
+    QObject::connect(m_removeSelectedRules, SIGNAL(triggered()),
+                     wnd, SLOT(removeSelectionFromCompiled()));
 
     m_connected = true;
 }

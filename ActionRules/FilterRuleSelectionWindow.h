@@ -43,9 +43,11 @@ public:
     TSharedCompiledRulesStateSaver getWindow( );
 
 public slots:
-    void addSelectionToCompiled();
+    void addSelectionToCompiled(  );
+    void removeSelectionFromCompiled(  );
 
 private:
+
     QTableView *m_ruleView;
     TableModelRules *m_rulesModel;
 

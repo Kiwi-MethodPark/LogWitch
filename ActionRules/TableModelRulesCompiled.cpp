@@ -180,3 +180,48 @@ void TableModelRulesCompiled::appendRule( TSharedFilterRuleRaw rule )
 
     updateFilterRuleTable();
 }
+
+void TableModelRulesCompiled::removeRule( const QModelIndex &index )
+{
+    if (!index.isValid())
+     return;
+
+    if ( index.row() < 0
+         || index.row() >= (m_table.size() ) )
+     return;
+
+    beginRemoveRows(QModelIndex(), index.row(), index.row());
+    m_table.erase( m_table.begin() + index.row() );
+    endRemoveRows();
+
+    updateFilterRuleTable();
+}
+
+namespace
+{
+    // Sorting in backward order.
+    bool indexRow(const QModelIndex &s1, const QModelIndex &s2)
+    {
+        return s1.row() > s2.row();
+    }
+}
+
+void TableModelRulesCompiled::removeRules( const QModelIndexList &idxList )
+{
+    // Removing many is complex, because the rows within idxList always reference
+    // to the state before removing a row. So we sort everything in reverse order
+    // and then start removing from the back on.
+    QModelIndexList myList( idxList );
+    qSort( myList.begin(), myList.end(), indexRow );
+
+    QModelIndexList::Iterator it;
+    for( it = myList.begin(); it != myList.end(); ++it )
+    {
+        beginRemoveRows(QModelIndex(), it->row(), it->row());
+        m_table.erase( m_table.begin() + it->row() );
+        endRemoveRows();
+    }
+
+    updateFilterRuleTable();
+}
+

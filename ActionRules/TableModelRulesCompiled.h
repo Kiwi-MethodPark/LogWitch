@@ -42,6 +42,10 @@ public:
 
     void appendRule( TSharedFilterRuleRaw rule );
 
+    void removeRule( const QModelIndex &index );
+
+    void removeRules( const QModelIndexList &idxList );
+
 public slots:
     void updateFilterRuleTable();
 

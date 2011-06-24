@@ -65,7 +65,7 @@ TSharedCompiledRulesStateSaver FilterRuleSelectionWindow::getWindow( )
     return m_compiledRules;
 }
 
-void FilterRuleSelectionWindow::addSelectionToCompiled()
+void FilterRuleSelectionWindow::addSelectionToCompiled( )
 {
     if( m_compiledRules )
     {
@@ -77,6 +77,16 @@ void FilterRuleSelectionWindow::addSelectionToCompiled()
             TSharedFilterRuleRaw rule = m_rulesModel->getRaw( *it );
             m_compiledRules->m_rulesCompiledModel->appendRule( rule );
         }
+    }
+}
+
+void FilterRuleSelectionWindow::removeSelectionFromCompiled( )
+{
+    if( m_compiledRules )
+    {
+        QItemSelectionModel *selMod = m_compiledRules->m_compiledRuleView->selectionModel();
+        QModelIndexList selection = selMod->selectedRows();
+        m_compiledRules->m_rulesCompiledModel->removeRules( selection );
     }
 }
 
