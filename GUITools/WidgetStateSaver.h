@@ -14,7 +14,7 @@
 #include <boost/shared_ptr.hpp>
 #include <qobject.h>
 
-using boost::shared_ptr;
+#define DEBUG_WIDGETSTATESAFER( x ) ;
 
 class ObjectState;
 

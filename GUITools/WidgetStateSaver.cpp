@@ -21,7 +21,7 @@ WidgetStateSaver::~WidgetStateSaver()
 void WidgetStateSaver::addElementToWatch( QObject *obj,
         boost::shared_ptr<ObjectStateSavingInterface> stateSaver )
 {
-    qDebug() << "adding object to watch " <<obj;
+    DEBUG_WIDGETSTATESAFER("adding object to watch " <<obj);
     m_myWatchedObjects.insert( ObjectStateDumper::value_type( obj, stateSaver ) );
     // Save actual obj state as state default.
     StateSaveMap::iterator it = m_stateHistoryMap.find( NULL );
@@ -35,7 +35,7 @@ void WidgetStateSaver::addElementToWatch( QObject *obj,
 
 void WidgetStateSaver::storeState( QObject *obj )
 {
-    qDebug() << "Storing state";
+    DEBUG_WIDGETSTATESAFER("Storing state");
     ObjectStateDumper::iterator it;
     ObjectStateList stateList;
 
@@ -67,7 +67,7 @@ void WidgetStateSaver::replayState( QObject *obj )
 
 void WidgetStateSaver::deregisterFocusObject( QObject *end, bool applyDefauls )
 {
-    qDebug() << "DeregisterFocusObject" << end;
+    DEBUG_WIDGETSTATESAFER("DeregisterFocusObject" << end);
     if( applyDefauls )
         replayState( NULL );
 
@@ -76,10 +76,10 @@ void WidgetStateSaver::deregisterFocusObject( QObject *end, bool applyDefauls )
 
 void WidgetStateSaver::switchState( QObject *newObject)
 {
-    qDebug() << "Request for wwitch state from " << m_lastObject << " to new " << newObject;
+    DEBUG_WIDGETSTATESAFER("Request for wwitch state from " << m_lastObject << " to new " << newObject);
     if( m_lastObject == newObject )
         return;
-    qDebug() << "Doing Switch state from " << m_lastObject << " to new " << newObject;
+    DEBUG_WIDGETSTATESAFER("Doing Switch state from " << m_lastObject << " to new " << newObject);
 
     if( m_lastObject )
         storeState( m_lastObject );

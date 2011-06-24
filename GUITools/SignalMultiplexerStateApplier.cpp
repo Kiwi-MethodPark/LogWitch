@@ -11,7 +11,7 @@
 
 boost::shared_ptr<SignalMultiplexerStateApplier> SignalMultiplexerStateApplier::generate( SignalMultiplexer *mul)
 {
-    shared_ptr<SignalMultiplexerStateApplier> obj( new SignalMultiplexerStateApplier( mul ) );
+    boost::shared_ptr<SignalMultiplexerStateApplier> obj( new SignalMultiplexerStateApplier( mul ) );
     obj->m_ptrToMyself = obj;
 
     return obj;

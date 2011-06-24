@@ -80,17 +80,17 @@ GetSetStateSaver<T>::GetSetStateSaver()
 template<class T>
 boost::shared_ptr<ObjectState> GetSetStateSaver<T>::dumpState( QObject *obj, QObject * ) const
 {
-    qDebug() << "dumping state" << obj;
+    DEBUG_WIDGETSTATESAFER("dumping state" << obj);
 
     typename T::ObjectToSet *wi = dynamic_cast<typename T::ObjectToSet *>(obj);
     if( wi )
     {
-        qDebug() << "Saving old widget: " << T::get( wi );
+        DEBUG_WIDGETSTATESAFER( "Saving old widget: " << T::get( wi ));
         return boost::shared_ptr<ObjectState>(new state( this->shared_from_this(), obj, T::get( wi ) ));
     }
     else
     {
-        qDebug() << "Ignoring: Cast failed";
+        DEBUG_WIDGETSTATESAFER("Ignoring: Cast failed");
         return boost::shared_ptr<ObjectState>(new ObjectState());
     }
 }
@@ -98,18 +98,18 @@ boost::shared_ptr<ObjectState> GetSetStateSaver<T>::dumpState( QObject *obj, QOb
 template<class T>
 void GetSetStateSaver<T>::replayState( QObject *obj, QObject *, const ObjectState *stateP ) const
 {
-    qDebug() << "Replaying state" << obj;
+    DEBUG_WIDGETSTATESAFER("Replaying state" << obj);
 
     typename T::ObjectToSet *wi = dynamic_cast<typename T::ObjectToSet *>(obj);
     const state *st = dynamic_cast<const state *>(stateP);
 
     if( wi && st )
     {
-        qDebug() << "Replaying old widget: " << st->m_widget;
+        DEBUG_WIDGETSTATESAFER("Replaying old widget: " << st->m_widget);
         T::set( wi, st->m_widget );
     }
     else
-        qDebug() << "Ignoring: Cast failed";
+        DEBUG_WIDGETSTATESAFER("Ignoring: Cast failed");
 }
 
 typedef GetSetStateSaver<DockWidgetStateSaverTypes> DockWidgetStateSaver;
