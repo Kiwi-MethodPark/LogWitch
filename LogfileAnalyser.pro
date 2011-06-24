@@ -17,7 +17,8 @@ QT += core \
     network
 
 # Input
-HEADERS += LogData/LogEntryAttributeNames.h \
+HEADERS += GUITools/GetSetStateSaver.hxx \
+    LogData/LogEntryAttributeNames.h \
     LogData/ObjectCache.hxx \
     ActionRules/ActionParser.h \
     GUITools/WidgetSaver.hpp \
@@ -44,7 +45,6 @@ HEADERS += LogData/LogEntryAttributeNames.h \
     EntryToTextFormaterLog4cplus.h \
     GUITools/SignalMultiplexerStateApplier.h \
     GUITools/SignalMultiplexer.h \
-    GUITools/DockWidgetStateSaver.h \
     GUITools/WidgetStateSaver.h \
     Assert.h \
     EntryToTextFormater.h \
@@ -93,7 +93,6 @@ SOURCES += LogData/LogEntryAttributeNames.cpp \
     EntryToTextFormaterLog4cplus.cpp \
     GUITools/SignalMultiplexerStateApplier.cpp \
     GUITools/SignalMultiplexer.cpp \
-    GUITools/DockWidgetStateSaver.cpp \
     GUITools/WidgetStateSaver.cpp \
     LogEntryCombinedWidget.cpp \
     LogEntryTableWindow.cpp \
