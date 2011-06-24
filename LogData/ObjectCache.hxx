@@ -39,6 +39,8 @@ public:
     typedef typename SIGNALLER::shStType StType;
 
     StType virtual getObject( StType in ) = 0;
+
+    bool virtual isCaching() const = 0;
 };
 
 /**
@@ -62,6 +64,8 @@ public:
 	 * @param in Object passing in
 	 */
 	StType getObject( StType in );
+
+	bool isCaching() const{ return true;}
 
 private:
 	struct lessStringSharedPtr
@@ -92,6 +96,8 @@ public:
      * @param in Object passing in
      */
     StType getObject( StType in );
+
+    bool isCaching() const {return false;};
 };
 
 

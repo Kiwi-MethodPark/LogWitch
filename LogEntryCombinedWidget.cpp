@@ -14,6 +14,7 @@
 #include "LogData/LogEntryParserModelConfiguration.h"
 #include "LogData/LogEntryAttributeFactory.h"
 #include "FilterListView.h"
+#include "LogData/ObjectCache.hxx"
 
 LogEntryCombinedWidget::LogEntryCombinedWidget( boost::shared_ptr<LogEntryTableModel> model, QWidget *parent )
 	: QMdiSubWindow( parent )
@@ -79,8 +80,12 @@ QTabWidget *LogEntryCombinedWidget::getTabFilterWidget()
 		int attributes = m_model->getParserModelConfiguration()->getLogEntryAttributeFactory()->getNumberOfFields();
 		for(int attr = 0; attr < attributes; attr++ )
 		{
-		    FilterListView *view = new FilterListView( this, m_model->getParserModelConfiguration(), attr );
-		    view->addToTabs( tabs, this );
+		    // Only show tabs with an active StringCahche.
+		    if( m_model->getParserModelConfiguration()->getLogEntryAttributeFactory()->getCache(attr).isCaching() )
+		    {
+		        FilterListView *view = new FilterListView( this, m_model->getParserModelConfiguration(), attr );
+		        view->addToTabs( tabs, this );
+		    }
 		}
 		m_myFilterTabs = tabs;
 	}
