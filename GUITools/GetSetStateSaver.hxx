@@ -109,7 +109,9 @@ void GetSetStateSaver<T>::replayState( QObject *obj, QObject *, const ObjectStat
         T::set( wi, st->m_widget );
     }
     else
+    {
         DEBUG_WIDGETSTATESAFER("Ignoring: Cast failed");
+    }
 }
 
 typedef GetSetStateSaver<DockWidgetStateSaverTypes> DockWidgetStateSaver;
