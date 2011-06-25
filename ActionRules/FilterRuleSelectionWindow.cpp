@@ -16,7 +16,7 @@ FilterRuleSelectionWindow::FilterRuleSelectionWindow( QWidget* parent )
 : QSplitter( Qt::Vertical, parent )
 , m_compiledRules( )
 {
-    m_ruleView = new QTableView(  );
+    m_ruleView = new RulesTableView( );
     m_ruleView->verticalHeader()->setDefaultSectionSize( 20 );
     m_ruleView->horizontalHeader()->setDefaultSectionSize( 190 );
     m_ruleView->verticalHeader()->setResizeMode(QHeaderView::Fixed);
@@ -24,7 +24,21 @@ FilterRuleSelectionWindow::FilterRuleSelectionWindow( QWidget* parent )
     m_ruleView->setModel( m_rulesModel );
     m_ruleView->setSelectionBehavior(QAbstractItemView::SelectRows);
     m_ruleView->setSelectionMode( QAbstractItemView::ExtendedSelection );
-    addWidget( m_ruleView );
+
+    QWidget *displayWidget = new QWidget(); //This is the pane
+    QVBoxLayout* vbox = new QVBoxLayout(displayWidget);
+    displayWidget->setLayout(vbox);
+
+    QToolBar* toolBar = new QToolBar( displayWidget );
+    m_addSelectedRules = toolBar->addAction("addNew");
+    m_addSelectedRules->setIcon(QIcon(":/icons/plus"));
+    m_trashSelectedRules = toolBar->addAction("Trash");
+    m_trashSelectedRules->setIcon(QIcon(":/icons/trash"));
+    toolBar->setIconSize(QSize(16,16));
+    vbox->addWidget(toolBar);
+    vbox->addWidget(m_ruleView);
+
+    addWidget( displayWidget );
     addWidget( new QLabel ( tr("Context missing - open or select a Logger window to add rules."), this ) );
     //addWidget( generateNewParserWindow() );
     QList<int> he; he << 300 << 500;

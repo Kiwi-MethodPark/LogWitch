@@ -16,6 +16,7 @@
 
 #include "ActionRules/Action.h"
 #include "ActionRules/FilterRuleRaw.h"
+#include <QtGui>
 
 using boost::shared_ptr;
 
@@ -45,7 +46,6 @@ private:
     std::vector<TSharedFilterRuleRaw> m_table;
 
     static const int m_columnCount = 2;
-
 };
 
 #endif /* TABLEMODELRULES_H_ */

@@ -83,8 +83,8 @@
   <action name="actionClearLogTable">
    <property name="icon">
     <iconset resource="LogfileAnalyserResources.qrc">
-     <normaloff>:/icons/icons/trash32x32.png</normaloff>
-     <normalon>:/icons/icons/trash32x32.png</normalon>:/icons/icons/trash32x32.png</iconset>
+     <normalon>:/icons/trash</normalon>
+	</iconset>
    </property>
    <property name="text">
     <string>Clear</string>
@@ -93,7 +93,7 @@
   <action name="actionOpenLog4cplusServer">
    <property name="icon">
     <iconset>
-     <normalon>:/icons/icons/network32x32.png</normalon>
+     <normalon>:/icons/network</normalon>
     </iconset>
    </property>
    <property name="text">

@@ -11,6 +11,7 @@
 #include "ActionRules/TableModelRules.h"
 #include "ActionRules/TableModelRulesCompiled.h"
 #include "ActionRules/CompiledRulesStateSaver.h"
+#include "ActionRules/RulesTableView.h"
 
 class CompiledRulesStateSaver;
 class LogEntryTableFilter;
@@ -48,10 +49,13 @@ public slots:
 
 private:
 
-    QTableView *m_ruleView;
+    RulesTableView *m_ruleView;
     TableModelRules *m_rulesModel;
 
     TSharedCompiledRulesStateSaver m_compiledRules;
+
+    QAction *m_addSelectedRules;
+    QAction *m_trashSelectedRules;
 };
 
 class FilterRuleSelWndStateSaverTypes

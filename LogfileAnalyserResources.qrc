@@ -1,6 +1,8 @@
 <RCC>
-  <qresource prefix="icons">
-    <file>icons/network32x32.png</file>
-    <file>icons/trash32x32.png</file>
-  </qresource>
+    <qresource prefix="/icons">
+        <file alias="network">icons/network.svg</file>
+        <file alias="trash">icons/trash.svg</file>
+        <file alias="plus">icons/plus.svg</file>
+        <file alias="minus">icons/minus.svg</file>
+    </qresource>
 </RCC>
