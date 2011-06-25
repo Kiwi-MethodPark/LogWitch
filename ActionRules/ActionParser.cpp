@@ -20,6 +20,7 @@
 #include <QtGui>
 
 #include "ActionRules/ActionDataRewriter.h"
+#include "ActionRules/ActionDoNothing.h"
 
 using boost::spirit::tag::space;
 
@@ -62,7 +63,7 @@ namespace actionParser
 
             void operator()(TSharedAction& entry ) const
             {
-                entry = TSharedAction();
+                entry = TSharedAction( new ActionDoNothing );
             }
         };
         struct constructEmptyActionDataRewriter
