@@ -31,6 +31,44 @@ TableModelRules::~TableModelRules()
 {
 }
 
+void TableModelRules::insertEmptyRule()
+{
+    TSharedFilterRuleRaw row = TSharedFilterRuleRaw( new FilterRuleRaw );
+    row->actionString( "" );
+    row->expressionAsString("");
+
+    int newPos = m_table.size();
+    beginInsertRows( QModelIndex(), newPos, newPos );
+    m_table.push_back( row );
+    endInsertRows();
+}
+
+namespace
+{
+    // Sorting in backward order.
+    bool indexRow(const QModelIndex &s1, const QModelIndex &s2)
+    {
+        return s1.row() > s2.row();
+    }
+}
+
+void TableModelRules::removeRules( const QModelIndexList &idxList )
+{
+    // Removing many is complex, because the rows within idxList always reference
+    // to the state before removing a row. So we sort everything in reverse order
+    // and then start removing from the back on.
+    QModelIndexList myList( idxList );
+    qSort( myList.begin(), myList.end(), indexRow );
+
+    QModelIndexList::Iterator it;
+    for( it = myList.begin(); it != myList.end(); ++it )
+    {
+        beginRemoveRows(QModelIndex(), it->row(), it->row());
+        m_table.erase( m_table.begin() + it->row() );
+        endRemoveRows();
+    }
+}
+
 int TableModelRules::rowCount(const QModelIndex &parent) const
 {
     Q_UNUSED(parent);

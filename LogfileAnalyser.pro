@@ -18,6 +18,7 @@ QT += core \
 
 # Input
 HEADERS += GUITools/GetSetStateSaver.hxx \
+    ActionRules/RulesTableView.h \
     LogData/LogEntryAttributeNames.h \
     LogData/ObjectCache.hxx \
     ActionRules/ActionParser.h \
@@ -69,6 +70,7 @@ HEADERS += GUITools/GetSetStateSaver.hxx \
     Models/StringCacheTreeModel.h
 FORMS += logfileanalyser.ui
 SOURCES += LogData/LogEntryAttributeNames.cpp \
+    ActionRules/RulesTableView.cpp \
     ActionRules/ActionParser.cpp \
     ActionRules/CompiledRulesStateSaver.cpp \
     ActionRules/ExpressionParser.cpp \

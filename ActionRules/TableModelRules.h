@@ -42,6 +42,18 @@ public:
 
     TSharedFilterRuleRaw getRaw(const QModelIndex &index)const;
 
+    /**
+     * Removes a specified set of rules.
+     * After calling this, all indexes will be invalid.
+     */
+    void removeRules( const QModelIndexList &idxList );
+
+public slots:
+    /**
+     * This method inserts a new created rule.
+     */
+    void insertEmptyRule();
+
 private:
     std::vector<TSharedFilterRuleRaw> m_table;
 

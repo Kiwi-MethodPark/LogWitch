@@ -30,10 +30,20 @@ FilterRuleSelectionWindow::FilterRuleSelectionWindow( QWidget* parent )
     displayWidget->setLayout(vbox);
 
     QToolBar* toolBar = new QToolBar( displayWidget );
+
+    // Add new Rule action
     m_addSelectedRules = toolBar->addAction("addNew");
     m_addSelectedRules->setIcon(QIcon(":/icons/plus"));
+    QObject::connect(m_addSelectedRules, SIGNAL(triggered()),
+            m_rulesModel, SLOT(insertEmptyRule()));
+
+    // Add trash selected rule action
     m_trashSelectedRules = toolBar->addAction("Trash");
     m_trashSelectedRules->setIcon(QIcon(":/icons/trash"));
+    QObject::connect(m_trashSelectedRules, SIGNAL(triggered()),
+            this, SLOT(trashSelectedRules()));
+
+    // Finish toolbar
     toolBar->setIconSize(QSize(16,16));
     vbox->addWidget(toolBar);
     vbox->addWidget(m_ruleView);
@@ -77,6 +87,14 @@ void FilterRuleSelectionWindow::setWindow( TSharedCompiledRulesStateSaver state 
 TSharedCompiledRulesStateSaver FilterRuleSelectionWindow::getWindow( )
 {
     return m_compiledRules;
+}
+
+void FilterRuleSelectionWindow::trashSelectedRules()
+{
+    qDebug() <<"FilterRuleSelectionWindow::trashSelectedRules()";
+    QItemSelectionModel *selMod = m_ruleView->selectionModel();
+    QModelIndexList selection = selMod->selectedRows();
+    m_rulesModel->removeRules( selection );
 }
 
 void FilterRuleSelectionWindow::addSelectionToCompiled( )

@@ -41,11 +41,12 @@ public:
      * it via setWindow. If no window was set before, it returns a
      * empty pointer.
      */
-    TSharedCompiledRulesStateSaver getWindow( );
+    TSharedCompiledRulesStateSaver getWindow();
 
 public slots:
-    void addSelectionToCompiled(  );
-    void removeSelectionFromCompiled(  );
+    void addSelectionToCompiled();
+    void removeSelectionFromCompiled();
+    void trashSelectedRules();
 
 private:
 
