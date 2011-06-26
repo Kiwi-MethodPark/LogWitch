@@ -17,9 +17,11 @@ QT += core \
     network
 
 # Input
-HEADERS += GUITools/GetSetStateSaver.hxx \
+HEADERS += ActionRules/ExpressionOperators.h \
+    ActionRules/ExpressionRegEx.h \
     ActionRules/ActionDoNothing.h \
     ActionRules/RulesTableView.h \
+    GUITools/GetSetStateSaver.hxx \
     LogData/LogEntryAttributeNames.h \
     LogData/ObjectCache.hxx \
     ActionRules/ActionParser.h \
@@ -70,9 +72,11 @@ HEADERS += GUITools/GetSetStateSaver.hxx \
     Models/StringCacheTreeItem.h \
     Models/StringCacheTreeModel.h
 FORMS += logfileanalyser.ui
-SOURCES += LogData/LogEntryAttributeNames.cpp \
+SOURCES += ActionRules/ExpressionOperators.cpp \
+    ActionRules/ExpressionRegEx.cpp \
     ActionRules/ActionDoNothing.cpp \
     ActionRules/RulesTableView.cpp \
+    LogData/LogEntryAttributeNames.cpp \
     ActionRules/ActionParser.cpp \
     ActionRules/CompiledRulesStateSaver.cpp \
     ActionRules/ExpressionParser.cpp \

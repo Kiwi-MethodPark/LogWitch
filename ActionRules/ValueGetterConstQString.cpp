@@ -32,14 +32,16 @@ TSharedConstQString ValueGetterConstQString::getValue( TconstSharedLogEntry & ) 
 
 std::ostream &ValueGetterConstQString::out( std::ostream &o, bool extended ) const
 {
+    QString str = *m_string;
+    str.replace('"',"\\\"");
     if( extended )
     {
-        o << "ValueGetterConstQString{"<< "\"" << m_string->toStdString() << "\"" << "}";
+        o << "ValueGetterConstQString{"<< "\"" << str.toStdString() << "\"" << "}";
         return o;
     }
     else
     {
-        o << "\"" << m_string->toStdString() << "\"";
+        o << "\"" << str.toStdString() << "\"";
         return o;
     }
 }

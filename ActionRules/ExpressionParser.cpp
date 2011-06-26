@@ -12,12 +12,15 @@
 #include <boost/spirit/include/phoenix_operator.hpp>
 #include <boost/spirit/include/phoenix_fusion.hpp>
 #include <boost/spirit/include/phoenix_stl.hpp>
+#include <boost/spirit/home/phoenix/core/value.hpp>
 #include <boost/fusion/include/adapt_struct.hpp>
 #include <boost/variant/recursive_variant.hpp>
 
 #include <Qt/qstring.h>
 
 #include "ActionRules/Expression.h"
+#include "ActionRules/ExpressionOperators.h"
+#include "ActionRules/ExpressionRegEx.h"
 #include "ActionRules/ExpressionValueGetter.h"
 #include "ActionRules/ValueGetterConstQString.h"
 #include "ActionRules/ValueGetterLogEntry.h"
@@ -43,6 +46,21 @@ namespace boost { namespace spirit { namespace traits
         }
     };
 }}}
+
+std::ostream& operator<<(std::ostream&o, const QString& str)
+{
+    return o << str.toStdString();
+}
+
+std::ostream& operator<<(std::ostream&o, const TSharedExpression& str)
+{
+    return o << *str;
+}
+
+std::ostream& operator<<(std::ostream&o, const TSharedValueGetter& str)
+{
+    return o << *str;
+}
 
 namespace expressionParser
 {
@@ -73,24 +91,74 @@ namespace expressionParser
                 entry = TSharedValueGetter( new ValueGetterConstQString( name ) );
             }
         };
-        struct constructPartialExpVG
+        struct constructExpVG
         {
-            template <typename S1,typename S2>
+            template <typename S1,typename S2, typename S3>
             struct result { typedef void type; };
 
-            void operator()(TSharedExpressionValueGetter& entry, TSharedValueGetter &left) const
+            void operator()(TSharedExpression& entry, TSharedValueGetter &left, TSharedValueGetter &right) const
             {
-                entry = TSharedExpressionValueGetter( new ExpressionValueGetter( left ) );
+                entry = TSharedExpressionValueGetter( new ExpressionValueGetter( left, right ) );
             }
         };
-        struct setRightToExpVG
+        struct constructExpRegEx
+        {
+            template <typename S1,typename S2, typename S3>
+            struct result { typedef void type; };
+
+            void operator()(TSharedExpression& entry, TSharedValueGetter &value, QString &regex) const
+            {
+                entry = TSharedExpressionRegEx( new ExpressionRegEx( value, regex ) );
+            }
+        };
+        struct constructExpOpNeg
         {
             template <typename S1,typename S2>
             struct result { typedef void type; };
 
-            void operator()(TSharedExpressionValueGetter& entry, TSharedValueGetter &right) const
+            void operator()(TSharedExpression& entry, TSharedExpression &value) const
             {
-                entry->setRight( right );
+                entry = TSharedExpressionOpNegate( new ExpressionOpNegate( value ) );
+            }
+        };
+        struct constructExpOpAnd
+        {
+            template <typename S1,typename S2,typename S3>
+            struct result { typedef void type; };
+
+            void operator()(TSharedExpression& entry, TSharedExpression &left, TSharedExpression &right) const
+            {
+                entry = TSharedExpressionOpAnd( new ExpressionOpAnd( left, right ) );
+            }
+        };
+        struct constructExpOpOr
+        {
+            template <typename S1,typename S2,typename S3>
+            struct result { typedef void type; };
+
+            void operator()(TSharedExpression& entry, TSharedExpression &left, TSharedExpression &right) const
+            {
+                entry = TSharedExpressionOpOr( new ExpressionOpOr( left, right ) );
+            }
+        };
+        struct constructExpOpXOr
+        {
+            template <typename S1,typename S2,typename S3>
+            struct result { typedef void type; };
+
+            void operator()(TSharedExpression& entry, TSharedExpression &left, TSharedExpression &right) const
+            {
+                entry = TSharedExpressionOpXOr( new ExpressionOpXOr( left, right ) );
+            }
+        };
+        struct constructExpConst
+        {
+            template <typename S1,typename S2>
+            struct result { typedef void type; };
+
+            void operator()(TSharedExpression& entry, bool value) const
+            {
+                entry = TSharedExpressionConst( new ExpressionConst( value ) );
             }
         };
     }
@@ -99,7 +167,7 @@ namespace expressionParser
    template <typename Iterator>
    struct expression_grammar : qi::grammar<Iterator, TSharedExpression(), ascii::space_type>
    {
-       expression_grammar( TSharedConstLogEntryParserModelConfiguration cfg) : expression_grammar::base_type(expression)
+       expression_grammar( TSharedConstLogEntryParserModelConfiguration cfg) : expression_grammar::base_type(top)
        {
            using qi::lit;
            using qi::lexeme;
@@ -107,34 +175,128 @@ namespace expressionParser
            using ascii::string;
            using namespace qi::labels;
            using boost::phoenix::function;
+           using boost::phoenix::val;
            using boost::spirit::ascii::alpha;
 
            function<detail::createVGLogEntry> createVGLogEntry;
            function<detail::createVGConstString> createVGConstString;
-           function<detail::constructPartialExpVG> constructPartialExpVG;
-           function<detail::setRightToExpVG> setRightToExpVG;
+           function<detail::constructExpVG> constructExpVG;
+           function<detail::constructExpRegEx> constructExpRegEx;
+           function<detail::constructExpOpNeg> constructExpOpNeg;
+           function<detail::constructExpOpAnd> constructExpOpAnd;
+           function<detail::constructExpOpOr> constructExpOpOr;
+           function<detail::constructExpOpXOr> constructExpOpXOr;
+           function<detail::constructExpConst> constructExpConst;
 
-           expression = expressionVG[_val = _1];
+           top =
+                   expression [_val=_1]
+                   | qi::eps[constructExpConst(_val,val(true))];
 
-           expressionVG = vg_LogEntry[ constructPartialExpVG(_val, _1 )] >> "==" >> vg_ConstString[setRightToExpVG(_val, _1 )]
-               | vg_ConstString[ constructPartialExpVG(_val, _1 )] >> "==" >> vg_LogEntry[setRightToExpVG(_val, _1 )]
-               | vg_ConstString[ constructPartialExpVG(_val, _1 )] >> "==" >> vg_ConstString[setRightToExpVG(_val, _1 )]
-               | vg_LogEntry[ constructPartialExpVG(_val, _1 )] >> "==" >> vg_LogEntry[setRightToExpVG(_val, _1 )];
+           expression =
+                     orExprTerm [_val=_1]
+                   | basicExpr [_val=_1]
+                   ;
 
-           quotedQString %= lexeme['"' >> +(char_ - '"') >> '"'];
-           unquotedQString %=  +(alpha) ;
+           orExprTerm =
+                     ((xorExprTerm >> "||" >> xorExprTerm)[constructExpOpOr(_val,_1,_2)])
+                   | xorExprTerm [_val=_1]
+                   ;
 
-           vg_ConstString = quotedQString[createVGConstString(_val,_1)];
+           xorExprTerm =
+                     ((andExprTerm >> "^^" >> andExprTerm)[constructExpOpXOr(_val,_1,_2)])
+                   | andExprTerm [_val=_1]
+                   ;
+
+           andExprTerm =
+                     ((unaryExprTerm >> "&&" >> unaryExprTerm)[constructExpOpAnd(_val,_1,_2)])
+                   | unaryExprTerm [_val=_1]
+                   ;
+
+           unaryExprTerm =
+                     ("!(" >> expression[constructExpOpNeg(_val,_1)] >> ")" )
+                   | ('(' >> expression >> ')') [_val=_1]
+                   | basicExpr [_val=_1]
+                   ;
+
+           basicExpr =
+                     expressionVG [_val=_1]
+                   | expressionRegEx [_val=_1]
+                   | expressionConst [_val=_1]
+                   ;
+
+           expressionVG = ( valueGetter >> "==" >> valueGetter)[ constructExpVG(_val, _1, _2 )]
+                     | ( valueGetter >> "!=" >> valueGetter)[ constructExpVG(_val, _1, _2 )]
+                         >> qi::eps[constructExpOpNeg(_val,_val)] ;
+
+           expressionRegEx = (valueGetter >> "=~" >> quotedQStringRegEx)[ constructExpRegEx(_val, _1, _2)]
+                     | (valueGetter >> "!~" >> quotedQStringRegEx)[ constructExpRegEx(_val, _1, _2)]
+                         >> qi::eps[constructExpOpNeg(_val,_val)] ;
+
+           expressionConst =
+                     lit("true") [constructExpConst(_val,val(true))]
+                   | lit("false") [constructExpConst(_val,val(false))]
+                   ;
+
+           valueGetter %= vg_ConstString
+                   | vg_LogEntry;
+
+           vg_ConstString = quotedQString('"')[createVGConstString(_val,_1)];
            vg_LogEntry = unquotedQString[createVGLogEntry(_val,_1,cfg)];
+
+           quotedQString = lexeme[
+                                  lit(_r1)
+                               >> +(
+                                       ( '\\' >> char_(_r1) ) [_val += _1]
+                                       || (char_ - lit(_r1) ) [_val += _1]
+                                   )
+                               >> lit(_r1)];
+
+           quotedQStringRegEx %=
+                     quotedQString('"')
+                   | quotedQString('/')
+                   | quotedQString('|')
+                   | quotedQString('#')
+                   ;
+
+           unquotedQString %=  +(alpha);
+
+           BOOST_SPIRIT_DEBUG_NODE(top);
+           BOOST_SPIRIT_DEBUG_NODE(expression);
+           BOOST_SPIRIT_DEBUG_NODE(orExprTerm);
+           BOOST_SPIRIT_DEBUG_NODE(xorExprTerm);
+           BOOST_SPIRIT_DEBUG_NODE(andExprTerm);
+           BOOST_SPIRIT_DEBUG_NODE(unaryExprTerm);
+           BOOST_SPIRIT_DEBUG_NODE(basicExpr);
+
+           BOOST_SPIRIT_DEBUG_NODE(expressionVG);
+           BOOST_SPIRIT_DEBUG_NODE(expressionRegEx);
+           BOOST_SPIRIT_DEBUG_NODE(expressionConst);
+
+           BOOST_SPIRIT_DEBUG_NODE(valueGetter);
+           BOOST_SPIRIT_DEBUG_NODE(vg_LogEntry);
+           BOOST_SPIRIT_DEBUG_NODE(vg_ConstString);
+
+           BOOST_SPIRIT_DEBUG_NODE(quotedQString);
+           BOOST_SPIRIT_DEBUG_NODE(unquotedQString);
        }
 
-       qi::rule<Iterator,  QString(), ascii::space_type> quotedQString;
-       qi::rule<Iterator,  QString(), ascii::space_type> unquotedQString;
+       qi::rule<Iterator, TSharedExpression(), ascii::space_type> top;
+       qi::rule<Iterator, TSharedExpression(), ascii::space_type> expression;
+       qi::rule<Iterator, TSharedExpression(), ascii::space_type> orExprTerm;
+       qi::rule<Iterator, TSharedExpression(), ascii::space_type> xorExprTerm;
+       qi::rule<Iterator, TSharedExpression(), ascii::space_type> andExprTerm;
+       qi::rule<Iterator, TSharedExpression(), ascii::space_type> unaryExprTerm;
+       qi::rule<Iterator, TSharedExpression(), ascii::space_type> basicExpr;
+       qi::rule<Iterator, TSharedExpression(), ascii::space_type> expressionVG;
+       qi::rule<Iterator, TSharedExpression(), ascii::space_type> expressionRegEx;
+       qi::rule<Iterator, TSharedExpression(), ascii::space_type> expressionConst;
+
+       qi::rule<Iterator, TSharedValueGetter(), ascii::space_type> valueGetter;
        qi::rule<Iterator, TSharedValueGetter(), ascii::space_type> vg_LogEntry;
        qi::rule<Iterator, TSharedValueGetter(), ascii::space_type> vg_ConstString;
-
-       qi::rule<Iterator, TSharedExpressionValueGetter(), ascii::space_type> expressionVG;
-       qi::rule<Iterator, TSharedExpression(), ascii::space_type> expression;
+       qi::rule<Iterator,  QString(const char), ascii::space_type> quotedQString;
+       qi::rule<Iterator,  QString(), ascii::space_type> quotedQStringRegEx;
+       qi::rule<Iterator,  QString(), ascii::space_type> unquotedQString;
    };
 }
 
