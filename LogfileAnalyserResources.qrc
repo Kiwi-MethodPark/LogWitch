@@ -4,5 +4,10 @@
         <file alias="trash">icons/trash.svg</file>
         <file alias="plus">icons/plus.svg</file>
         <file alias="minus">icons/minus.svg</file>
+        <file alias="fatal">icons/fatal.svg</file>
+        <file alias="error">icons/error.svg</file>
+        <file alias="warning">icons/warning.svg</file>
+        <file alias="information">icons/information.svg</file>
+        <file alias="trace">icons/bug.svg</file>
     </qresource>
 </RCC>
