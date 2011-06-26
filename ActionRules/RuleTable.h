@@ -62,6 +62,19 @@ public:
         return !actions.empty();
     }
 
+    template <class T>
+    bool isActionMatched( TconstSharedLogEntry &entry ) const
+    {
+        TRuleList::const_iterator it;
+        for( it = m_rules.begin(); it != m_rules.end(); ++it )
+        {
+            T action = boost::dynamic_pointer_cast<typename T::element_type>( (*it)->getAction() );
+            if( action && (*it)->checkRule( entry ) )
+                return true;
+        }
+        return false;
+    }
+
     void beginChange();
     void endChange();
 signals:

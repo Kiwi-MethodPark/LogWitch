@@ -17,7 +17,8 @@ QT += core \
     network
 
 # Input
-HEADERS += ActionRules/ExpressionOperators.h \
+HEADERS += ActionRules/ActionDiscardRow.h \
+    ActionRules/ExpressionOperators.h \
     ActionRules/ExpressionRegEx.h \
     ActionRules/ActionDoNothing.h \
     ActionRules/RulesTableView.h \
@@ -35,7 +36,6 @@ HEADERS += ActionRules/ExpressionOperators.h \
     ActionRules/TableModelRules.h \
     ActionRules/ActionDataRewriter.h \
     ActionRules/RuleTable.h \
-    ActionRules/ActionRemoveRow.h \
     ActionRules/ValueGetterConstQString.h \
     ActionRules/ValueGetterLogEntry.h \
     ActionRules/ExpressionValueGetter.h \
@@ -72,7 +72,8 @@ HEADERS += ActionRules/ExpressionOperators.h \
     Models/StringCacheTreeItem.h \
     Models/StringCacheTreeModel.h
 FORMS += logfileanalyser.ui
-SOURCES += ActionRules/ExpressionOperators.cpp \
+SOURCES += ActionRules/ActionDiscardRow.cpp \
+    ActionRules/ExpressionOperators.cpp \
     ActionRules/ExpressionRegEx.cpp \
     ActionRules/ActionDoNothing.cpp \
     ActionRules/RulesTableView.cpp \
@@ -87,7 +88,6 @@ SOURCES += ActionRules/ExpressionOperators.cpp \
     ActionRules/TableModelRules.cpp \
     ActionRules/ActionDataRewriter.cpp \
     ActionRules/RuleTable.cpp \
-    ActionRules/ActionRemoveRow.cpp \
     ActionRules/ValueGetterConstQString.cpp \
     ActionRules/ValueGetterLogEntry.cpp \
     ActionRules/ExpressionValueGetter.cpp \

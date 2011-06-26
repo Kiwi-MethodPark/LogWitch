@@ -9,16 +9,18 @@
 #define ACTIONREMOVEROW_H_
 #include "ActionRules/Action.h"
 
-class ActionRemoveRow
+class ActionDiscardRow
     : public Action
 {
 public:
-    ActionRemoveRow();
-    ~ActionRemoveRow();
+    ActionDiscardRow();
+    ~ActionDiscardRow();
 
     QVariant toDisplay( int role ) const;
-
-    void execute( ) const {};
 };
+
+
+typedef boost::shared_ptr<ActionDiscardRow> TSharedActionDiscardRow;
+typedef boost::shared_ptr<const ActionDiscardRow> TconstSharedActionDiscardRow;
 
 #endif /* ACTIONREMOVEROW_H_ */

@@ -23,6 +23,7 @@
 
 #include "ActionRules/ActionDataRewriter.h"
 #include "ActionRules/ActionDoNothing.h"
+#include "ActionRules/ActionDiscardRow.h"
 
 using boost::spirit::tag::space;
 using boost::spirit::locals;
@@ -59,26 +60,6 @@ namespace actionParser
 
     namespace detail
     {
-        struct constructEmptyAction
-        {
-            template <typename S1>
-            struct result { typedef void type; };
-
-            void operator()(TSharedAction& entry ) const
-            {
-                entry = TSharedAction( new ActionDoNothing );
-            }
-        };
-        struct constructEmptyActionDataRewriter
-        {
-            template <typename S1, typename S2>
-            struct result { typedef void type; };
-
-            void operator()(TSharedActionDataRewriter& entry, TSharedConstLogEntryParserModelConfiguration cfg ) const
-            {
-                entry = TSharedActionDataRewriter( new ActionDataRewriter( cfg ) );
-            }
-        };
         struct addRewriteRule
         {
             template <typename S1, typename S2>
@@ -163,27 +144,29 @@ namespace actionParser
             using namespace qi::labels;
             using boost::phoenix::function;
             using boost::phoenix::val;
+            using boost::phoenix::ref;
             using boost::phoenix::at_c;
             using boost::phoenix::construct;
             using boost::spirit::ascii::alpha;
             using boost::spirit::qi::uint_parser;
             using boost::spirit::qi::locals;
 
-            function<detail::constructEmptyAction> constructEmptyAction;
-
-            function<detail::constructEmptyActionDataRewriter> constructEmptyActionDataRewriter;
             function<detail::addRewriteRule> addRewriteRule;
 
             action = actionDataRewriter [_val = _1]
-                    | qi::eps [ constructEmptyAction(_val) ];
+                    | actionDiscardRow [_val = _1]
+                    | qi::eps [ _val = construct<TSharedAction>( val(new ActionDoNothing) ) ];
 
             actionDataRewriter =
-                    qi::eps [constructEmptyActionDataRewriter(_val, cfg)]
-                    >> "Rewrite("
+                    qi::eps [_val = construct<TSharedActionDataRewriter>( val( new ActionDataRewriter( cfg ) ) )]
+                    >> "rewrite("
                     >>  ( rewriteRule [ addRewriteRule(_val, _1)]
                            | rewriteRuleColumn [ addRewriteRule(_val, _1)]
                         ) % ','
                     >> ')' ;
+
+            actionDiscardRow =
+                    lit("discard()") [_val = construct<TSharedAction>( val(new ActionDiscardRow) )];
 
            rewriteRule %= rewriteRuleColor
                    | rewriteRuleIcon
@@ -215,6 +198,7 @@ namespace actionParser
 
         qi::rule<Iterator, TSharedAction(), ascii::space_type> action;
         qi::rule<Iterator, TSharedActionDataRewriter(), ascii::space_type> actionDataRewriter;
+        qi::rule<Iterator, TSharedAction(), ascii::space_type> actionDiscardRow;
 
         qi::rule<Iterator, TRoleVariantPair(), ascii::space_type> rewriteRule;
         qi::rule<Iterator, TRoleVariantPair(), ascii::space_type> rewriteRuleColor;

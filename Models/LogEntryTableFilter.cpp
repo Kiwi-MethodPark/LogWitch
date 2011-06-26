@@ -11,6 +11,7 @@
 #include "LogData/LogEntryAttributes.h"
 #include "Assert.h"
 #include "ActionRules/ActionDataRewriter.h"
+#include "ActionRules/ActionDiscardRow.h"
 
 LogEntryTableFilter::LogEntryTableFilter( QObject *parent)
 	: QSortFilterProxyModel( parent )
@@ -72,8 +73,21 @@ void LogEntryTableFilter::setSourceModel( QAbstractItemModel *model )
 
 bool LogEntryTableFilter::filterAcceptsRow ( int sourceRow, const QModelIndex & sourceParent ) const
 {
+    bool filterAccept = true;
+
     QModelIndex index = sourceModel()->index(sourceRow, 0, sourceParent);
     TconstSharedLogEntry entry = m_model->getEntryByIndex( index );
 
-    return m_filterChain.filterEntry( entry );
+    filterAccept &= m_filterChain.filterEntry( entry );
+
+    if( m_ruleTable )
+    {
+        std::list<  TconstSharedActionDiscardRow > actions;
+        if( m_ruleTable->isActionMatched<TconstSharedActionDiscardRow>( entry ) )
+        {
+            filterAccept = false;
+        }
+    }
+
+    return filterAccept;
 }
