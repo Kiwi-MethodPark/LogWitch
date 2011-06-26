@@ -15,9 +15,10 @@ class LogEntryTableModel;
 class QSortFilterProxyModel;
 class LogEntryFilter;
 class LogEntryTableFilter;
+class QScrollDownTableView;
 
 class LogEntryTableWindow
-	: public QTableView
+	: public QWidget
 {
 	Q_OBJECT
 public:
@@ -30,15 +31,16 @@ public:
 
 	void setRuleTable( TconstSharedRuleTable table );
 
-protected:
-	void updateGeometries();
+	QTableView *tableView();
 
 private:
 	boost::shared_ptr<LogEntryTableModel> m_model;
 
-	QTableView m_tableView;
+	QScrollDownTableView *m_tableView;
 
 	LogEntryTableFilter *m_proxyModel;
+
+	QLineEdit *m_quickSearch;
 };
 
 #endif /* LOGENTRYTABLEWINDOW_H_ */

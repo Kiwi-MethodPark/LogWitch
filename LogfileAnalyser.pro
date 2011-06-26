@@ -18,6 +18,7 @@ QT += core \
 
 # Input
 HEADERS += ActionRules/ActionDiscardRow.h \
+    GUITools/QScrollDownTableView.h \
     ActionRules/ExpressionOperators.h \
     ActionRules/ExpressionRegEx.h \
     ActionRules/ActionDoNothing.h \
@@ -73,6 +74,7 @@ HEADERS += ActionRules/ActionDiscardRow.h \
     Models/StringCacheTreeModel.h
 FORMS += logfileanalyser.ui
 SOURCES += ActionRules/ActionDiscardRow.cpp \
+    GUITools/QScrollDownTableView.cpp \
     ActionRules/ExpressionOperators.cpp \
     ActionRules/ExpressionRegEx.cpp \
     ActionRules/ActionDoNothing.cpp \

@@ -26,7 +26,7 @@ LogEntryCombinedWidget::LogEntryCombinedWidget( boost::shared_ptr<LogEntryTableM
 	m_table = new LogEntryTableWindow( model, this );
 	m_text = new QTextEdit("<b>Log Message viewer</b>",this);
 
-    QObject::connect(m_table->selectionModel(), SIGNAL(selectionChanged ( const QItemSelection & , const QItemSelection & )),
+    QObject::connect(m_table->tableView()->selectionModel(), SIGNAL(selectionChanged ( const QItemSelection & , const QItemSelection & )),
                      SLOT(newSelection ( const QItemSelection &, const QItemSelection & )));
 
     QObject::connect(dynamic_cast<QObject*>(m_model.get()), SIGNAL(signalError( QString )),

@@ -14,31 +14,41 @@
 #include "ActionRules/ActionDataRewriter.h"
 #include "ActionRules/ExpressionValueGetter.h"
 #include "ActionRules/ValueGetterLogEntry.h"
+#include "GUITools/QScrollDownTableView.h"
 
 LogEntryTableWindow::LogEntryTableWindow( boost::shared_ptr<LogEntryTableModel> model, QWidget *parent )
-	:QTableView(parent)
+	:QWidget(parent)
 	 ,m_model( model )
+     ,m_tableView( new QScrollDownTableView(  ) )
 {
-    m_proxyModel = new LogEntryTableFilter(this);
+    QVBoxLayout* layout = new QVBoxLayout(this);
+    this->setLayout(layout);
+
+    m_proxyModel = new LogEntryTableFilter(m_tableView);
     m_proxyModel->setSourceModel(m_model.get());
 
-	setModel( m_proxyModel );
-    this->horizontalHeader()->moveSection(1, model->columnCount( QModelIndex() )-1 );
-    this->horizontalHeader()->setMovable( true );
-    this->verticalHeader()->setDefaultSectionSize( 20 );
-    this->verticalHeader()->setResizeMode(QHeaderView::Fixed);
-    this->verticalHeader()->hide();
-    this->setAlternatingRowColors(true);
-    setSelectionBehavior(QAbstractItemView::SelectRows);
-	setSelectionMode( QAbstractItemView::SingleSelection );
+    m_tableView->setModel( m_proxyModel );
+    m_tableView->horizontalHeader()->moveSection(1, model->columnCount( QModelIndex() )-1 );
+    m_tableView->horizontalHeader()->setMovable( true );
+    m_tableView->verticalHeader()->setDefaultSectionSize( 20 );
+    m_tableView->verticalHeader()->setResizeMode(QHeaderView::Fixed);
+    m_tableView->verticalHeader()->hide();
+    m_tableView->setAlternatingRowColors(true);
+    m_tableView->setSelectionBehavior(QAbstractItemView::SelectRows);
+    m_tableView->setSelectionMode( QAbstractItemView::SingleSelection );
 
 	// Qt::Horizontal
 	int count = m_model->columnCount( QModelIndex() );
 	for( int col = 0; col < count; col ++)
 	{
 		int width = m_proxyModel->headerData( col, Qt::Horizontal, 512 ).value<int>();
-		this->horizontalHeader()->resizeSection( col, width );
+		m_tableView->horizontalHeader()->resizeSection( col, width );
 	}
+
+	m_quickSearch = new QLineEdit;
+	//m_quickSearch->setMaximumSize(QWIDGETSIZE_MAX,20);
+	layout->addWidget( m_quickSearch );
+	layout->addWidget(m_tableView);
 }
 
 void LogEntryTableWindow::setRuleTable( TconstSharedRuleTable table )
@@ -56,15 +66,14 @@ QModelIndex LogEntryTableWindow::mapToSource ( const QModelIndex & proxyIndex ) 
 	return m_proxyModel->mapToSource ( proxyIndex );
 }
 
+QTableView *LogEntryTableWindow::tableView()
+{
+    return m_tableView;
+}
+
 LogEntryTableWindow::~LogEntryTableWindow()
 {
 
 }
 
-void LogEntryTableWindow::updateGeometries()
-{
-	bool scrollDown = verticalScrollBar()->maximum() == verticalScrollBar()->value();
-	QTableView::updateGeometries();
-	if( scrollDown )
-		scrollToBottom();
-}
+
