@@ -27,7 +27,6 @@ bool ActionDataRewriter::modifyData( QVariant &var,  int column, int role) const
     if( it == m_changes.end() )
         it = m_changes.find( rc_key(role) );
 
-
     if( it != m_changes.end() )
     {
         var = it->second;
@@ -46,19 +45,13 @@ QVariant ActionDataRewriter::toDisplay( int role ) const
         variant = QString( QObject::tr("Text changing") );
     }
 
-    TChangeSet::const_iterator it = m_changes.find( rc_key(role) );
-    if( it != m_changes.end() )
+    TChangeSet::const_iterator it;
+
+    for( it = m_changes.begin(); it != m_changes.end(); ++it )
     {
-        variant = it->second;
-    }
-    else
-    {
-        for( it = m_changes.begin(); it != m_changes.end(); ++it )
+        if( it->first.role == role )
         {
-            if( it->first.role == role )
-            {
-                variant = it->second;
-            }
+            variant = it->second;
         }
     }
 
@@ -83,6 +76,12 @@ void ActionDataRewriter::addChangeSet( const QVariant &var, int role, const QStr
                 break;
             }
         }
+    }
+    else
+    {
+        // this is a fallback  if the configuration is missing. This is the case if we
+        // use the action only for displaying the action.
+        addChangeSet( var, role );
     }
 }
 
