@@ -29,7 +29,7 @@ public:
 
 	void addFilter( boost::shared_ptr<LogEntryFilter> flt );
 
-	void setRuleTable( TconstSharedRuleTable table );
+	TSharedRuleTable getRuleTable();
 
 	QTableView *tableView();
 

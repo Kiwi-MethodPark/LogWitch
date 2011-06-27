@@ -29,7 +29,7 @@ public:
 
 	void addFilter( boost::shared_ptr<LogEntryFilter> );
 
-	void setRuleTable( TconstSharedRuleTable table ) ;
+	TSharedRuleTable getRuleTable();
 
 	virtual ~LogEntryTableFilter();
 
@@ -42,7 +42,7 @@ private:
 
 	LogEntryFilterChain m_filterChain;
 
-	TconstSharedRuleTable m_ruleTable;
+	TSharedRuleTable m_ruleTable;
 };
 
 #endif /* LOGENTRYTABLEFILTER_H_ */

@@ -16,9 +16,12 @@
 LogEntryTableFilter::LogEntryTableFilter( QObject *parent)
 	: QSortFilterProxyModel( parent )
 	, m_model( NULL )
+    , m_ruleTable( new RuleTable )
 {
     QObject::connect(&m_filterChain, SIGNAL(filterUpdateFinished()),
                      this, SLOT(invalidate()));
+    QObject::connect( m_ruleTable.get(), SIGNAL(changed()),
+            this, SLOT(invalidate()));
 }
 
 LogEntryTableFilter::~LogEntryTableFilter()
@@ -30,11 +33,9 @@ void LogEntryTableFilter::addFilter( boost::shared_ptr<LogEntryFilter> flt )
 	m_filterChain.addFilter( flt );
 }
 
-void LogEntryTableFilter::setRuleTable( TconstSharedRuleTable table )
+TSharedRuleTable LogEntryTableFilter:: getRuleTable()
 {
-    m_ruleTable = table;
-    QObject::connect( m_ruleTable.get(), SIGNAL(changed()),
-            this, SLOT(invalidate()));
+    return m_ruleTable;
 }
 
 QVariant LogEntryTableFilter::data(const QModelIndex &index, int role) const
