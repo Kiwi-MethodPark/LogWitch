@@ -83,7 +83,6 @@ bool LogEntryTableFilter::filterAcceptsRow ( int sourceRow, const QModelIndex & 
 
     if( m_ruleTable )
     {
-        std::list<  TconstSharedActionDiscardRow > actions;
         if( m_ruleTable->isActionMatched<TconstSharedActionDiscardRow>( entry ) )
         {
             filterAccept = false;
