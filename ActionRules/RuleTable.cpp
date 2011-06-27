@@ -16,16 +16,39 @@ RuleTable::~RuleTable()
 {
 }
 
-void RuleTable::addRule( TSharedRule &rule )
+void RuleTable::addRule( const char *tableName, TSharedRule &rule )
 {
     qDebug() << "RuleTable::addRule";
-    m_rules.push_back( rule );
+
+    std::string tableNameAsString( tableName );
+    TRuleTableMap::iterator it = m_rulesFromSource.find( tableNameAsString );
+    if( it == m_rulesFromSource.end() )
+    {
+        it = m_rulesFromSource.insert( TRuleTableMap::value_type(tableNameAsString,TRuleSet()) ).first;
+    }
+
+    it->second.insert( rule );
+    m_rules.insert( rule );
+
     dataChanged();
 }
 
-void RuleTable::clear()
+void RuleTable::clear( const char *tableName )
 {
+    std::string tableNameAsString( tableName );
+    TRuleTableMap::iterator it = m_rulesFromSource.find( tableNameAsString );
+    if( it == m_rulesFromSource.end() )
+        return;
+
+    m_rulesFromSource.erase( it );
+
+    // rebuild table
     m_rules.clear();
+    for( it = m_rulesFromSource.begin(); it != m_rulesFromSource.end(); ++it )
+    {
+        m_rules.insert( it->second.begin(), it->second.end() );
+    }
+
     dataChanged();
 }
 

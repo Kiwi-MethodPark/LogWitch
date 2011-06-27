@@ -8,6 +8,9 @@
 #ifndef RULETABLE_H_
 #define RULETABLE_H_
 #include <list>
+#include <set>
+#include <map>
+#include <string>
 
 #include <boost/shared_ptr.hpp>
 #include <QtCore/qobject.h>
@@ -25,6 +28,8 @@ class RuleTable
     Q_OBJECT
 public:
     typedef std::list< TconstSharedRule > TRuleList;
+    typedef std::set< TconstSharedRule > TRuleSet;
+    typedef std::map<std::string,TRuleSet> TRuleTableMap;
 
     RuleTable();
     virtual ~RuleTable();
@@ -44,15 +49,15 @@ public:
 //        return table;
 //    }
 
-    void addRule( TSharedRule &rule );
+    void addRule( const char *tableName, TSharedRule &rule );
 
-    void clear();
+    void clear( const char *tableName );
 
     // TActionList getActionsForEntry( TconstSharedLogEntry &entry ) const;
     template <class T>
     bool getMatchedActionsForType( std::list<T> &actions, TconstSharedLogEntry &entry ) const
     {
-        TRuleList::const_iterator it;
+        TRuleSet::const_iterator it;
         for( it = m_rules.begin(); it != m_rules.end(); ++it )
         {
             T action = boost::dynamic_pointer_cast<typename T::element_type>( (*it)->getAction() );
@@ -65,7 +70,7 @@ public:
     template <class T>
     bool isActionMatched( TconstSharedLogEntry &entry ) const
     {
-        TRuleList::const_iterator it;
+        TRuleSet::const_iterator it;
         for( it = m_rules.begin(); it != m_rules.end(); ++it )
         {
             T action = boost::dynamic_pointer_cast<typename T::element_type>( (*it)->getAction() );
@@ -85,7 +90,9 @@ private:
 
     bool m_onChange;
 
-    TRuleList m_rules;
+    TRuleSet m_rules;
+
+    TRuleTableMap m_rulesFromSource;
 };
 
 

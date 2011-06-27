@@ -147,14 +147,14 @@ void TableModelRulesCompiled::updateFilterRuleTable()
 {
     qDebug() << "TableModelRulesCompiled::updateFilterRuleTable()";
     m_ruleTable->beginChange();
-    m_ruleTable->clear();
+    m_ruleTable->clear("filters");
 
     TCompiledRulesTable::iterator it;
     for( it = m_table.begin(); it != m_table.end(); ++it)
     {
         TSharedRule rule = (*it)->getCompiledRule();
         if( rule && rule->isValid() )
-            m_ruleTable->addRule( rule );
+            m_ruleTable->addRule( "filters", rule );
     }
     m_ruleTable->endChange();
 
