@@ -73,7 +73,7 @@ TconstSharedLogEntry LogEntryTableModel::getEntryByIndex( const QModelIndex &ind
     if (index.column() >= (m_modelConfiguration->getLogEntryAttributeFactory()->getNumberOfFields( ) )
     		|| index.column() < 0
     		|| index.row() < 0
-    		|| index.row() >= (m_table.size() ) )
+    		|| index.row() >= int(m_table.size() ) )
         return TconstSharedLogEntry();
 
 	return m_table[index.row()];
@@ -87,7 +87,7 @@ QVariant LogEntryTableModel::data(const QModelIndex &index, int role) const
     if (index.column() >= (m_modelConfiguration->getLogEntryAttributeFactory()->getNumberOfFields( ) )
     		|| index.column() < 0
     		|| index.row() < 0
-    		|| index.row() >= (m_table.size() ) )
+    		|| index.row() >= int(m_table.size() ) )
         return QVariant();
 
     if (role == Qt::DisplayRole)

@@ -74,7 +74,7 @@ private:
 	  {return (*s1) < (*s2);}
 	};
 
-	typedef std::set< StType, ObjectCache<SIGNALLER>::lessStringSharedPtr > TMyCache;
+	typedef std::set< StType, typename ObjectCache<SIGNALLER>::lessStringSharedPtr > TMyCache;
 
 	TMyCache cache;
 };
