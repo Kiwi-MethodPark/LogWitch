@@ -11,24 +11,29 @@
 TableModelRules::TableModelRules( QObject *parent )
     :QAbstractTableModel( parent )
 {
-    TSharedFilterRuleRaw row = TSharedFilterRuleRaw( new FilterRuleRaw );
-    row->actionString( "rewrite(BG:red)" );
-    row->expressionAsString("message =~ \"Stopping\"");
-    m_table.push_back( row );
+    QSettings settings;
 
-    row = TSharedFilterRuleRaw( new FilterRuleRaw );
-    row->actionString("rewrite(BG:green)");
-    row->expressionAsString("message =~ \"Starting\"");
-    m_table.push_back( row );
+    const int size = settings.beginReadArray("Rules");
+    for (int i = 0; i < size; ++i)
+    {
+         settings.setArrayIndex(i);
 
-    row = TSharedFilterRuleRaw( new FilterRuleRaw );
-    row->actionString("rewrite(BG:yellow)");
-    row->expressionAsString("message =~ \"Singleshotting\"");
-    m_table.push_back( row );
+         TSharedFilterRuleRaw row = TSharedFilterRuleRaw( new FilterRuleRaw(settings.value("rule").toString()) );
+         m_table.push_back( row );
+    }
+
+    settings.endArray();
 }
 
 TableModelRules::~TableModelRules()
 {
+    QSettings settings;
+    settings.beginWriteArray("Rules");
+    for (unsigned int i = 0; i < m_table.size(); ++i) {
+        settings.setArrayIndex(i);
+        settings.setValue("rule", m_table[i]->toString() );
+    }
+    settings.endArray();
 }
 
 void TableModelRules::insertEmptyRule()
