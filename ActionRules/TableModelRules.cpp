@@ -12,18 +12,18 @@ TableModelRules::TableModelRules( QObject *parent )
     :QAbstractTableModel( parent )
 {
     TSharedFilterRuleRaw row = TSharedFilterRuleRaw( new FilterRuleRaw );
-    row->actionString( "Rewrite(FG:yellow)" );
-    row->expressionAsString("Severity == \"DEBUG\"");
+    row->actionString( "rewrite(BG:red)" );
+    row->expressionAsString("message =~ \"Stopping\"");
     m_table.push_back( row );
 
     row = TSharedFilterRuleRaw( new FilterRuleRaw );
-    row->actionString("Rewrite(FG:green)");
-    row->expressionAsString("Severity == \"TRACE\"");
+    row->actionString("rewrite(BG:green)");
+    row->expressionAsString("message =~ \"Starting\"");
     m_table.push_back( row );
 
     row = TSharedFilterRuleRaw( new FilterRuleRaw );
-    row->actionString("Rewrite(FG:red)");
-    row->expressionAsString("Severity == \"FATAL\"");
+    row->actionString("rewrite(BG:yellow)");
+    row->expressionAsString("message =~ \"Singleshotting\"");
     m_table.push_back( row );
 }
 
