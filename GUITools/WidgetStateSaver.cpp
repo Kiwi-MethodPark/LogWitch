@@ -39,12 +39,15 @@ void WidgetStateSaver::storeState( QObject *obj )
     ObjectStateDumper::iterator it;
     ObjectStateList stateList;
 
+    StateSaveMap::iterator itSM;
+    itSM = m_stateHistoryMap.insert( StateSaveMap::value_type(obj,ObjectStateList())).first;
+
+    itSM->second.clear();
+
     for( it = m_myWatchedObjects.begin(); it != m_myWatchedObjects.end(); ++it )
     {
-        stateList.push_back( it->second->dumpState( it->first, m_lastObject ) );
+        itSM->second.push_back( it->second->dumpState( it->first, m_lastObject ) );
     }
-
-    m_stateHistoryMap.insert( StateSaveMap::value_type(obj, stateList ) );
 }
 
 void WidgetStateSaver::replayState( QObject *obj )
