@@ -20,7 +20,7 @@ QString EntryToTextFormaterLog4cplus::formatEntry( TconstSharedLogEntry entry ) 
     QString tmp;
 
     // retrieve the attributes from the factory ...
-    if( entry->getAttributes().getFactory().getNumberOfFields() == 5 )
+    if( entry->getAttributes().getFactory().getNumberOfFields() >= 8 )
     {
         str << "<b>Timestamp:</b> " << *entry->getAttributes()[1] << "<br/>";
         str << "<b>Loglevel:</b> " << *entry->getAttributes()[3] << "<br/>";
