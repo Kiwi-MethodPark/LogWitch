@@ -28,6 +28,7 @@ class FilterRuleRaw
     Q_OBJECT
 public:
     FilterRuleRaw();
+    FilterRuleRaw( const QString &str );
     ~FilterRuleRaw();
 
     /**
@@ -60,7 +61,7 @@ public:
     const QString &actionString() const;
 
     /**
-     * Returns true if actionString is parsable to an Action object.
+     * Returns true if actionString is parseable to an Action object.
      */
     bool isActionOk() const;
 
@@ -74,6 +75,8 @@ public:
      * actionAsString in a more human readable way.
      */
     TconstSharedDisplayItemData getActionDisplayer() const;
+
+    QString toString() const;
 
 signals:
     void changed ();

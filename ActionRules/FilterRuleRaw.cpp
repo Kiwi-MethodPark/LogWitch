@@ -7,12 +7,42 @@
 
 #include "FilterRuleRaw.h"
 
+// take the string and search for => as an special expression.
+static const QString seperator("=>");
+
 FilterRuleRaw::FilterRuleRaw()
 {
 }
 
+FilterRuleRaw::FilterRuleRaw( const QString &str )
+{
+    // Check if we can parse the string ... we will
+    QStringList vals = str.split(seperator);
+
+    if( vals.size() == 1 )
+    {
+        expressionAsString( vals.front() );
+    }
+    else if( vals.size() == 2 )
+    {
+        expressionAsString( vals.at(0) );
+        actionString( vals.at(1) );
+    }
+    else
+    {
+        expressionAsString( vals.at(0) );
+        vals.pop_front();
+        actionString( vals.join( seperator ));
+    }
+}
+
 FilterRuleRaw::~FilterRuleRaw()
 {
+}
+
+QString FilterRuleRaw::toString() const
+{
+    return expressionAsString()+seperator+actionString();
 }
 
 void FilterRuleRaw::expressionAsString( const QString &exp )
