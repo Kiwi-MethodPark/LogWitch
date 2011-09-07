@@ -29,6 +29,19 @@ public:
 };
 
 /**
+ * This saves the isChecked state from the QAction
+ */
+struct QQctionCheckedSaverTypes
+{
+public:
+    typedef QAction ObjectToSet;
+    typedef bool value;
+
+    static value get( ObjectToSet *obj ) { return obj->isChecked(); }
+    static void set( ObjectToSet *obj, value s ) { obj->setChecked( s ); }
+};
+
+/**
  * This class is a get set state saver. This state saver works with object
  * getter/setter of the type T::ObjectToSet. This is the object from which
  * the state should be saved. The object type to save is T::value.
