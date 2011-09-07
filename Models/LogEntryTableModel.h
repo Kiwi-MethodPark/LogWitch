@@ -64,6 +64,8 @@ private:
     boost::shared_ptr<LogEntryParser> m_entryLoader;
 
     QString m_ModelName;
+
+    mutable QMutex m_mutex;
 };
 
 #endif /* LOGENTRYTABLEMODEL_H_ */

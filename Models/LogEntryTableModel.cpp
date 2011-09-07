@@ -12,6 +12,7 @@
 #include <QtCore/QtCore>
 #include <QtCore/QVariant>
 #include <QDateTime>
+ #include <QMutexLocker>
 
 #include "LogData/LogEntry.h"
 #include "LogData/LogEntryAttributes.h"
@@ -25,6 +26,7 @@ LogEntryTableModel::LogEntryTableModel( boost::shared_ptr<LogEntryParser> parser
 	, m_dateTimeConversionString("dd.MM.yyyy hh:mm:ss.zzz")
 	, m_entryLoader( parser )
 	, m_ModelName("Untitled")
+  , m_mutex( QMutex::Recursive )
 {
     QObject::connect(dynamic_cast<QObject*>(parser.get()), SIGNAL(newEntry( TSharedLogEntry)),
                      this, SLOT(insertEntry( TSharedLogEntry )) );
@@ -58,29 +60,37 @@ TSharedConstLogEntryParserModelConfiguration LogEntryTableModel::getParserModelC
 int LogEntryTableModel::rowCount(const QModelIndex &parent) const
 {
 	Q_UNUSED(parent);
+  QMutexLocker lo( &m_mutex );
+
 	return m_table.size();
 }
 
 int LogEntryTableModel::columnCount(const QModelIndex &parent) const
 {
 	Q_UNUSED(parent);
+  QMutexLocker lo( &m_mutex );
+
 	int value = m_modelConfiguration->getLogEntryAttributeFactory()->getNumberOfFields( );
 	return value;
 }
 
 TconstSharedLogEntry LogEntryTableModel::getEntryByIndex( const QModelIndex &index ) const
 {
-    if (index.column() >= (m_modelConfiguration->getLogEntryAttributeFactory()->getNumberOfFields( ) )
-    		|| index.column() < 0
-    		|| index.row() < 0
-    		|| index.row() >= int(m_table.size() ) )
-        return TconstSharedLogEntry();
+  QMutexLocker lo( &m_mutex );
+
+  if (index.column() >= (m_modelConfiguration->getLogEntryAttributeFactory()->getNumberOfFields( ) )
+      || index.column() < 0
+      || index.row() < 0
+      || index.row() >= int(m_table.size() ) )
+      return TconstSharedLogEntry();
 
 	return m_table[index.row()];
 }
 
 QVariant LogEntryTableModel::data(const QModelIndex &index, int role) const
 {
+    QMutexLocker lo( &m_mutex );
+
     if (!index.isValid())
         return QVariant();
 
@@ -124,6 +134,7 @@ QVariant LogEntryTableModel::headerData(int section, Qt::Orientation orientation
 
 void LogEntryTableModel::clearTable()
 {
+    QMutexLocker lo( &m_mutex );
     beginResetModel();
     m_table.clear();
     endResetModel();
@@ -131,8 +142,9 @@ void LogEntryTableModel::clearTable()
 
 void LogEntryTableModel::insertEntry( TSharedLogEntry entry )
 {
-	int newPos = m_table.size();
-	beginInsertRows( QModelIndex(), newPos, newPos );
-	m_table.push_back( entry );
-	endInsertRows();
+    QMutexLocker lo( &m_mutex );
+    int newPos = m_table.size();
+    beginInsertRows( QModelIndex(), newPos, newPos );
+    m_table.push_back( entry );
+    endInsertRows();
 }
