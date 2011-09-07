@@ -11,6 +11,7 @@
 #include <log4cplus/helpers/socket.h>
 #include <QtCore/QtCore>
 #include <QtNetwork>
+#include <QAtomicInt>
 
 #include "LogData/LogEntryFactory.h"
 #include "LogData/LogEntryParser.h"
@@ -61,6 +62,7 @@ private:
 
 	QString m_name;
 
+	QAtomicInt m_logEntryNumber;
 };
 
 class LogEntryParser_log4cplusSocket_Receiver
@@ -92,8 +94,6 @@ private:
 	bool m_stateReadSize;
 
 	LogEntryParser_log4cplusSocket *m_server;
-
-    int m_logEntryNumber;
 };
 
 #endif /* LOGENTRYPARSER_LOG4CPLUSSOCKET_H_ */

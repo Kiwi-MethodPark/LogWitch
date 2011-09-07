@@ -28,6 +28,7 @@
 LogEntryParser_log4cplusSocket::LogEntryParser_log4cplusSocket( int port )
 	:m_port(port)
 	,m_name( "Log4cplus Listener Port " + QString::number(port))
+  ,m_logEntryNumber( 0 )
 {
 	// Preparing attributes in factory
     LogEntryAttributeNames names;
@@ -75,6 +76,8 @@ LogEntryParser_log4cplusSocket::~LogEntryParser_log4cplusSocket()
 
 void LogEntryParser_log4cplusSocket::newEntryFromReceiver( TSharedLogEntry entry)
 {
+  entry->getAttributes().setAttribute( TSharedConstQString( new QString( QString("%1").arg(m_logEntryNumber.fetchAndAddAcquire(1)) ) ) , 0 );
+
 	emit newEntry( entry );
 }
 
@@ -112,7 +115,6 @@ LogEntryParser_log4cplusSocket_Receiver::LogEntryParser_log4cplusSocket_Receiver
 	: m_socket( socket )
 	, m_stateReadSize( true )
 	, m_server(server)
-    , m_logEntryNumber( 0 )
 {
 	qDebug() << "new receiver created";
 	m_socket->setParent( this );
@@ -202,7 +204,6 @@ TSharedLogEntry LogEntryParser_log4cplusSocket_Receiver::bufferToEntry()
 	else if( event.getLogLevel() >= log4cplus::TRACE_LOG_LEVEL )
 		logLevel = m_server->m_loglevelStringTrace;
 
-	entry->getAttributes().setAttribute( TSharedConstQString( new QString( QString("%1").arg(++m_logEntryNumber) ) ) , 0 );
 	entry->getAttributes().setAttribute( TSharedConstQString( new QString( timestamp.toString("dd.MM.yyyy hh:mm:ss.zzz") ) ), 1 );
 	entry->getAttributes().setAttribute( TSharedConstQString( new QString( event.getMessage().c_str() ) ), 2 );
 	entry->getAttributes().setAttribute( TSharedConstQString( logLevel ), 3 );
