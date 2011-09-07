@@ -91,7 +91,7 @@ namespace actionParser
             ("darkGreen"    , QColor(Qt::darkGreen) )
             ("darkBlue"     , QColor(Qt::darkBlue) )
             ("cyan"         , QColor(Qt::cyan) )
-            ("magenta"      , QColor(Qt::yellow) )
+            ("magenta"      , QColor(Qt::magenta) )
             ("yellow"       , QColor(Qt::yellow) )
             ("gray"         , QColor(Qt::gray) )
             ("darkCyan"     , QColor(Qt::darkCyan) )
