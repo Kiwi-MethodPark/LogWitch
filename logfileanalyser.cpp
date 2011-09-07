@@ -61,6 +61,9 @@ LogfileAnalyser::LogfileAnalyser(QWidget *parent)
 
     m_stateSaver->addElementToWatch( m_myfilterRuleSelectionWidget
             , GetSetStateSaver<FilterRuleSelWndStateSaverTypes>::generate() );
+    m_stateSaver->addElementToWatch( ui.actionCapture
+            , GetSetStateSaver<QQctionCheckedSaverTypes>::generate() );
+
 }
 
 void LogfileAnalyser::subWindowDestroyed( QObject *obj )
@@ -121,16 +124,19 @@ void LogfileAnalyser::createWindowsFromParser(boost::shared_ptr<LogEntryParser> 
     m_signalMultiplexer.setObject( wnd );
     m_signalMultiplexer.connect( ui.actionClearLogTable, SIGNAL(triggered())
             , wnd, SLOT(clearTable() ) );
+    m_signalMultiplexer.connect( ui.actionCapture, SIGNAL(toggled(bool))
+            , wnd, SLOT(capture(bool) ) );
+
 
     wnd->setWindowState(Qt::WindowMaximized );
     wnd->setAttribute(Qt::WA_DeleteOnClose);
     wnd->setWindowTitle( parser->getName() );
 	wnd->show();
 
-
+    ui.actionCapture->setChecked( true );
 
 	/*
-	 * We want to open the Dock the first time we ceate a window.
+	 * We want to open the Dock the first time we create a window.
 	 * The advantage of doing so is the correct size for the inner
 	 * filter tab widget which is set to the dock widget.
 	 */

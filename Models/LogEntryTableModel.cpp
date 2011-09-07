@@ -26,7 +26,8 @@ LogEntryTableModel::LogEntryTableModel( boost::shared_ptr<LogEntryParser> parser
 	, m_dateTimeConversionString("dd.MM.yyyy hh:mm:ss.zzz")
 	, m_entryLoader( parser )
 	, m_ModelName("Untitled")
-  , m_mutex( QMutex::Recursive )
+    , m_mutex( QMutex::Recursive )
+    , m_captureActive( true )
 {
     QObject::connect(dynamic_cast<QObject*>(parser.get()), SIGNAL(newEntry( TSharedLogEntry)),
                      this, SLOT(insertEntry( TSharedLogEntry )) );
@@ -142,9 +143,17 @@ void LogEntryTableModel::clearTable()
 
 void LogEntryTableModel::insertEntry( TSharedLogEntry entry )
 {
+    if( !m_captureActive )
+        return;
+
     QMutexLocker lo( &m_mutex );
     int newPos = m_table.size();
     beginInsertRows( QModelIndex(), newPos, newPos );
     m_table.push_back( entry );
     endInsertRows();
+}
+
+void LogEntryTableModel::capture( bool active )
+{
+    m_captureActive = active;
 }

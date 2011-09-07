@@ -71,6 +71,11 @@ void LogEntryCombinedWidget::clearTable( )
     m_model->clearTable();
 }
 
+void LogEntryCombinedWidget::capture( bool active )
+{
+    m_model->capture( active );
+}
+
 QTabWidget *LogEntryCombinedWidget::getTabFilterWidget()
 {
 	if ( m_myFilterTabs == NULL )

@@ -37,6 +37,8 @@ private slots:
 
 	void clearTable( );
 
+    void capture( bool active );
+
 	void errorFromModel( QString error );
 
 private:

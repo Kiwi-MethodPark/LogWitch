@@ -47,6 +47,8 @@ public slots:
 
 	void clearTable();
 
+	void capture( bool active );
+
     void signalErrorFromParser( QString error );
 
 signals:
@@ -66,6 +68,8 @@ private:
     QString m_ModelName;
 
     mutable QMutex m_mutex;
+
+    bool m_captureActive;
 };
 
 #endif /* LOGENTRYTABLEMODEL_H_ */

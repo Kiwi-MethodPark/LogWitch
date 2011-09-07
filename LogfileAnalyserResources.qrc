@@ -9,5 +9,6 @@
         <file alias="warning">icons/warning.svg</file>
         <file alias="information">icons/information.svg</file>
         <file alias="trace">icons/bug.svg</file>
+        <file alias="active">icons/gear2.svg</file>
     </qresource>
 </RCC>

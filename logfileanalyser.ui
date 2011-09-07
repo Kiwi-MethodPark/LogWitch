@@ -52,6 +52,7 @@
    </attribute>
    <addaction name="separator"/>
    <addaction name="actionClearLogTable"/>
+   <addaction name="actionCapture"/>
   </widget>
   <widget class="QToolBar" name="ToolbarLog4cplus">
    <property name="windowTitle">
@@ -82,9 +83,9 @@
   </action>
   <action name="actionClearLogTable">
    <property name="icon">
-    <iconset resource="LogfileAnalyserResources.qrc">
+    <iconset>
      <normalon>:/icons/trash</normalon>
-	</iconset>
+    </iconset>
    </property>
    <property name="text">
     <string>Clear</string>
@@ -101,6 +102,21 @@
    </property>
    <property name="toolTip">
     <string>Starts the Log4cplus logging server.</string>
+   </property>
+  </action>
+  <action name="actionCapture">
+   <property name="checkable">
+    <bool>true</bool>
+   </property>
+   <property name="icon">
+    <iconset resource="LogfileAnalyserResources.qrc">
+     <normaloff>:/icons/active</normaloff>:/icons/active</iconset>
+   </property>
+   <property name="text">
+    <string>Capture</string>
+   </property>
+   <property name="toolTip">
+    <string>Capturing log entries</string>
    </property>
   </action>
  </widget>
