@@ -60,32 +60,32 @@ TSharedConstLogEntryParserModelConfiguration LogEntryTableModel::getParserModelC
 
 int LogEntryTableModel::rowCount(const QModelIndex &parent) const
 {
-	Q_UNUSED(parent);
-  QMutexLocker lo( &m_mutex );
+    Q_UNUSED(parent);
+    QMutexLocker lo( &m_mutex );
 
-	return m_table.size();
+    return m_table.size();
 }
 
 int LogEntryTableModel::columnCount(const QModelIndex &parent) const
 {
-	Q_UNUSED(parent);
-  QMutexLocker lo( &m_mutex );
+    Q_UNUSED(parent);
+    QMutexLocker lo( &m_mutex );
 
-	int value = m_modelConfiguration->getLogEntryAttributeFactory()->getNumberOfFields( );
-	return value;
+    int value = m_modelConfiguration->getLogEntryAttributeFactory()->getNumberOfFields( );
+    return value;
 }
 
 TconstSharedLogEntry LogEntryTableModel::getEntryByIndex( const QModelIndex &index ) const
 {
-  QMutexLocker lo( &m_mutex );
+    QMutexLocker lo( &m_mutex );
 
-  if (index.column() >= (m_modelConfiguration->getLogEntryAttributeFactory()->getNumberOfFields( ) )
+    if (index.column() >= (m_modelConfiguration->getLogEntryAttributeFactory()->getNumberOfFields( ) )
       || index.column() < 0
       || index.row() < 0
       || index.row() >= int(m_table.size() ) )
       return TconstSharedLogEntry();
 
-	return m_table[index.row()];
+    return m_table[index.row()];
 }
 
 QVariant LogEntryTableModel::data(const QModelIndex &index, int role) const

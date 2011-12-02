@@ -26,9 +26,9 @@
 
 
 LogEntryParser_log4cplusSocket::LogEntryParser_log4cplusSocket( int port )
-	:m_port(port)
-	,m_name( "Log4cplus Listener Port " + QString::number(port))
-  ,m_logEntryNumber( 0 )
+    :m_port(port)
+    ,m_name( "Log4cplus Listener Port " + QString::number(port))
+    ,m_logEntryNumber( 0 )
 {
 	// Preparing attributes in factory
     LogEntryAttributeNames names;
