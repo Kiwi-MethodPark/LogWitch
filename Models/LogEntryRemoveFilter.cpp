@@ -35,5 +35,6 @@ void LogEntryRemoveFilter::clear()
 
 bool LogEntryRemoveFilter::filterEntry( TconstSharedLogEntry entry ) const
 {
+    Q_ASSERT( entry );
 	return m_removeStrings.end() == m_removeStrings.find( entry->getAttributes().getAttribute(m_attributeID) );
 }

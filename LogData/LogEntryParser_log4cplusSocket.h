@@ -7,15 +7,19 @@
 
 #ifndef LOGENTRYPARSER_LOG4CPLUSSOCKET_H_
 #define LOGENTRYPARSER_LOG4CPLUSSOCKET_H_
+#include <list>
+
 #include <boost/scoped_ptr.hpp>
+#include <boost/shared_ptr.hpp>
+
 #include <log4cplus/helpers/socket.h>
+
+#include <QAtomicInt>
 #include <QtCore/QtCore>
 #include <QtNetwork>
-#include <QAtomicInt>
 
 #include "LogData/LogEntryFactory.h"
 #include "LogData/LogEntryParser.h"
-#include <boost/shared_ptr.hpp>
 
 class LogEntryParser_log4cplusSocket_Receiver;
 
@@ -39,10 +43,12 @@ public:
 
 private slots:
 	void newIncomingConnection();
-	void newEntryFromReceiver( TSharedLogEntry entry);
+	void newEntryFromReceiver( std::list<TSharedLogEntry> entry);
+
+	void logEntryMessageDestroyed();
 
 signals:
-	void newEntry( TSharedLogEntry );
+	void newEntry( TconstSharedNewLogEntryMessage );
 
 	void signalError( QString error );
 
@@ -63,6 +69,13 @@ private:
 	QString m_name;
 
 	QAtomicInt m_logEntryNumber;
+
+	// Mutex for protecting nextMessage and messageInProgress
+    mutable QMutex m_mutex;
+
+	TSharedNewLogEntryMessage m_nextMessage;
+
+	bool m_messageInProgress;
 };
 
 class LogEntryParser_log4cplusSocket_Receiver
@@ -76,7 +89,7 @@ public:
 signals:
 	void error(QTcpSocket::SocketError socketError);
 
-	void newEntry( TSharedLogEntry );
+	void newEntry( std::list<TSharedLogEntry> );
 
 public slots:
 	void newDataAvailable();

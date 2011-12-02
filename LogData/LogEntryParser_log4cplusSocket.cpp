@@ -29,6 +29,7 @@ LogEntryParser_log4cplusSocket::LogEntryParser_log4cplusSocket( int port )
     :m_port(port)
     ,m_name( "Log4cplus Listener Port " + QString::number(port))
     ,m_logEntryNumber( 0 )
+    ,m_messageInProgress( false )
 {
 	// Preparing attributes in factory
     LogEntryAttributeNames names;
@@ -74,11 +75,54 @@ LogEntryParser_log4cplusSocket::~LogEntryParser_log4cplusSocket()
 	qDebug() << "finished: ~LogEntryParser_log4cplusSocket";
 }
 
-void LogEntryParser_log4cplusSocket::newEntryFromReceiver( TSharedLogEntry entry)
+void LogEntryParser_log4cplusSocket::logEntryMessageDestroyed()
 {
-  entry->getAttributes().setAttribute( TSharedConstQString( new QString( QString("%1").arg(m_logEntryNumber.fetchAndAddAcquire(1)) ) ) , 0 );
+    QMutexLocker lo( &m_mutex );
 
-	emit newEntry( entry );
+    if( m_nextMessage )
+    {
+        connect(m_nextMessage.get(),SIGNAL(destroyed(QObject *)),this,SLOT(logEntryMessageDestroyed()));
+        TSharedNewLogEntryMessage messageToSend( m_nextMessage );
+        m_nextMessage.reset();
+
+        // Unlock and send message now.
+        lo.unlock();
+        emit newEntry( m_nextMessage );
+    }
+    else
+    {
+        m_messageInProgress = false;
+    }
+}
+
+void LogEntryParser_log4cplusSocket::newEntryFromReceiver( std::list<TSharedLogEntry> entries)
+{
+    qDebug() << "New Messages received: " << entries.size();
+    std::list<TSharedLogEntry>::iterator it;
+    for( it = entries.begin(); it != entries.end(); ++it )
+        (*it)->getAttributes().setAttribute( TSharedConstQString( new QString( QString("%1").arg(m_logEntryNumber.fetchAndAddAcquire(1)) ) ) , 0 );
+
+    QMutexLocker lo( &m_mutex );
+
+    if( m_messageInProgress )
+    {
+        qDebug() << "msg in progress";
+        if( !m_nextMessage )
+            m_nextMessage.reset( new NewLogEntryMessage );
+
+        m_nextMessage->entries.insert( m_nextMessage->entries.end(), entries.begin(), entries.end() );
+    }
+    else
+    {
+        qDebug() << "new message";
+        TSharedNewLogEntryMessage newEntryMessage( new NewLogEntryMessage );
+        newEntryMessage->entries = entries;
+        connect(newEntryMessage.get(),SIGNAL(destroyed(QObject *)),this,SLOT(logEntryMessageDestroyed()));
+        m_messageInProgress = true;
+
+        lo.unlock();
+        emit newEntry( newEntryMessage );
+    }
 }
 
 boost::shared_ptr<LogEntryParserModelConfiguration> LogEntryParser_log4cplusSocket::getParserModelConfiguration() const
@@ -103,7 +147,7 @@ void LogEntryParser_log4cplusSocket::newIncomingConnection()
 	LogEntryParser_log4cplusSocket_Receiver *receiver = new LogEntryParser_log4cplusSocket_Receiver( this, socket );
 
     connect(this, SIGNAL(destroyed()), receiver, SLOT(shutdown()));
-    connect(receiver, SIGNAL(newEntry(TSharedLogEntry)), this, SLOT(newEntryFromReceiver(TSharedLogEntry)));
+    connect(receiver, SIGNAL(newEntry(std::list<TSharedLogEntry>)), this, SLOT(newEntryFromReceiver(std::list<TSharedLogEntry>)));
 }
 
 QString LogEntryParser_log4cplusSocket::getName() const
@@ -138,6 +182,8 @@ void LogEntryParser_log4cplusSocket_Receiver::newDataAvailable()
 		m_buffer.reset( new log4cplus::helpers::SocketBuffer(m_bytesNeeded) );
 	}
 
+	std::list<TSharedLogEntry> entries;
+
 	while( m_socket->bytesAvailable() )
 	{
 		// read outstanding data
@@ -157,7 +203,7 @@ void LogEntryParser_log4cplusSocket_Receiver::newDataAvailable()
 			}
 			else
 			{
-				emit newEntry( bufferToEntry() );
+			    entries.push_back( bufferToEntry() );
 
 				m_stateReadSize = true;
 				sizeToReadNext = sizeof(unsigned int);
@@ -167,6 +213,10 @@ void LogEntryParser_log4cplusSocket_Receiver::newDataAvailable()
 			// This is a prevention from memory errors due to wrong data.
 			if( sizeToReadNext > 1024*1024 )
 			{
+			    // Purge entries before we will shutdown the connection.
+			    if( !entries.empty() )
+			        emit newEntry( entries );
+
 				shutdown();
 				return;
 			}
@@ -175,6 +225,9 @@ void LogEntryParser_log4cplusSocket_Receiver::newDataAvailable()
 			m_bytesNeeded = sizeToReadNext;
 		}
 	}
+
+	if( !entries.empty() )
+	    emit newEntry( entries );
 }
 
 TSharedLogEntry LogEntryParser_log4cplusSocket_Receiver::bufferToEntry()

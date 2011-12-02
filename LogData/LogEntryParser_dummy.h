@@ -38,7 +38,7 @@ public:
 	QString getName() const {return QString("Dummylogger"); }
 
 signals:
-	void newEntry( TSharedLogEntry );
+	void newEntry( TconstSharedNewLogEntryMessage );
 
     void signalError( QString error );
 

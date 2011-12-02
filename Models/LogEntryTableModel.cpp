@@ -29,8 +29,8 @@ LogEntryTableModel::LogEntryTableModel( boost::shared_ptr<LogEntryParser> parser
     , m_mutex( QMutex::Recursive )
     , m_captureActive( true )
 {
-    QObject::connect(dynamic_cast<QObject*>(parser.get()), SIGNAL(newEntry( TSharedLogEntry)),
-                     this, SLOT(insertEntry( TSharedLogEntry )) );
+    QObject::connect(dynamic_cast<QObject*>(parser.get()), SIGNAL(newEntry( TconstSharedNewLogEntryMessage )),
+                     this, SLOT(insertEntry( TconstSharedNewLogEntryMessage )) );
     QObject::connect(dynamic_cast<QObject*>(parser.get()), SIGNAL(signalError( QString )),
                      this, SLOT(signalErrorFromParser( QString )) );
 
@@ -83,7 +83,13 @@ TconstSharedLogEntry LogEntryTableModel::getEntryByIndex( const QModelIndex &ind
       || index.column() < 0
       || index.row() < 0
       || index.row() >= int(m_table.size() ) )
+    {
+      qDebug() << "Returning empty item from model: index.column():" << index.column()
+              << " index.row():" << index.row()
+              << " table size:" << int(m_table.size() )
+              << " model columns:" << (m_modelConfiguration->getLogEntryAttributeFactory()->getNumberOfFields( ) );
       return TconstSharedLogEntry();
+    }
 
     return m_table[index.row()];
 }
@@ -141,15 +147,15 @@ void LogEntryTableModel::clearTable()
     endResetModel();
 }
 
-void LogEntryTableModel::insertEntry( TSharedLogEntry entry )
+void LogEntryTableModel::insertEntry( TconstSharedNewLogEntryMessage mess )
 {
-    if( !m_captureActive )
+    if( !m_captureActive || mess->entries.empty() )
         return;
 
     QMutexLocker lo( &m_mutex );
     int newPos = m_table.size();
-    beginInsertRows( QModelIndex(), newPos, newPos );
-    m_table.push_back( entry );
+    beginInsertRows( QModelIndex(), newPos, newPos + mess->entries.size() - 1 );
+    m_table.insert( m_table.end(), mess->entries.begin(), mess->entries.end() );
     endInsertRows();
 }
 

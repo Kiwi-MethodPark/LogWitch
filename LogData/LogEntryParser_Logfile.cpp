@@ -86,6 +86,8 @@ void LogEntryParser_Logfile::run()
 
 	int i = 0;
 
+	TSharedNewLogEntryMessage newEntryMessage( new NewLogEntryMessage );
+
 	forever
 	{
 		if ( m_abort)
@@ -94,12 +96,14 @@ void LogEntryParser_Logfile::run()
 		TSharedLogEntry entry( getNextLogEntry() );
 
         if( entry )
-        	emit newEntry( entry );
+            newEntryMessage->entries.push_back( entry );
         else
         	m_abort = true;
 
         i++;
 	}
+
+    emit newEntry( newEntryMessage );
 
 	qDebug() << "We got " << i << " entries from logfile.";
 }

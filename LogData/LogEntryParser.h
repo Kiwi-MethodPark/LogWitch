@@ -13,6 +13,7 @@
 #include <QtCore/QObject>
 
 #include "LogData/LogEntry.h"
+#include "NewLogEntryMessage.h"
 
 class LogEntryParserModelConfiguration;
 
@@ -39,7 +40,7 @@ public:
 
 	// This block is the later called signals methods.
 protected:
-	virtual void newEntry( TSharedLogEntry ) = 0;
+	virtual void newEntry( TconstSharedNewLogEntryMessage ) = 0;
 
 	virtual void signalError( QString error ) = 0;
 };

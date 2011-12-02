@@ -67,21 +67,28 @@ void LogEntryParser_dummy::run()
 				return;
 		}
 
-		while( m_count )
-		{
-			TSharedLogEntry entry( getNextLogEntry() );
+		TSharedNewLogEntryMessage newEntryMessage( new NewLogEntryMessage);
 
-	        if( entry )
-	        	emit newEntry( entry );
-	        m_count--;
-			if( m_count < 0 )
-				m_count = 0;
-		}
+        while( m_count )
+        {
+            TSharedLogEntry entry( getNextLogEntry() );
+
+            if( entry )
+                newEntryMessage->entries.push_back( entry );
+
+            m_count--;
+            if( m_count < 0 )
+                m_count = 0;
+        }
+
 
 		TSharedLogEntry entry( getNextLogEntry() );
 
         if( entry )
-        	emit newEntry( entry );
+            newEntryMessage->entries.push_back( entry );
+
+        if( !newEntryMessage->entries.empty() )
+            emit newEntry( newEntryMessage );
         else
         	m_abort = true;
 	}

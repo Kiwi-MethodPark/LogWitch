@@ -14,6 +14,7 @@
 #include <QtCore/QtCore>
 #include "LogData/LogEntry.h"
 #include "LogEntryParserModelConfiguration.h"
+#include "NewLogEntryMessage.h"
 
 class LogEntryParser;
 class LogEntryParserModelConfiguration;
@@ -43,7 +44,7 @@ public:
     TSharedConstLogEntryParserModelConfiguration getParserModelConfiguration() const;
 
 public slots:
-	void insertEntry( TSharedLogEntry entry );
+	void insertEntry( TconstSharedNewLogEntryMessage );
 
 	void clearTable();
 
