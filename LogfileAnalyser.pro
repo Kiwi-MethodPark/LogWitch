@@ -17,7 +17,8 @@ QT += core \
     network
 
 # Input
-HEADERS += LogData/NewLogEntryMessage.h \
+HEADERS += Help/HelpAssistant.h \
+    LogData/NewLogEntryMessage.h \
     ActionRules/ActionDiscardRow.h \
     GUITools/QScrollDownTableView.h \
     ActionRules/ExpressionOperators.h \
@@ -74,7 +75,8 @@ HEADERS += LogData/NewLogEntryMessage.h \
     Models/StringCacheTreeItem.h \
     Models/StringCacheTreeModel.h
 FORMS += logfileanalyser.ui
-SOURCES += LogData/NewLogEntryMessage.cpp \
+SOURCES += Help/HelpAssistant.cpp \
+    LogData/NewLogEntryMessage.cpp \
     ActionRules/ActionDiscardRow.cpp \
     GUITools/QScrollDownTableView.cpp \
     ActionRules/ExpressionOperators.cpp \
@@ -131,6 +133,8 @@ RESOURCES = LogfileAnalyserResources.qrc
 QHP_FILES += Help/help.qhcp
 qhp_qhc.input = QHP_FILES
 qhp_qhc.output = ${QMAKE_FILE_BASE}.qhc
-qhp_qhc.commands = qcollectiongenerator ${QMAKE_FILE_NAME}
-qhp_qhc.CONFIG = no_link target_predeps
-QMAKE_EXTRA_COMPILERS += qhp_qhc 
+qhp_qhc.commands = qcollectiongenerator \
+    ${QMAKE_FILE_NAME}
+qhp_qhc.CONFIG = no_link \
+    target_predeps
+QMAKE_EXTRA_COMPILERS += qhp_qhc

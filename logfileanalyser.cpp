@@ -19,11 +19,13 @@
 #include "GUITools/GetSetStateSaver.hxx"
 #include "GUITools/SignalMultiplexerStateApplier.h"
 #include "ActionRules/FilterRuleSelectionWindow.h"
+#include "Help/HelpAssistant.h"
 
 LogfileAnalyser::LogfileAnalyser(QWidget *parent)
     : QMainWindow(parent)
 	, m_myFilterDock( NULL )
     , m_stateSaver( NULL )
+    , m_helpAssistant( new HelpAssistant )
 {
 	ui.setupUi(this);
 
@@ -42,6 +44,8 @@ LogfileAnalyser::LogfileAnalyser(QWidget *parent)
     m_stateSaver->addElementToWatch( &m_signalMultiplexer
             , SignalMultiplexerStateApplier::generate(&m_signalMultiplexer) );
 
+    QObject::connect(ui.actionHelp, SIGNAL(triggered()),
+                     this, SLOT(showDocumentation()));
     QObject::connect(ui.actionOpenDummyLogger, SIGNAL(triggered()),
                      this, SLOT(openDummyLogfile()));
     QObject::connect(ui.actionAddEntries, SIGNAL(triggered()),
@@ -89,6 +93,13 @@ void LogfileAnalyser::subWindowActivated( QMdiSubWindow *obj )
     qDebug() << "subWindowActivated";
     if( obj != NULL )
         m_stateSaver->switchState( obj );
+}
+
+void LogfileAnalyser::showDocumentation()
+{
+    qDebug() << "ShuwDocumentation";
+
+    m_helpAssistant->showDocumentation("index.html");
 }
 
 LogfileAnalyser::~LogfileAnalyser()

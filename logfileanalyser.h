@@ -8,6 +8,8 @@
 #include "ui_logfileanalyser.h"
 #include "GUITools/SignalMultiplexer.h"
 
+class HelpAssistant;
+
 class LogEntryParser_dummy;
 class LogEntryTableModel;
 class LogEntryTable;
@@ -31,6 +33,7 @@ public:
 public slots:
     void subWindowActivated( QMdiSubWindow * );
     void subWindowDestroyed( QObject *obj );
+    void showDocumentation();
 
 private:
     Ui::LogfileAnalyserClass ui;
@@ -47,6 +50,8 @@ private:
 
     WidgetStateSaver *m_stateSaver;
     SignalMultiplexer m_signalMultiplexer;
+
+    boost::shared_ptr<HelpAssistant> m_helpAssistant;
 
 private slots:
   	void openDummyLogfile();
