@@ -125,3 +125,12 @@ SOURCES += LogData/NewLogEntryMessage.cpp \
     Models/StringCacheTreeItem.cpp \
     Models/StringCacheTreeModel.cpp
 RESOURCES = LogfileAnalyserResources.qrc
+
+# The help
+# Using a "custom compiler"
+QHP_FILES += Help/help.qhcp
+qhp_qhc.input = QHP_FILES
+qhp_qhc.output = ${QMAKE_FILE_BASE}.qhc
+qhp_qhc.commands = qcollectiongenerator ${QMAKE_FILE_NAME}
+qhp_qhc.CONFIG = no_link target_predeps
+QMAKE_EXTRA_COMPILERS += qhp_qhc 

@@ -1,0 +1,195 @@
+<!DOCTYPE HTML PUBLIC "-//W3C//DTD HTML 4.01 Transitional//EN">
+<html><head>
+  
+  <meta http-equiv="Content-Type" content="text/html; charset=iso-8859-1">
+  <title>Manual</title>
+
+  
+  
+  <link rel="stylesheet" href="help.css" type="text/css">
+
+</head><body>
+<h1>Logfile Analyzer<br>
+</h1>
+
+<p>The LogfileAnalyzer enables the user to record logfiles from a
+remote machine or open a logfile to analyze it.<br>
+</p>
+
+<h2>Log Entries for Expressions and Actions</h2>
+
+For matching a specific log entry the fields a re mapped to common
+names.<br>
+
+<table style="text-align: left; width: 100%;" border="1" cellpadding="2" cellspacing="2">
+
+  <tbody>
+    <tr>
+      <td style="vertical-align: top;">number<br>
+      </td>
+      <td style="vertical-align: top;">Upgrowing number since the
+logging window has been created.<br>
+      </td>
+    </tr>
+    <tr>
+      <td style="vertical-align: top;">timestamp</td>
+      <td style="vertical-align: top;">Timestamp of the log entry.<br>
+      </td>
+    </tr>
+    <tr>
+      <td style="vertical-align: top;">message</td>
+      <td style="vertical-align: top;">Logmessage<br>
+      </td>
+    </tr>
+    <tr>
+      <td style="vertical-align: top;">level</td>
+      <td style="vertical-align: top;">Loglevel (FATAL, ERROR, INFO,
+WARN, DEBUG, TRACE)<br>
+      </td>
+    </tr>
+    <tr>
+      <td style="vertical-align: top;">ndc</td>
+      <td style="vertical-align: top;">Nested Diagnostic content</td>
+    </tr>
+    <tr>
+      <td style="vertical-align: top;">thread</td>
+      <td style="vertical-align: top;">Number of the thread.<br>
+      </td>
+    </tr>
+    <tr>
+      <td style="vertical-align: top;">logger</td>
+      <td style="vertical-align: top;">The used logger or logger
+hirarchy.<br>
+      </td>
+    </tr>
+    <tr>
+      <td style="vertical-align: top;">fsource</td>
+      <td style="vertical-align: top;">The file source<br>
+      </td>
+    </tr>
+  </tbody>
+</table>
+
+<h2>Expressions</h2>
+Expressions can match a specific log entry. The simplest expression is
+an expression working on a single cell or being a constant. Constants
+are:<br>
+<ul>
+  <li>true / false (as a boolean constant)</li>
+  <li>"string" (a string constant)<br>
+Inside a string the " can be quoted using the \". <br>
+  </li>
+</ul>
+The basic cell matching expressions against single cells are:<br>
+<ul>
+  <li>Comparison operators<br>
+left == right: Matches if the left side is equal to the right side. left and right can be either a string or a cell<br>
+left != right:&nbsp; Matches if the left side is not equal to the right side. <br>
+  </li>
+  <li>Regex operators:<br>
+The regex operator left =~ regex matches a perl regex. For regex
+different notations are available, as delimiters one can use ", /, #, |<br>
+The operator !~ negates the regex matching.</li>
+</ul>
+The basic cell matching expressions and the boolean constant can be
+combined by different operators (Within this order, top is the most
+important):<br>
+<ul>
+  <li>(basic cell matching expression)</li>
+  <li>() <br>
+  </li>
+  <li>! Negation operator, needs always to be used with the brackets !( expression )<br>
+  </li>
+  <li>&amp;&amp; AND<br>
+  </li>
+  <li>^^ XOR<br>
+  </li>
+  <li>|| OR<br>
+  </li>
+</ul>
+
+<h2>Actions</h2>
+
+Actions will be executed on the log entry.<br>
+<ul>
+  <li>DataRewriter ( rewrite( ...) )<br>
+Rewrites contents of the complete row or a specific cell.<br>
+  </li>
+  <li>Discard Row ( discard() )<br>
+Drops the matched row.<br>
+  </li>
+</ul>
+
+<h3>Data rewriter parameters</h3>
+This action is very powerfull und you can reformat the entrys look.<br>
+<ul>
+  <li>Rewriting Color of Text <br>
+Syntax: FG:color</li>
+  <li>Rewriting Color of Background<br>
+Syntax: BG:color</li>
+  <li>Rewriting Text<br>
+Syntax: text:textString</li>
+  <li>Adding an icon<br>
+Syntax: icon:icon to display<br>
+Icons available: fatal, error, warn, info, trace</li>
+</ul>
+
+The above syntax applies the rewriting to the complete log entry. If
+the rewriter is prepended by the name: a single cell can be addressed.
+You can add multiple rewriter by joining them with a ','.<br>
+<br>
+<span style="font-weight: bold;">Example:</span> Rewriting the loglevel to an error icon and coloring the complete entry in red (by the side, the original text will be wiped)<br>
+rewrite( level:text: , level:icon:error, FG:red )&nbsp;  <br>
+<br>
+<span style="font-weight: bold;">Color:</span> For colors you can use
+the predefined listed below, or you can use the #RRGGBB code. Example:
+FG:#FF0000 will give you a red text.<br>
+<br>
+<table style="text-align: left; width: 600px; height: 149px;" border="0" cellpadding="2" cellspacing="0">
+  <tbody>
+    <tr>
+      <td style="vertical-align: top; background-color: red;">red<br>
+      </td>
+      <td style="vertical-align: top; background-color: rgb(136, 0, 0); color: white;">darkRed<br>
+      </td>
+      <td style="vertical-align: top; background-color: aqua;">cyan<br>
+      </td>
+      <td style="vertical-align: top; background-color: teal; color: white;">darkCyan<br>
+      </td>
+    </tr>
+    <tr>
+      <td style="vertical-align: top; background-color: lime;">green<br>
+      </td>
+      <td style="vertical-align: top; background-color: green; color: white;">darkGreen<br>
+      </td>
+      <td style="vertical-align: top; background-color: fuchsia;">magenta<br>
+      </td>
+      <td style="vertical-align: top; background-color: purple; color: white;">darkMagenta<br>
+      </td>
+    </tr>
+    <tr>
+      <td style="vertical-align: top; background-color: blue;">blue<br>
+      </td>
+      <td style="vertical-align: top; background-color: navy; color: white;">darkBlue<br>
+      </td>
+      <td style="vertical-align: top; background-color: yellow;">yellow<br>
+      </td>
+      <td style="vertical-align: top; background-color: olive; color: white;">darkYellow<br>
+      </td>
+    </tr>
+    <tr>
+      <td style="vertical-align: top;">white<br>
+      </td>
+      <td style="vertical-align: top; background-color: silver;">lightGray</td>
+      <td style="vertical-align: top; background-color: rgb(160, 160, 164);">gray<br>
+      </td>
+      <td style="vertical-align: top; background-color: gray; color: white;">darkGray<br>
+      </td>
+    </tr>
+    <tr style="color: white;">
+      <td colspan="4" rowspan="1" style="vertical-align: top; background-color: black;">black</td>
+    </tr>
+  </tbody>
+</table>
+<br>
+</body></html>
