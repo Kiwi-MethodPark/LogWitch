@@ -48,6 +48,15 @@ public slots:
 
 	void clearTable();
 
+	/**
+	 * This sets the mamimum numbers of entries to the model. If the model
+	 * receives more entries it will drop older entries first.
+	 *
+	 * @param count Numbers of entries to keep at maximum. If set to 0, disables
+	 *              this feature.
+	 */
+	void setMaxEntries( int count );
+
 	void capture( bool active );
 
     void signalErrorFromParser( QString error );
@@ -71,6 +80,8 @@ private:
     mutable QMutex m_mutex;
 
     bool m_captureActive;
+
+    int m_maxNumberOfEntries;
 };
 
 #endif /* LOGENTRYTABLEMODEL_H_ */

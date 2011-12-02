@@ -28,6 +28,7 @@ LogEntryTableModel::LogEntryTableModel( boost::shared_ptr<LogEntryParser> parser
 	, m_ModelName("Untitled")
     , m_mutex( QMutex::Recursive )
     , m_captureActive( true )
+    , m_maxNumberOfEntries( 0 )
 {
     QObject::connect(dynamic_cast<QObject*>(parser.get()), SIGNAL(newEntry( TconstSharedNewLogEntryMessage )),
                      this, SLOT(insertEntry( TconstSharedNewLogEntryMessage )) );
@@ -153,10 +154,53 @@ void LogEntryTableModel::insertEntry( TconstSharedNewLogEntryMessage mess )
         return;
 
     QMutexLocker lo( &m_mutex );
-    int newPos = m_table.size();
-    beginInsertRows( QModelIndex(), newPos, newPos + mess->entries.size() - 1 );
+
+    size_t entryCount = mess->entries.size();
+
+    if( m_maxNumberOfEntries > 0 )
+    {
+        // Remove elements to match maxEntriesFirst.
+        const int toRemove = m_table.size() + entryCount - m_maxNumberOfEntries;
+        if( toRemove > 0 )
+        {
+            if( size_t( toRemove ) >= m_table.size() )
+            {
+                // We will clear the table and add as much elements as we can add to our model
+                beginResetModel();
+                const int frontEntriesDropped = entryCount - m_maxNumberOfEntries;
+                Q_ASSERT( frontEntriesDropped >= 0 );
+                m_table.clear();
+
+                std::list<TSharedLogEntry>::const_iterator it;
+                int i = 0;
+                for( it = mess->entries.begin(); i < frontEntriesDropped; ++i, ++it )
+                    ;
+
+                m_table.insert( m_table.end()
+                        , it
+                        , mess->entries.end() );
+                endResetModel();
+
+                return;
+            }
+            else
+            {
+                beginRemoveRows( QModelIndex(), 0, toRemove - 1 );
+                m_table.erase( m_table.begin(), m_table.begin() + toRemove );
+                endRemoveRows();
+            }
+        }
+    }
+
+    const int newPos = m_table.size();
+    beginInsertRows( QModelIndex(), newPos, newPos + entryCount - 1 );
     m_table.insert( m_table.end(), mess->entries.begin(), mess->entries.end() );
     endInsertRows();
+}
+
+void LogEntryTableModel::setMaxEntries( int max )
+{
+    m_maxNumberOfEntries = max;
 }
 
 void LogEntryTableModel::capture( bool active )
