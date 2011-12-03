@@ -190,7 +190,7 @@ namespace expressionParser
 
            top =
                    expression [_val=_1]
-                   | qi::eps[constructExpConst(_val,val(true))];
+                   | qi::eps[constructExpConst(_val,val(false))];
 
            expression =
                      orExprTerm [_val=_1]
