@@ -33,6 +33,20 @@ public:
 
 	QTableView *tableView();
 
+public slots:
+    /**
+     * Switches between the different modes for the quicksearch
+     * text line.
+     */
+    void switchSearchMode();
+
+    /**
+     * Updates the view from the quicksearch line
+     */
+    void updateSearch();
+
+private:
+    enum SearchModes { Regex, Text, Expression};
 private:
 	boost::shared_ptr<LogEntryTableModel> m_model;
 
@@ -41,6 +55,16 @@ private:
 	LogEntryTableFilter *m_proxyModel;
 
 	QLineEdit *m_quickSearch;
+
+	SearchModes m_searchMode;
+
+	QPushButton* m_searchModeButton;
+
+	QPushButton* m_markButton;
+
+	TSharedAction m_quickSearchAction;
+
+	TSharedExpression m_quickSearchExp;
 };
 
 #endif /* LOGENTRYTABLEWINDOW_H_ */

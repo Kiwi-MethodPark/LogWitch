@@ -31,3 +31,8 @@ TconstSharedAction Rule::getAction( ) const
 {
     return m_action;
 }
+
+TconstSharedExpression Rule::getExpression( ) const
+{
+    return m_expr;
+}

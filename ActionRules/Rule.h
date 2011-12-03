@@ -26,6 +26,7 @@ public:
 
     bool checkRule( TconstSharedLogEntry &entry ) const;
     TconstSharedAction getAction( ) const;
+    TconstSharedExpression getExpression( ) const;
 
     bool isValid() const;
 

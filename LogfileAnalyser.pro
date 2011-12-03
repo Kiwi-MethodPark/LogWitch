@@ -17,7 +17,9 @@ QT += core \
     network
 
 # Input
-HEADERS += Help/HelpAssistant.h \
+HEADERS += ActionRules/ExpressionFind.h \
+    ActionRules/ExpressionMatch.h \
+    Help/HelpAssistant.h \
     LogData/NewLogEntryMessage.h \
     ActionRules/ActionDiscardRow.h \
     GUITools/QScrollDownTableView.h \
@@ -41,7 +43,6 @@ HEADERS += Help/HelpAssistant.h \
     ActionRules/RuleTable.h \
     ActionRules/ValueGetterConstQString.h \
     ActionRules/ValueGetterLogEntry.h \
-    ActionRules/ExpressionValueGetter.h \
     ActionRules/ValueGetter.h \
     ActionRules/Expression.h \
     ActionRules/Rule.h \
@@ -75,7 +76,9 @@ HEADERS += Help/HelpAssistant.h \
     Models/StringCacheTreeItem.h \
     Models/StringCacheTreeModel.h
 FORMS += logfileanalyser.ui
-SOURCES += Help/HelpAssistant.cpp \
+SOURCES += ActionRules/ExpressionFind.cpp \
+    ActionRules/ExpressionMatch.cpp \
+    Help/HelpAssistant.cpp \
     LogData/NewLogEntryMessage.cpp \
     ActionRules/ActionDiscardRow.cpp \
     GUITools/QScrollDownTableView.cpp \
@@ -96,7 +99,6 @@ SOURCES += Help/HelpAssistant.cpp \
     ActionRules/RuleTable.cpp \
     ActionRules/ValueGetterConstQString.cpp \
     ActionRules/ValueGetterLogEntry.cpp \
-    ActionRules/ExpressionValueGetter.cpp \
     ActionRules/ValueGetter.cpp \
     ActionRules/Expression.cpp \
     ActionRules/Rule.cpp \
