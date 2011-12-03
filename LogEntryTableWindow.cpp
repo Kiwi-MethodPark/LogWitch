@@ -12,7 +12,7 @@
 #include "ActionRules/ValueGetterConstQString.h"
 #include "ActionRules/RuleTable.h"
 #include "ActionRules/ActionDataRewriter.h"
-#include "ActionRules/ExpressionValueGetter.h"
+#include "ActionRules/ExpressionMatch.h"
 #include "ActionRules/ValueGetterLogEntry.h"
 #include "GUITools/QScrollDownTableView.h"
 

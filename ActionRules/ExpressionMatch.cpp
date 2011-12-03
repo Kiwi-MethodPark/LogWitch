@@ -5,42 +5,42 @@
  *      Author: sven
  */
 
-#include "ExpressionValueGetter.h"
+#include "ExpressionMatch.h"
 #include "ValueGetter.h"
 
-ExpressionValueGetter::ExpressionValueGetter( TconstSharedValueGetter left, TconstSharedValueGetter right )
+ExpressionMatch::ExpressionMatch( TconstSharedValueGetter left, TconstSharedValueGetter right )
     : m_left( left )
     , m_right( right )
 {
 }
 
-ExpressionValueGetter::ExpressionValueGetter( TconstSharedValueGetter left )
+ExpressionMatch::ExpressionMatch( TconstSharedValueGetter left )
     : m_left( left )
     , m_right(  )
 {
 }
 
-ExpressionValueGetter::~ExpressionValueGetter()
+ExpressionMatch::~ExpressionMatch()
 {
 
 }
 
-void ExpressionValueGetter::setRight( TconstSharedValueGetter right )
+void ExpressionMatch::setRight( TconstSharedValueGetter right )
 {
     m_right = right;
 }
 
-bool ExpressionValueGetter::match( TconstSharedLogEntry &entry ) const
+bool ExpressionMatch::match( TconstSharedLogEntry &entry ) const
 {
     return *(m_left->getValue( entry )) == *(m_right->getValue( entry ));
 }
 
-bool ExpressionValueGetter::isValid( ) const
+bool ExpressionMatch::isValid( ) const
 {
     return m_left && m_left->isValid() && m_right && m_right->isValid();
 }
 
-std::ostream &ExpressionValueGetter::out( std::ostream &o, bool extended ) const
+std::ostream &ExpressionMatch::out( std::ostream &o, bool extended ) const
 {
     if( extended )
     {

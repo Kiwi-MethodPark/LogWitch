@@ -19,9 +19,10 @@
 #include <Qt/qstring.h>
 
 #include "ActionRules/Expression.h"
+#include "ActionRules/ExpressionFind.h"
 #include "ActionRules/ExpressionOperators.h"
 #include "ActionRules/ExpressionRegEx.h"
-#include "ActionRules/ExpressionValueGetter.h"
+#include "ActionRules/ExpressionMatch.h"
 #include "ActionRules/ValueGetterConstQString.h"
 #include "ActionRules/ValueGetterLogEntry.h"
 
@@ -98,7 +99,7 @@ namespace expressionParser
 
             void operator()(TSharedExpression& entry, TSharedValueGetter &left, TSharedValueGetter &right) const
             {
-                entry = TSharedExpressionValueGetter( new ExpressionValueGetter( left, right ) );
+                entry = TSharedExpressionMatch( new ExpressionMatch( left, right ) );
             }
         };
         struct constructExpRegEx
@@ -109,6 +110,16 @@ namespace expressionParser
             void operator()(TSharedExpression& entry, TSharedValueGetter &value, QString &regex) const
             {
                 entry = TSharedExpressionRegEx( new ExpressionRegEx( value, regex ) );
+            }
+        };
+        struct constructExpFind
+        {
+            template <typename S1,typename S2, typename S3>
+            struct result { typedef void type; };
+
+            void operator()(TSharedExpression& entry, TSharedValueGetter &value, QString &find) const
+            {
+                entry = TSharedExpressionFind( new ExpressionFind( value, find ) );
             }
         };
         struct constructExpOpNeg
@@ -187,6 +198,7 @@ namespace expressionParser
            function<detail::constructExpOpOr> constructExpOpOr;
            function<detail::constructExpOpXOr> constructExpOpXOr;
            function<detail::constructExpConst> constructExpConst;
+           function<detail::constructExpFind> constructExpFind;
 
            top =
                    expression [_val=_1]
@@ -221,6 +233,7 @@ namespace expressionParser
            basicExpr =
                      expressionVG [_val=_1]
                    | expressionRegEx [_val=_1]
+                   | expressionFind [_val=_1]
                    | expressionConst [_val=_1]
                    ;
 
@@ -236,6 +249,8 @@ namespace expressionParser
                      lit("true") [constructExpConst(_val,val(true))]
                    | lit("false") [constructExpConst(_val,val(false))]
                    ;
+
+           expressionFind = ("find(" >> valueGetter >> "," >> quotedQString('"') >> ")")[ constructExpFind(_val, _1, _2)];
 
            valueGetter %= vg_ConstString
                    | vg_LogEntry;
@@ -269,6 +284,7 @@ namespace expressionParser
            BOOST_SPIRIT_DEBUG_NODE(basicExpr);
 
            BOOST_SPIRIT_DEBUG_NODE(expressionVG);
+           BOOST_SPIRIT_DEBUG_NODE(expressionFind);
            BOOST_SPIRIT_DEBUG_NODE(expressionRegEx);
            BOOST_SPIRIT_DEBUG_NODE(expressionConst);
 
@@ -288,6 +304,7 @@ namespace expressionParser
        qi::rule<Iterator, TSharedExpression(), ascii::space_type> unaryExprTerm;
        qi::rule<Iterator, TSharedExpression(), ascii::space_type> basicExpr;
        qi::rule<Iterator, TSharedExpression(), ascii::space_type> expressionVG;
+       qi::rule<Iterator, TSharedExpression(), ascii::space_type> expressionFind;
        qi::rule<Iterator, TSharedExpression(), ascii::space_type> expressionRegEx;
        qi::rule<Iterator, TSharedExpression(), ascii::space_type> expressionConst;
 

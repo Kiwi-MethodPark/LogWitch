@@ -10,13 +10,13 @@
 #include "Expression.h"
 #include "ValueGetter.h"
 
-class ExpressionValueGetter
+class ExpressionMatch
     : public Expression
 {
 public:
-    ExpressionValueGetter( TconstSharedValueGetter left );
-    ExpressionValueGetter( TconstSharedValueGetter left, TconstSharedValueGetter right );
-    ~ExpressionValueGetter();
+    ExpressionMatch( TconstSharedValueGetter left );
+    ExpressionMatch( TconstSharedValueGetter left, TconstSharedValueGetter right );
+    ~ExpressionMatch();
 
     void setRight( TconstSharedValueGetter right );
 
@@ -31,7 +31,7 @@ private:
 };
 
 
-typedef boost::shared_ptr<ExpressionValueGetter> TSharedExpressionValueGetter;
-typedef boost::shared_ptr<const ExpressionValueGetter> TconstSharedExpressionValueGetter;
+typedef boost::shared_ptr<ExpressionMatch> TSharedExpressionMatch;
+typedef boost::shared_ptr<const ExpressionMatch> TconstSharedExpressionMatch;
 
 #endif /* EXPRESSIONVALUEGETTER_H_ */
