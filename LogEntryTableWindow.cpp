@@ -19,19 +19,27 @@
 #include "ActionRules/ActionParser.h"
 #include "ActionRules/ExpressionFind.h"
 #include "ActionRules/ExpressionRegEx.h"
+#include "LogData/LogEntryParserModelConfiguration.h"
+#include "LogData/LogEntryAttributeFactory.h"
+#include "LogData/ObjectCache.hxx"
+
+#include "FilterListView.h"
+#include "EntryToTextFormater.h"
 
 LogEntryTableWindow::LogEntryTableWindow( boost::shared_ptr<LogEntryTableModel> model, QWidget *parent )
-	:QWidget(parent)
-	 ,m_model( model )
-     ,m_tableView( new QScrollDownTableView(  ) )
+	:QMdiSubWindow(parent)
+	, m_model( model )
+    , m_splitter( new QSplitter(Qt::Vertical ) )
+    , m_myFilterTabs( NULL )
+    , m_dockFilterShouldDockedTo( NULL )
+    , m_tableView( new QScrollDownTableView(  ) )
     , m_searchMode( Text )
 {
-    QVBoxLayout* layout = new QVBoxLayout(this);
-    this->setLayout(layout);
-
+    // Paramtrize the filtering model, connect it to the table view.
     m_proxyModel = new LogEntryTableFilter(m_tableView);
     m_proxyModel->setSourceModel(m_model.get());
 
+    // PArametrize the table view for the log entries.
     m_tableView->setModel( m_proxyModel );
     m_tableView->horizontalHeader()->moveSection(1, model->columnCount( QModelIndex() )-1 );
     m_tableView->horizontalHeader()->setMovable( true );
@@ -42,7 +50,7 @@ LogEntryTableWindow::LogEntryTableWindow( boost::shared_ptr<LogEntryTableModel> 
     m_tableView->setSelectionBehavior(QAbstractItemView::SelectRows);
     m_tableView->setSelectionMode( QAbstractItemView::SingleSelection );
 
-	// Qt::Horizontal
+	// Resize the columns to fit to the models defaults.
 	int count = m_model->columnCount( QModelIndex() );
 	for( int col = 0; col < count; col ++)
 	{
@@ -50,8 +58,9 @@ LogEntryTableWindow::LogEntryTableWindow( boost::shared_ptr<LogEntryTableModel> 
 		m_tableView->horizontalHeader()->resizeSection( col, width );
 	}
 
+	// Create quicksearch bar
+	QWidget *quickSearchBar = new QWidget;
 	m_quickSearch = new QLineEdit;
-	QWidget *quickSearchBar = new QWidget( this );
 	QHBoxLayout* quickSearchLayout = new QHBoxLayout;
 	quickSearchLayout->setContentsMargins( 0, 0, 0, 0 );
 	quickSearchBar->setLayout( quickSearchLayout );
@@ -75,19 +84,13 @@ LogEntryTableWindow::LogEntryTableWindow( boost::shared_ptr<LogEntryTableModel> 
     QObject::connect(m_quickSearch, SIGNAL(editingFinished()),
                      this, SLOT(updateSearch()));
 
-
     quickSearchLayout->addWidget( m_searchModeButton );
 	quickSearchLayout->addWidget( m_quickSearch );
     quickSearchLayout->addWidget( m_markButton );
 	quickSearchLayout->addWidget( new QPushButton(iconDown, "") );
 	quickSearchLayout->addWidget( new QPushButton(iconUp, "") );
 
-	//m_quickSearch->setMaximumSize(QWIDGETSIZE_MAX,20);
-    layout->addWidget( quickSearchBar );
-    //layout->addWidget( m_quickSearch );
-	layout->addWidget(m_tableView);
-
-	// Initialize the rule
+	// Initialize the action for highlighting log entries.
 	ActionParser parser( model->getParserModelConfiguration() );
 	if( !parser.parse("rewrite(BG:#81BEF7)") )
 	{
@@ -97,6 +100,32 @@ LogEntryTableWindow::LogEntryTableWindow( boost::shared_ptr<LogEntryTableModel> 
 	{
 	    m_quickSearchAction = parser.get();
 	}
+
+    m_text = new QTextEdit("<b>Log Message viewer</b>",this);
+    QObject::connect(m_tableView->selectionModel(), SIGNAL(selectionChanged ( const QItemSelection & , const QItemSelection & )),
+                     SLOT(newSelection ( const QItemSelection &, const QItemSelection & )));
+    QObject::connect(dynamic_cast<QObject*>(m_model.get()), SIGNAL(signalError( QString )),
+                     this, SLOT(errorFromModel( QString )) );
+
+    // Make the big layout, top is quickearch bar, then log table and at the bottom the log message.
+    QVBoxLayout* layout = new QVBoxLayout();
+    QWidget *centralWidget = new QWidget( this );
+
+    m_splitter->addWidget( m_tableView );
+    m_splitter->addWidget( m_text );
+    m_splitter->setStretchFactor( 0, 20 );
+
+    layout->addWidget( quickSearchBar );
+	layout->addWidget( m_splitter );
+
+	centralWidget->setLayout( layout );
+	this->setWidget( centralWidget );
+
+    resize( 800, 500 );
+
+    // Just generate the tab here, because we want to catch all filter entries.
+    getTabFilterWidget();
+    QMdiSubWindow::setAttribute(Qt::WA_DeleteOnClose,true);
 }
 
 void LogEntryTableWindow::switchSearchMode()
@@ -192,15 +221,78 @@ QModelIndex LogEntryTableWindow::mapToSource ( const QModelIndex & proxyIndex ) 
 {
 	return m_proxyModel->mapToSource ( proxyIndex );
 }
-
-QTableView *LogEntryTableWindow::tableView()
-{
-    return m_tableView;
-}
+//
+//QTableView *LogEntryTableWindow::tableView()
+//{
+//    return m_tableView;
+//}
 
 LogEntryTableWindow::~LogEntryTableWindow()
 {
-
+    qDebug() << " Window deleted.";
 }
 
+void LogEntryTableWindow::errorFromModel( QString error )
+{
+    QMessageBox msgBox;
+    QString errorText;
+    errorText+= "Erorr received: " + error;
+    msgBox.setText( errorText );
+    msgBox.setInformativeText("Close window now?");
+    msgBox.setStandardButtons(QMessageBox::Ignore | QMessageBox::Close );
+    msgBox.setDefaultButton(QMessageBox::Ignore);
 
+    int ret =  msgBox.exec();
+    if( ret == QMessageBox::Close )
+    {
+        this->deleteLater();
+    }
+}
+
+void LogEntryTableWindow::setDockForFilter( QDockWidget *dock )
+{
+    dock->setWidget( getTabFilterWidget( ) );
+}
+
+void LogEntryTableWindow::clearTable( )
+{
+    m_model->clearTable();
+}
+
+void LogEntryTableWindow::capture( bool active )
+{
+    m_model->capture( active );
+}
+
+QTabWidget *LogEntryTableWindow::getTabFilterWidget()
+{
+    if ( m_myFilterTabs == NULL )
+    {
+        QTabWidget *tabs = new QTabWidget( );
+
+        int attributes = m_model->getParserModelConfiguration()->getLogEntryAttributeFactory()->getNumberOfFields();
+        for(int attr = 0; attr < attributes; attr++ )
+        {
+            // Only show tabs with an active StringCahche.
+            if( m_model->getParserModelConfiguration()->getLogEntryAttributeFactory()->getCache(attr).isCaching() )
+            {
+                FilterListView *view = new FilterListView( this, m_model->getParserModelConfiguration(), attr );
+                view->addToTabs( tabs, this );
+            }
+        }
+        m_myFilterTabs = tabs;
+    }
+
+    return m_myFilterTabs;
+}
+
+TSharedCompiledRulesStateSaver LogEntryTableWindow::getCompiledRules()
+{
+    return TSharedCompiledRulesStateSaver( new CompiledRulesStateSaver( m_model->getParserModelConfiguration(), getRuleTable() ) );
+}
+
+void LogEntryTableWindow::newSelection ( const QItemSelection & selected, const QItemSelection & )
+{
+    TconstSharedLogEntry entry = m_model->getEntryByIndex( mapToSource( selected.front().topLeft() ) );
+    m_text->setHtml( m_model->getParserModelConfiguration()->getEntryToTextFormater()->formatEntry( entry ) );
+}

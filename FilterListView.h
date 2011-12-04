@@ -10,7 +10,7 @@
 #include <boost/shared_ptr.hpp>
 #include <QtGui>
 
-class LogEntryCombinedWidget;
+class LogEntryTableWindow;
 class LogEntryParserModelConfiguration;
 class StringCacheTreeModel;
 
@@ -22,7 +22,7 @@ public:
     FilterListView( QObject *parent, boost::shared_ptr<const LogEntryParserModelConfiguration> cfg, const int attr );
     ~FilterListView();
 
-    void addToTabs( QTabWidget *tabs, LogEntryCombinedWidget* widget  );
+    void addToTabs( QTabWidget *tabs, LogEntryTableWindow* widget  );
 
 public slots:
     void contextMenuPopup( const QPoint &pos);

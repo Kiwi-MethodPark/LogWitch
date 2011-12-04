@@ -3,12 +3,14 @@
 # #####################################################################
 TEMPLATE = app
 TARGET = 
+SRCDIR = $$(PWD)
+
 CONFIG += qt \
     debug
-DEPENDPATH += . \
+DEPENDPATH += SRCDIR \
     LogData \
     Models
-INCLUDEPATH += . \
+INCLUDEPATH += SRCDIR \
     LogData \
     Models
 LIBS += -llog4cplus
@@ -55,7 +57,6 @@ HEADERS += ActionRules/ExpressionFind.h \
     GUITools/WidgetStateSaver.h \
     Assert.h \
     EntryToTextFormater.h \
-    LogEntryCombinedWidget.h \
     LogEntryTableWindow.h \
     logfileanalyser.h \
     Types.h \
@@ -109,7 +110,6 @@ SOURCES += ActionRules/ExpressionFind.cpp \
     GUITools/SignalMultiplexerStateApplier.cpp \
     GUITools/SignalMultiplexer.cpp \
     GUITools/WidgetStateSaver.cpp \
-    LogEntryCombinedWidget.cpp \
     LogEntryTableWindow.cpp \
     logfileanalyser.cpp \
     main.cpp \

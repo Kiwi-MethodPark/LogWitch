@@ -10,6 +10,7 @@
 #include <QtGui>
 #include <boost/shared_ptr.hpp>
 #include "ActionRules/RuleTable.h"
+#include "ActionRules/CompiledRulesStateSaver.h"
 
 class LogEntryTableModel;
 class QSortFilterProxyModel;
@@ -18,7 +19,7 @@ class LogEntryTableFilter;
 class QScrollDownTableView;
 
 class LogEntryTableWindow
-	: public QWidget
+	: public QMdiSubWindow
 {
 	Q_OBJECT
 public:
@@ -31,7 +32,11 @@ public:
 
 	TSharedRuleTable getRuleTable();
 
-	QTableView *tableView();
+    QTabWidget *getTabFilterWidget();
+
+    TSharedCompiledRulesStateSaver getCompiledRules();
+
+    void setDockForFilter( QDockWidget *dock );
 
 public slots:
     /**
@@ -45,10 +50,28 @@ public slots:
      */
     void updateSearch();
 
+    void newSelection ( const QItemSelection & selected, const QItemSelection & deselected );
+
+    void clearTable( );
+
+    void capture( bool active );
+
+    void errorFromModel( QString error );
+
 private:
     enum SearchModes { Regex, Text, Expression};
 private:
-	boost::shared_ptr<LogEntryTableModel> m_model;
+    boost::shared_ptr<LogEntryTableModel> m_model;
+
+    QSplitter *m_splitter;
+
+    /// Text field containing the formated log entry.
+    QTextEdit *m_text;
+
+    QTabWidget *m_myFilterTabs;
+
+
+    QDockWidget *m_dockFilterShouldDockedTo;
 
 	QScrollDownTableView *m_tableView;
 

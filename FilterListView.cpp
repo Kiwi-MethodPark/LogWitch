@@ -5,7 +5,7 @@
  *      Author: sven
  */
 #include "FilterListView.h"
-#include "LogEntryCombinedWidget.h"
+#include "LogEntryTableWindow.h"
 #include "Models/StringCacheTreeModel.h"
 #include "LogEntryParserModelConfiguration.h"
 #include "LogData/LogEntryAttributeFactory.h"
@@ -63,7 +63,7 @@ FilterListView::FilterListView( QObject *parent, boost::shared_ptr<const LogEntr
 
 }
 
-void FilterListView::addToTabs( QTabWidget *tabs, LogEntryCombinedWidget* widget  )
+void FilterListView::addToTabs( QTabWidget *tabs, LogEntryTableWindow* widget  )
 {
     if( m_strModel->getFilter() )
         widget->addFilter( m_strModel->getFilter() );

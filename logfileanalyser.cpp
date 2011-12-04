@@ -13,7 +13,6 @@
 
 #include "Models/StringCacheTreeModel.h"
 #include "LogData/LogEntryParser_Logfile.h"
-#include "LogEntryCombinedWidget.h"
 #include "LogEntryParser_log4cplusSocket.h"
 #include "GUITools/WidgetStateSaver.h"
 #include "GUITools/GetSetStateSaver.hxx"
@@ -131,7 +130,7 @@ void LogfileAnalyser::createWindowsFromParser(boost::shared_ptr<LogEntryParser> 
 {
 	boost::shared_ptr<LogEntryTableModel> model( new LogEntryTableModel( parser ) );
 
-	LogEntryCombinedWidget *wnd = new LogEntryCombinedWidget( model, ui.mdiArea );
+	LogEntryTableWindow *wnd = new LogEntryTableWindow( model, ui.mdiArea );
     m_signalMultiplexer.setObject( wnd );
     m_signalMultiplexer.connect( ui.actionClearLogTable, SIGNAL(triggered())
             , wnd, SLOT(clearTable() ) );
