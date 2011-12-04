@@ -50,6 +50,16 @@ public slots:
      */
     void updateSearch();
 
+    /**
+     * Search the next log entry which will match to out quicksearch expression.
+     */
+    void searchNext();
+
+    /**
+     * Search the previous log entry which will match to out quicksearch expression.
+     */
+    void searchPrev();
+
     void newSelection ( const QItemSelection & selected, const QItemSelection & deselected );
 
     void clearTable( );
@@ -60,6 +70,9 @@ public slots:
 
 private:
     enum SearchModes { Regex, Text, Expression};
+
+    /// Private helper which performs the search
+    void search( bool backwards );
 private:
     boost::shared_ptr<LogEntryTableModel> m_model;
 

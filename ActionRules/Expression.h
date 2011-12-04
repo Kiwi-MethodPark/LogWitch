@@ -16,6 +16,9 @@ public:
 
     virtual bool isValid( ) const = 0;
 
+    /**
+     * Executes the expression and returns the value.
+     */
     virtual bool match( TconstSharedLogEntry &entry ) const = 0;
 
     virtual std::ostream &out( std::ostream &o, bool extended = false ) const = 0;

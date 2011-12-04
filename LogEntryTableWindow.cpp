@@ -74,7 +74,7 @@ LogEntryTableWindow::LogEntryTableWindow( boost::shared_ptr<LogEntryTableModel> 
     QObject::connect(m_searchModeButton, SIGNAL(clicked()),
                      this, SLOT(switchSearchMode()));
 
-    m_markButton = new QPushButton( tr("mark") );
+    m_markButton = new QPushButton( tr("Highlight") );
     m_markButton->setCheckable( true );
     m_markButton->setChecked( true );
 
@@ -84,11 +84,19 @@ LogEntryTableWindow::LogEntryTableWindow( boost::shared_ptr<LogEntryTableModel> 
     QObject::connect(m_quickSearch, SIGNAL(editingFinished()),
                      this, SLOT(updateSearch()));
 
+    QPushButton *searchDnBtn = new QPushButton(iconDown, "");
+    QObject::connect(searchDnBtn, SIGNAL(clicked()),
+                     this, SLOT(searchNext()) );
+
+    QPushButton *searchUpBtn = new QPushButton(iconUp, "");
+    QObject::connect(searchUpBtn, SIGNAL(clicked()),
+                     this, SLOT(searchPrev()) );
+
     quickSearchLayout->addWidget( m_searchModeButton );
 	quickSearchLayout->addWidget( m_quickSearch );
     quickSearchLayout->addWidget( m_markButton );
-	quickSearchLayout->addWidget( new QPushButton(iconDown, "") );
-	quickSearchLayout->addWidget( new QPushButton(iconUp, "") );
+	quickSearchLayout->addWidget( searchDnBtn );
+	quickSearchLayout->addWidget( searchUpBtn );
 
 	// Initialize the action for highlighting log entries.
 	ActionParser parser( model->getParserModelConfiguration() );
@@ -207,6 +215,52 @@ void LogEntryTableWindow::updateSearch()
     }
 }
 
+
+void LogEntryTableWindow::search( bool backwards )
+{
+    if( m_proxyModel->rowCount() > 0 )
+    {
+        int startRow = -1;
+
+        if( m_tableView->selectionModel()->hasSelection() )
+        {
+            QItemSelection selection = m_tableView->selectionModel()->selection();
+            QModelIndex index = selection.front().topLeft();
+            startRow = index.row();
+        }
+
+        const int inc = backwards ? -1 : 1;
+        int nextRow = startRow + inc;
+
+        for( ; nextRow != startRow; nextRow += inc )
+        {
+            if( nextRow >= m_proxyModel->rowCount() )
+                nextRow = 0;
+            if( nextRow < 0 )
+                nextRow =  m_proxyModel->rowCount() - 1;
+
+            TconstSharedLogEntry entry = m_model->getEntryByIndex( mapToSource( m_proxyModel->index( nextRow, 0 ) ) );
+            if( m_quickSearchExp->match(entry ) )
+                break;
+        }
+
+        if( nextRow != startRow )
+        {
+            m_tableView->setCurrentIndex( m_proxyModel->index( nextRow, 0 ) );
+            m_tableView->setFocus();
+        }
+    }
+}
+void LogEntryTableWindow::searchNext()
+{
+    search( false );
+}
+
+void LogEntryTableWindow::searchPrev()
+{
+    search( true );
+}
+
 TSharedRuleTable LogEntryTableWindow::getRuleTable()
 {
     return m_proxyModel->getRuleTable();
@@ -236,9 +290,9 @@ void LogEntryTableWindow::errorFromModel( QString error )
 {
     QMessageBox msgBox;
     QString errorText;
-    errorText+= "Erorr received: " + error;
+    errorText+= tr("Error received: \n") + error;
     msgBox.setText( errorText );
-    msgBox.setInformativeText("Close window now?");
+    msgBox.setInformativeText(tr("Close window with the logs now? This will discard all already captured messages. If you want to keep them, press ignore."));
     msgBox.setStandardButtons(QMessageBox::Ignore | QMessageBox::Close );
     msgBox.setDefaultButton(QMessageBox::Ignore);
 
