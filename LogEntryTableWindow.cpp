@@ -136,6 +136,11 @@ LogEntryTableWindow::LogEntryTableWindow( boost::shared_ptr<LogEntryTableModel> 
     QMdiSubWindow::setAttribute(Qt::WA_DeleteOnClose,true);
 }
 
+void LogEntryTableWindow::exportLogfile( const QString &filename )
+{
+    m_model->exportToFile( filename );
+}
+
 void LogEntryTableWindow::switchSearchMode()
 {
     switch( m_searchMode )

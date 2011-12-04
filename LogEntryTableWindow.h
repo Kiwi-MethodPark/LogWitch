@@ -68,6 +68,8 @@ public slots:
 
     void errorFromModel( QString error );
 
+    void exportLogfile( const QString &filename );
+
 private:
     enum SearchModes { Regex, Text, Expression};
 

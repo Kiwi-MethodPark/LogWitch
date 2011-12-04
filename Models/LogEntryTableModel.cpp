@@ -207,3 +207,46 @@ void LogEntryTableModel::capture( bool active )
 {
     m_captureActive = active;
 }
+
+void LogEntryTableModel::exportToFile( const QString &target )
+{
+    QFile file( target );
+    file.open(QIODevice::WriteOnly);
+    QTextStream str( &file );
+
+    // Determine sort order, we will put the message to the end.
+    const int fields = m_modelConfiguration->getLogEntryAttributeFactory()->getNumberOfFields();
+    std::vector<int> order;
+    for ( int i = 0; i < fields; i++ )
+    {
+        if( i != 2 )
+            order.push_back( i );
+    }
+    order.push_back( 2 );
+
+    QString desc;
+
+    for ( int i = 0; i < int( order.size() ); i++ )
+    {
+        if( desc.length() )
+            desc.append(" - ");
+
+        desc.append( m_modelConfiguration->getLogEntryAttributeFactory()->getDescShort( order[i] ) );
+    }
+
+    str << desc << "\n";
+
+    TLogEntryTable::iterator it;
+    for( it = m_table.begin(); it != m_table.end(); ++it)
+    {
+        QString line;
+        for ( int i = 0; i < int( order.size() ); i++ )
+        {
+            if( line.length() )
+                line.append(" - ");
+
+            line.append( *(*it)->getAttributes()[order[i]] );
+        }
+        str << line << "\n";
+    }
+}

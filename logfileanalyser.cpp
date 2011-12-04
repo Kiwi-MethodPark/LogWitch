@@ -51,6 +51,8 @@ LogfileAnalyser::LogfileAnalyser(QWidget *parent)
                      this, SLOT(moreDummyLogfile()));
     QObject::connect(ui.actionOpen, SIGNAL(triggered()),
                      this, SLOT(openLogfile()));
+    QObject::connect(ui.actionExportLogfile, SIGNAL(triggered()),
+                     this, SLOT(exportLogfile()));
     QObject::connect(ui.actionOpenLog4cplusServer, SIGNAL(triggered()),
                      this, SLOT(openPort()));
     QObject::connect( ui.mdiArea, SIGNAL( subWindowActivated ( QMdiSubWindow *) )
@@ -190,4 +192,25 @@ void LogfileAnalyser::moreDummyLogfile()
 		return;
 
 	m_parser->addEntries( 100 );
+}
+
+void LogfileAnalyser::exportLogfile()
+{
+    LogEntryTableWindow *wnd = NULL;
+    wnd = dynamic_cast<LogEntryTableWindow *>( ui.mdiArea->activeSubWindow() );
+
+    if( wnd )
+    {
+        QString fname;
+        fname += "exportedLogfile "
+               + QDateTime::currentDateTime().toString("yyyyMMdd hhmm")
+               + ".log";
+
+        QString fileName = QFileDialog::getSaveFileName(this, tr("Export Logfile"),
+                               fname,
+                               tr("Logfile (*.log *.txt)"));
+
+        if( fileName.length() )
+            wnd->exportLogfile( fileName );
+    }
 }

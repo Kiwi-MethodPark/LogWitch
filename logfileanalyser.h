@@ -61,6 +61,8 @@ private slots:
   	void openLogfile();
 
   	void openPort();
+
+  	void exportLogfile();
 };
 
 #endif // LOGFILEANALYSER_H

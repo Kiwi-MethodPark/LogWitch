@@ -61,6 +61,8 @@ public slots:
 
     void signalErrorFromParser( QString error );
 
+    void exportToFile( const QString &target );
+
 signals:
     void signalError( QString error );
 
