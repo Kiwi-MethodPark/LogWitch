@@ -223,7 +223,7 @@ void LogEntryTableWindow::updateSearch()
 
 void LogEntryTableWindow::search( bool backwards )
 {
-    if( m_proxyModel->rowCount() > 0 )
+    if( m_proxyModel->rowCount() > 0 && m_quickSearchExp )
     {
         int startRow = -1;
 
@@ -237,16 +237,32 @@ void LogEntryTableWindow::search( bool backwards )
         const int inc = backwards ? -1 : 1;
         int nextRow = startRow + inc;
 
-        for( ; nextRow != startRow; nextRow += inc )
+        if( nextRow >= m_proxyModel->rowCount() )
+            nextRow = 0;
+        if( nextRow < 0 )
+            nextRow =  m_proxyModel->rowCount() - 1;
+
+        for( ; nextRow != startRow;  )
         {
+            TconstSharedLogEntry entry = m_model->getEntryByIndex( mapToSource( m_proxyModel->index( nextRow, 0 ) ) );
+            if( entry && m_quickSearchExp->match(entry ) )
+                break;
+
+            // We need to correct startRow, if
+            // - we have no selection on entry
+            // - the table size may change during search
+            if( startRow < 0 )
+              startRow = nextRow;
+            if( startRow >= m_proxyModel->rowCount() )
+              startRow = m_proxyModel->rowCount() - 1;
+
+            // Incrementing part
+            nextRow += inc;
+
             if( nextRow >= m_proxyModel->rowCount() )
                 nextRow = 0;
             if( nextRow < 0 )
                 nextRow =  m_proxyModel->rowCount() - 1;
-
-            TconstSharedLogEntry entry = m_model->getEntryByIndex( mapToSource( m_proxyModel->index( nextRow, 0 ) ) );
-            if( m_quickSearchExp->match(entry ) )
-                break;
         }
 
         if( nextRow != startRow )
