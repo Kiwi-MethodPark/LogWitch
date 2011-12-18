@@ -233,9 +233,10 @@ void LogEntryTableModel::exportToFile( const QString &target )
         desc.append( m_modelConfiguration->getLogEntryFactory()->getDescShort( order[i] ) );
     }
 
-    str << desc << "\n";
+    str << "%%LFA_DESC="<< desc << "\n";
 
     TLogEntryTable::iterator it;
+    QRegExp regexLineEnd("(\r\n|\r|\n)");
     for( it = m_table.begin(); it != m_table.end(); ++it)
     {
         QString line;
@@ -244,7 +245,10 @@ void LogEntryTableModel::exportToFile( const QString &target )
             if( line.length() )
                 line.append(" - ");
 
-            line.append( *(*it)->getAttribute(order[i]) );
+            QString entry( *(*it)->getAttribute(order[i]) );
+            entry.replace(regexLineEnd,"\n " );
+
+            line.append( entry );
         }
         str << line << "\n";
     }
