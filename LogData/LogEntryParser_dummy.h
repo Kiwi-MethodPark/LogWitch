@@ -31,6 +31,8 @@ public:
 
 	void startEmiting();
 
+	bool initParser();
+
 	void addEntries( int count );
 
 	boost::shared_ptr<LogEntryParserModelConfiguration> getParserModelConfiguration() const;

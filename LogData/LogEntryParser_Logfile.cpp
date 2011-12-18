@@ -69,22 +69,22 @@ boost::shared_ptr<LogEntryParserModelConfiguration> LogEntryParser_Logfile::getP
 	return m_myModelConfig;
 }
 
-void LogEntryParser_Logfile::init()
+bool LogEntryParser_Logfile::initParser()
 {
     if (!logfile.open(QIODevice::ReadOnly | QIODevice::Text))
     {
-        emit signalError("Unable to open text file in readonly and textmode!");
-        return;
+        m_initError = tr("Unable to open file for reading.");
+        return false;
     }
 
     logfileStream.setDevice( &logfile );
     logfileStreamReady = true;
+
+    return true;
 }
 
 void LogEntryParser_Logfile::run()
 {
-	init();
-
 	int i = 0;
 
 	TSharedNewLogEntryMessage newEntryMessage( new NewLogEntryMessage );

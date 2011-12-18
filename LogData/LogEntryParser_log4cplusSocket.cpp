@@ -31,6 +31,7 @@ LogEntryParser_log4cplusSocket::LogEntryParser_log4cplusSocket( int port )
     ,m_name( "Log4cplus Listener Port " + QString::number(port))
     ,m_logEntryNumber( 0 )
     ,m_messageInProgress( false )
+    ,m_emittingAllowed( false )
 {
 	// Preparing attributes in factory
     LogEntryAttributeNames names;
@@ -99,6 +100,11 @@ void LogEntryParser_log4cplusSocket::logEntryMessageDestroyed()
 void LogEntryParser_log4cplusSocket::newEntryFromReceiver( std::list<TSharedLogEntry> entries)
 {
     qDebug() << "New Messages received: " << entries.size();
+    if( !m_emittingAllowed )
+    {
+        // Emitting not set up, so dropping entries.
+        return;
+    }
     std::list<TSharedLogEntry>::iterator it;
     for( it = entries.begin(); it != entries.end(); ++it )
         (*it)->setAttribute( TSharedConstQString( new QString( QString("%1").arg(m_logEntryNumber.fetchAndAddAcquire(1)) ) ) , 0 );
@@ -131,13 +137,20 @@ boost::shared_ptr<LogEntryParserModelConfiguration> LogEntryParser_log4cplusSock
 	return m_myModelConfig;
 }
 
-void LogEntryParser_log4cplusSocket::startEmiting()
+bool LogEntryParser_log4cplusSocket::initParser()
 {
 	qDebug() << "Server listening on port: " << m_port;
 	if( !listen ( QHostAddress::Any, m_port ) )
 	{
-	    emit signalError( "Listening on port " +QString::number( m_port) + " failed: "+ errorString() );
+	    m_initError = tr( QString("Listening on port " +QString::number( m_port) + " failed: "+ errorString()).toLatin1() );
+	    return false;
 	}
+    return true;
+}
+
+void LogEntryParser_log4cplusSocket::startEmiting()
+{
+    m_emittingAllowed = true;
 }
 
 void LogEntryParser_log4cplusSocket::newIncomingConnection()

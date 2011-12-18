@@ -130,6 +130,20 @@ void LogfileAnalyser::openPort()
 
 void LogfileAnalyser::createWindowsFromParser(boost::shared_ptr<LogEntryParser> parser)
 {
+    if( !parser->initParser() )
+    {
+        // Parser has an error while init, so view message box to inform user and do
+        // not create a new window.
+        QMessageBox msgBox;
+        QString errorText;
+        errorText += tr("Error while initializing parser: \n") + parser->getInitError();
+        msgBox.setText(errorText);
+        msgBox.setStandardButtons(QMessageBox::Ok);
+        msgBox.setDefaultButton(QMessageBox::Ok);
+        msgBox.exec();
+        return;
+    }
+
 	boost::shared_ptr<LogEntryTableModel> model( new LogEntryTableModel( parser ) );
 
 	LogEntryTableWindow *wnd = new LogEntryTableWindow( model, ui.mdiArea );

@@ -28,6 +28,8 @@ public:
     LogfileAnalyser(QWidget *parent = 0);
     ~LogfileAnalyser();
 
+    bool initParser();
+
     void createWindowsFromParser(boost::shared_ptr<LogEntryParser> parser);
 
 public slots:

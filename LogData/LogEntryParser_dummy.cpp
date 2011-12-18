@@ -94,6 +94,19 @@ void LogEntryParser_dummy::run()
 	}
 }
 
+bool LogEntryParser_dummy::initParser()
+{
+    static int inits = 0;
+
+    if( (++inits % 3 ) == 0 )
+    {
+        m_initError = tr("Parser initialization failed (just a test)");
+        return false;
+
+    }
+    return true;
+}
+
 TSharedLogEntry LogEntryParser_dummy::getNextLogEntry()
 {
 	TSharedLogEntry entry;

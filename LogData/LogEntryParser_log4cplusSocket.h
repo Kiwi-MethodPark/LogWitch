@@ -37,6 +37,8 @@ public:
 
 	QString getName() const;
 
+    bool initParser();
+
 	void startEmiting();
 
 	boost::shared_ptr<LogEntryParserModelConfiguration> getParserModelConfiguration() const;
@@ -76,6 +78,8 @@ private:
 	TSharedNewLogEntryMessage m_nextMessage;
 
 	bool m_messageInProgress;
+
+	bool m_emittingAllowed;
 };
 
 class LogEntryParser_log4cplusSocket_Receiver

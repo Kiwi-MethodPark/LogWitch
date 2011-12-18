@@ -34,6 +34,8 @@ public:
 
 	void startEmiting();
 
+	bool initParser();
+
 	void run();
 
 	virtual boost::shared_ptr<LogEntryParserModelConfiguration> getParserModelConfiguration() const;
@@ -45,8 +47,6 @@ signals:
     void signalError( QString error );
 
 private:
-	void init();
-
 	virtual TSharedLogEntry getNextLogEntry();
 
 	bool m_abort;

@@ -32,10 +32,30 @@ public:
 	virtual QString getName() const { return QString("Untitled"); }
 
 	/**
+	 * Gets a human readbale string with an error description if initParser
+	 * fails.
+	 */
+	virtual QString getInitError() const { return m_initError; }
+
+	/**
+	 * Initializes the parser and checks if the parser is runable.
+	 * After calling this, a valid parserModelConfiguration is available
+	 * if init returns true.
+	 *
+	 * @return true if sucessfull otherwise false.
+	 */
+	virtual bool initParser() = 0;
+
+	/**
 	 * This starts the parser after you have connected to the signals.
 	 */
 	virtual void startEmiting() = 0;
 
+	/**
+	 * This returns the parserModelConfiguration. This configuration
+	 * will be available and unchanged after calling initParser till
+	 * destruction.
+	 */
 	virtual boost::shared_ptr<LogEntryParserModelConfiguration> getParserModelConfiguration() const = 0;
 
 	// This block is the later called signals methods.
@@ -43,6 +63,8 @@ protected:
 	virtual void newEntry( TconstSharedNewLogEntryMessage ) = 0;
 
 	virtual void signalError( QString error ) = 0;
+
+	QString m_initError;
 };
 
 #endif /* LOGENTRYPARSER_H_ */
