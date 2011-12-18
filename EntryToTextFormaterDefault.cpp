@@ -10,8 +10,7 @@
 #include <QTextStream>
 
 #include "LogData/LogEntry.h"
-#include "LogData/LogEntryAttributeFactory.h"
-#include "LogData/LogEntryAttributes.h"
+#include "LogData/LogEntryFactory.h"
 
 QString EntryToTextFormaterDefault::formatEntry( TconstSharedLogEntry entry ) const
 {
@@ -21,14 +20,14 @@ QString EntryToTextFormaterDefault::formatEntry( TconstSharedLogEntry entry ) co
 
 	int messageId = 2;
 
-    for( int i = 0; i < entry->getAttributes().getFactory().getNumberOfFields(); i++ )
+    for( int i = 0; i < entry->getFactory().getNumberOfFields(); i++ )
     {
         if( i != messageId )
-            str << "<b>" << entry->getAttributes().getFactory().getDescLong(i) << ":</b> " << *entry->getAttributes()[i] << "<br/>";
+            str << "<b>" << entry->getFactory().getDescLong(i) << ":</b> " << *entry->getAttribute(i) << "<br/>";
     }
 
-    if( entry->getAttributes().getFactory().getNumberOfFields() > messageId)
-        tmp = *entry->getAttributes()[messageId];
+    if( entry->getFactory().getNumberOfFields() > messageId)
+        tmp = *entry->getAttribute(messageId);
 
 	str << "<b>Message:</b><p> <pre> " << tmp.replace("\n","<br/>") << "</pre></p>";
 

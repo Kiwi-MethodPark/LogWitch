@@ -1,37 +1,40 @@
 /*
  * LogEntry.h
  *
- *  Created on: May 13, 2011
+ *  Created on: May 14, 2011
  *      Author: sven
  */
 
-#ifndef LOGENTRY_H_
-#define LOGENTRY_H_
-
-#include <QDateTime>
-#include <QString>
-#include <QMetaType>
-
+#ifndef LOGENTRYATTRIBUTES_H_
+#define LOGENTRYATTRIBUTES_H_
 #include <boost/shared_ptr.hpp>
+#include <vector>
+#include "Types.h"
 
-class LogEntryAttributes;
+class LogEntryFactory;
+class QString;
 
 class LogEntry {
 public:
-	LogEntry( boost::shared_ptr<LogEntryAttributes> attr );
+	virtual ~LogEntry();
 
-	const LogEntryAttributes &getAttributes() const;
+	LogEntry( LogEntryFactory *factory, const std::vector< TSharedConstQString > &defAttributes );
 
-	LogEntryAttributes &getAttributes();
+	void setAttribute( TSharedConstQString, int idx );
+
+	TSharedConstQString getAttribute( int idx ) const;
+
+	const LogEntryFactory &getFactory() const { return *myFactory; }
+
+	const TSharedConstQString &operator []( int idx) const;
 
 private:
-	boost::shared_ptr<LogEntryAttributes> indexedLogEntries;
+	std::vector< TSharedConstQString > attributes;
 
+	LogEntryFactory *myFactory;
 };
 
 typedef boost::shared_ptr<LogEntry> TSharedLogEntry;
 typedef boost::shared_ptr<const LogEntry> TconstSharedLogEntry;
 
-Q_DECLARE_METATYPE ( TSharedLogEntry );
-
-#endif /* LOGENTRY_H_ */
+#endif /* LOGENTRYATTRIBUTES_H_ */

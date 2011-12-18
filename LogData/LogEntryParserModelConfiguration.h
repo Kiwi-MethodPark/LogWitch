@@ -12,7 +12,7 @@
 
 
 class EntryToTextFormater;
-class LogEntryAttributeFactory;
+class LogEntryFactory;
 /**
  * This class is responsible for modeling different kinds of behavior for the
  * GUI which is defined by the logfile and its structure.
@@ -44,9 +44,9 @@ public:
 	/**
 	 * Returns the corresponding factory for creating log entries.
 	 */
-	boost::shared_ptr<const LogEntryAttributeFactory> getLogEntryAttributeFactory() const { return m_attr;}
+	boost::shared_ptr<const LogEntryFactory> getLogEntryFactory() const { return m_attr;}
 
-	void setLogEntryAttributeFactory( boost::shared_ptr<LogEntryAttributeFactory> factory) { m_attr = factory;}
+	void setLogEntryFactory( boost::shared_ptr<LogEntryFactory> factory) { m_attr = factory;}
 
 	int getFieldWidthHint( int idx ) const;
 
@@ -57,7 +57,7 @@ private:
 
 	boost::shared_ptr<EntryToTextFormater> m_formater;
 
-	boost::shared_ptr<LogEntryAttributeFactory> m_attr;
+	boost::shared_ptr<LogEntryFactory> m_attr;
 
 	std::vector<int> m_filedWidthHints;
 

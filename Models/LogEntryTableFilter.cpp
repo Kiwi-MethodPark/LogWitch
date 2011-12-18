@@ -8,7 +8,6 @@
 #include "LogEntryTableFilter.h"
 #include "Models/LogEntryTableModel.h"
 #include "LogData/LogEntry.h"
-#include "LogData/LogEntryAttributes.h"
 #include "Assert.h"
 #include "ActionRules/ActionDataRewriter.h"
 #include "ActionRules/ActionDiscardRow.h"

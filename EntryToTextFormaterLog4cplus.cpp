@@ -10,8 +10,7 @@
 #include <QTextStream>
 
 #include "LogData/LogEntry.h"
-#include "LogData/LogEntryAttributeFactory.h"
-#include "LogData/LogEntryAttributes.h"
+#include "LogData/LogEntryFactory.h"
 
 QString EntryToTextFormaterLog4cplus::formatEntry( TconstSharedLogEntry entry ) const
 {
@@ -20,15 +19,15 @@ QString EntryToTextFormaterLog4cplus::formatEntry( TconstSharedLogEntry entry ) 
     QString tmp;
 
     // retrieve the attributes from the factory ...
-    if( entry->getAttributes().getFactory().getNumberOfFields() >= 8 )
+    if( entry->getFactory().getNumberOfFields() >= 8 )
     {
-        str << "<b>Timestamp:</b> " << *entry->getAttributes()[1] << "<br/>";
-        str << "<b>Loglevel:</b> " << *entry->getAttributes()[3] << "<br/>";
-        str << "<b>Component:</b> " << *entry->getAttributes()[4] << "<br/>";
-        str << "<b>File source:</b> " << *entry->getAttributes()[5] << "<br/>";
-        str << "<b>Thread:</b> " <<  *entry->getAttributes()[6]<< "<br/>";
-        str << "<b>Nested diagnostic content:</b> " << *entry->getAttributes()[7] << "<br/>";
-        tmp = *entry->getAttributes()[2];
+        str << "<b>Timestamp:</b> " << *entry->getAttribute(1) << "<br/>";
+        str << "<b>Loglevel:</b> " << *entry->getAttribute(3) << "<br/>";
+        str << "<b>Component:</b> " << *entry->getAttribute(4) << "<br/>";
+        str << "<b>File source:</b> " << *entry->getAttribute(5) << "<br/>";
+        str << "<b>Thread:</b> " <<  *entry->getAttribute(6)<< "<br/>";
+        str << "<b>Nested diagnostic content:</b> " << *entry->getAttribute(7) << "<br/>";
+        tmp = *entry->getAttribute(2);
         str << "<b>Message:</b><p> <pre> " << tmp.replace("\n","<br/>") << "</pre></p>";
     }
     else

@@ -6,7 +6,7 @@
 #include <boost/shared_ptr.hpp>
 
 #include "LogData/LogEntryParser_dummy.h"
-#include "LogData/LogEntryAttributeFactory.h"
+#include "LogData/LogEntryFactory.h"
 
 #include "Models/LogEntryTableModel.h"
 #include "LogEntryTableWindow.h"

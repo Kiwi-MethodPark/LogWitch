@@ -18,8 +18,8 @@
 #include <QtCore/QtCore>
 
 #include "EntryToTextFormaterLog4cplus.h"
-#include "LogData/LogEntryAttributes.h"
-#include "LogEntryAttributeFactory.h"
+#include "LogData/LogEntry.h"
+#include "LogEntryFactory.h"
 #include "LogEntryFactory.h"
 #include "LogEntryParserModelConfiguration.h"
 #include "LogEntryAttributeNames.h"
@@ -27,25 +27,26 @@
 
 LogEntryParser_log4cplusSocket::LogEntryParser_log4cplusSocket( int port )
     :m_port(port)
+    ,myFactory( new LogEntryFactory )
     ,m_name( "Log4cplus Listener Port " + QString::number(port))
     ,m_logEntryNumber( 0 )
     ,m_messageInProgress( false )
 {
 	// Preparing attributes in factory
     LogEntryAttributeNames names;
-	myFactory.getLogEntryAttributeFactory()->addField(names.attDescNumber,false);
-	myFactory.getLogEntryAttributeFactory()->addField(names.attDescTimestamp,false);
-	myFactory.getLogEntryAttributeFactory()->addField(names.attDescMessage,false);
+	myFactory->addField(names.attDescNumber,false);
+	myFactory->addField(names.attDescTimestamp,false);
+	myFactory->addField(names.attDescMessage,false);
 
-	myFactory.getLogEntryAttributeFactory()->addField(names.attDescLoglevel,true);
-	myFactory.getLogEntryAttributeFactory()->addField(names.attDescLogger,true);
-	myFactory.getLogEntryAttributeFactory()->addField(names.attDescFileSource,true);
-	myFactory.getLogEntryAttributeFactory()->addField(names.attDescThread,true);
-	myFactory.getLogEntryAttributeFactory()->addField(names.attDescNDC,true);
-	myFactory.getLogEntryAttributeFactory()->disallowAddingFields();
+	myFactory->addField(names.attDescLoglevel,true);
+	myFactory->addField(names.attDescLogger,true);
+	myFactory->addField(names.attDescFileSource,true);
+	myFactory->addField(names.attDescThread,true);
+	myFactory->addField(names.attDescNDC,true);
+	myFactory->disallowAddingFields();
 
 	m_myModelConfig = boost::shared_ptr<LogEntryParserModelConfiguration>( new LogEntryParserModelConfiguration("log4cplus") );
-	m_myModelConfig->setLogEntryAttributeFactory( myFactory.getLogEntryAttributeFactory() );
+	m_myModelConfig->setLogEntryFactory( myFactory );
 	m_myModelConfig->setHierarchySplitString( 4, "\\.");
 	m_myModelConfig->setEntryToTextFormater( boost::shared_ptr<EntryToTextFormater>( new EntryToTextFormaterLog4cplus ) );
 
@@ -100,7 +101,7 @@ void LogEntryParser_log4cplusSocket::newEntryFromReceiver( std::list<TSharedLogE
     qDebug() << "New Messages received: " << entries.size();
     std::list<TSharedLogEntry>::iterator it;
     for( it = entries.begin(); it != entries.end(); ++it )
-        (*it)->getAttributes().setAttribute( TSharedConstQString( new QString( QString("%1").arg(m_logEntryNumber.fetchAndAddAcquire(1)) ) ) , 0 );
+        (*it)->setAttribute( TSharedConstQString( new QString( QString("%1").arg(m_logEntryNumber.fetchAndAddAcquire(1)) ) ) , 0 );
 
     QMutexLocker lo( &m_mutex );
 
@@ -241,7 +242,7 @@ TSharedLogEntry LogEntryParser_log4cplusSocket_Receiver::bufferToEntry()
 	timestamp = timestamp.addMSecs(qint64(event.getTimestamp().getTime()) * 1000 + ((qint64( event.getTimestamp().usec()/1000)%1000) ) );
 #endif
 
-	TSharedLogEntry entry = m_server->myFactory.generateLogEntry( );
+	TSharedLogEntry entry = m_server->myFactory->getNewLogEntry( );
 
 	boost::shared_ptr<QString> logLevel = m_server->m_loglevelStringOff;
 	if( event.getLogLevel() >= log4cplus::OFF_LOG_LEVEL )
@@ -257,15 +258,15 @@ TSharedLogEntry LogEntryParser_log4cplusSocket_Receiver::bufferToEntry()
 	else if( event.getLogLevel() >= log4cplus::TRACE_LOG_LEVEL )
 		logLevel = m_server->m_loglevelStringTrace;
 
-	entry->getAttributes().setAttribute( TSharedConstQString( new QString( timestamp.toString("dd.MM.yyyy hh:mm:ss.zzz") ) ), 1 );
-	entry->getAttributes().setAttribute( TSharedConstQString( new QString( event.getMessage().c_str() ) ), 2 );
-	entry->getAttributes().setAttribute( TSharedConstQString( logLevel ), 3 );
-	entry->getAttributes().setAttribute( TSharedConstQString(new QString( event.getLoggerName().c_str() ) ), 4 );
+	entry->setAttribute( TSharedConstQString( new QString( timestamp.toString("dd.MM.yyyy hh:mm:ss.zzz") ) ), 1 );
+	entry->setAttribute( TSharedConstQString( new QString( event.getMessage().c_str() ) ), 2 );
+	entry->setAttribute( TSharedConstQString( logLevel ), 3 );
+	entry->setAttribute( TSharedConstQString(new QString( event.getLoggerName().c_str() ) ), 4 );
 	TSharedQString source = TSharedQString( new QString( event.getFile().c_str() ) );
 	(*source) = (*source) + ":" + QString::number( event.getLine() );
-	entry->getAttributes().setAttribute( source, 5 );
-	entry->getAttributes().setAttribute( TSharedConstQString( new QString( event.getThread().c_str() ) ), 6 );
-	entry->getAttributes().setAttribute( TSharedConstQString( new QString( event.getNDC().c_str() ) ), 7 );
+	entry->setAttribute( source, 5 );
+	entry->setAttribute( TSharedConstQString( new QString( event.getThread().c_str() ) ), 6 );
+	entry->setAttribute( TSharedConstQString( new QString( event.getNDC().c_str() ) ), 7 );
 	return entry;
 }
 

@@ -10,7 +10,7 @@
 #include <QtGui>
 
 #include "LogEntryParserModelConfiguration.h"
-#include "LogData/LogEntryAttributeFactory.h"
+#include "LogData/LogEntryFactory.h"
 
 ActionDataRewriter::ActionDataRewriter(TSharedConstLogEntryParserModelConfiguration configuration)
 : m_cfg( configuration )
@@ -67,10 +67,10 @@ void ActionDataRewriter::addChangeSet( const QVariant &var, int role, const QStr
 {
     if( m_cfg )
     {
-        int fieldCount = m_cfg->getLogEntryAttributeFactory()->getNumberOfFields();
+        int fieldCount = m_cfg->getLogEntryFactory()->getNumberOfFields();
         for( int i = 0; i < fieldCount; i++ )
         {
-            if( column == m_cfg->getLogEntryAttributeFactory()->getDescShort( i ) )
+            if( column == m_cfg->getLogEntryFactory()->getDescShort( i ) )
             {
                 m_changes.insert( TChangeSet::value_type(rc_key(role, i),var) );
                 break;

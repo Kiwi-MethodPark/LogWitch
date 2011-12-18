@@ -7,7 +7,6 @@
 
 #include "LogEntryRemoveFilter.h"
 #include "LogData/LogEntry.h"
-#include "LogData/LogEntryAttributes.h"
 
 LogEntryRemoveFilter::LogEntryRemoveFilter( int attr )
 	: m_attributeID( attr )
@@ -36,5 +35,5 @@ void LogEntryRemoveFilter::clear()
 bool LogEntryRemoveFilter::filterEntry( TconstSharedLogEntry entry ) const
 {
     Q_ASSERT( entry );
-	return m_removeStrings.end() == m_removeStrings.find( entry->getAttributes().getAttribute(m_attributeID) );
+	return m_removeStrings.end() == m_removeStrings.find( entry->getAttribute(m_attributeID) );
 }

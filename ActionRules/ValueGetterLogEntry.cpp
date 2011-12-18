@@ -9,8 +9,8 @@
 
 #include <boost/shared_ptr.hpp>
 
-#include "LogData/LogEntryAttributeFactory.h"
-#include "LogData/LogEntryAttributes.h"
+#include "LogData/LogEntryFactory.h"
+#include "LogData/LogEntry.h"
 #include "LogData/LogEntryParserModelConfiguration.h"
 
 ValueGetterLogEntry::ValueGetterLogEntry( )
@@ -36,10 +36,10 @@ ValueGetterLogEntry::ValueGetterLogEntry(const QString &name, TSharedConstLogEnt
 {
     if( m_configuration )
     {
-        int fieldCount = m_configuration->getLogEntryAttributeFactory()->getNumberOfFields();
+        int fieldCount = m_configuration->getLogEntryFactory()->getNumberOfFields();
         for( int i = 0; i < fieldCount; i++ )
         {
-            if( m_name == m_configuration->getLogEntryAttributeFactory()->getDescShort( i ) )
+            if( m_name == m_configuration->getLogEntryFactory()->getDescShort( i ) )
             {
                 m_fieldId = i;
                 break;
@@ -54,10 +54,10 @@ void ValueGetterLogEntry::setName( const QString &name )
 
     if( m_configuration )
     {
-        int fieldCount = m_configuration->getLogEntryAttributeFactory()->getNumberOfFields();
+        int fieldCount = m_configuration->getLogEntryFactory()->getNumberOfFields();
         for( int i = 0; i < fieldCount; i++ )
         {
-            if( m_name == m_configuration->getLogEntryAttributeFactory()->getDescShort( i ) )
+            if( m_name == m_configuration->getLogEntryFactory()->getDescShort( i ) )
             {
                 m_fieldId = i;
                 break;
@@ -72,7 +72,7 @@ ValueGetterLogEntry::~ValueGetterLogEntry()
 
 TSharedConstQString ValueGetterLogEntry::getValue( TconstSharedLogEntry &entry ) const
 {
-    return entry->getAttributes().getAttribute( m_fieldId );
+    return entry->getAttribute( m_fieldId );
 }
 
 bool ValueGetterLogEntry::isValid( ) const

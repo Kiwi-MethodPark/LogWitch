@@ -48,13 +48,13 @@ protected:
 private:
 	TSharedLogEntry getNextLogEntry();
 
-	LogEntryFactory myFactory;
-
 	int m_entries;
 
 	bool m_abort;
 
 	int m_count;
+
+	boost::shared_ptr<LogEntryFactory> myFactory;
 
 	boost::shared_ptr<LogEntryParserModelConfiguration> m_myModelConfig;
 };

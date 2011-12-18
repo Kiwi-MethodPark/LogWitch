@@ -11,8 +11,8 @@
 #include <QtCore/QtCore>
 
 #include "LogEntryFactory.h"
-#include "LogData/LogEntryAttributeFactory.h"
-#include "LogData/LogEntryAttributes.h"
+#include "LogData/LogEntryFactory.h"
+#include "LogData/LogEntry.h"
 #include "LogEntryParserModelConfiguration.h"
 #include "LogEntryAttributeNames.h"
 
@@ -23,6 +23,7 @@ LogEntryParser_Logfile::LogEntryParser_Logfile( const QString &filename)
 	, lineMessageRegex( new QRegExp("^([\\d-]+\\s+[\\d\\,\\:]+)\\s+-\\s+(.*)\\s+-\\s+\\[(.*)\\]\\s+-\\s+(.*)$") )
 	, cellRegex( "\\s+-\\s+" )
 	, timeFormat( "yyyy-MM-dd HH:mm:ss,zzz" )
+    , myFactory( new LogEntryFactory )
 	, m_Name( QFileInfo( filename ).fileName() )
     , m_logEntryNumber( 0 )
 {
@@ -30,17 +31,17 @@ LogEntryParser_Logfile::LogEntryParser_Logfile( const QString &filename)
 
 	// Preparing attributes in factory
     LogEntryAttributeNames names;
-    myFactory.getLogEntryAttributeFactory()->addField(names.attDescNumber,false);
-    myFactory.getLogEntryAttributeFactory()->addField(names.attDescTimestamp,false);
-    myFactory.getLogEntryAttributeFactory()->addField(names.attDescMessage,false);
+    myFactory->addField(names.attDescNumber,false);
+    myFactory->addField(names.attDescTimestamp,false);
+    myFactory->addField(names.attDescMessage,false);
 
-	myFactory.getLogEntryAttributeFactory()->addField(names.attDescLoglevel, true);
-	myFactory.getLogEntryAttributeFactory()->addField(names.attDescLogger, true);
-	myFactory.getLogEntryAttributeFactory()->addField(names.attDescFileSource, true);
-	myFactory.getLogEntryAttributeFactory()->disallowAddingFields();
+	myFactory->addField(names.attDescLoglevel, true);
+	myFactory->addField(names.attDescLogger, true);
+	myFactory->addField(names.attDescFileSource, true);
+	myFactory->disallowAddingFields();
 
 	m_myModelConfig = boost::shared_ptr<LogEntryParserModelConfiguration>( new LogEntryParserModelConfiguration("Logfile") );
-	m_myModelConfig->setLogEntryAttributeFactory( myFactory.getLogEntryAttributeFactory() );
+	m_myModelConfig->setLogEntryFactory( myFactory );
 	m_myModelConfig->setHierarchySplitString( 4, "\\.");
 
     m_myModelConfig->setFieldWidthHint( 0, 60 ); // number
@@ -136,27 +137,27 @@ TSharedLogEntry LogEntryParser_Logfile::getNextLogEntry()
 					{
 						//qDebug() << "Appending Message to last entry = " << message;
 
-						entry->getAttributes().setAttribute( TSharedConstQString( new QString( QString("%1").arg(++m_logEntryNumber) ) ), 0 );
-						entry->getAttributes().setAttribute( boost::shared_ptr<QString>(new QString(message) ), 2 );
+						entry->setAttribute( TSharedConstQString( new QString( QString("%1").arg(++m_logEntryNumber) ) ), 0 );
+						entry->setAttribute( boost::shared_ptr<QString>(new QString(message) ), 2 );
 						entryComplete = true;
 						entryReturn = entry;
 					}
 
-					entry = myFactory.generateLogEntry( );
+					entry = myFactory->getNewLogEntry( );
 
-					entry->getAttributes().setAttribute( boost::shared_ptr<QString>(
+					entry->setAttribute( boost::shared_ptr<QString>(
 					        new QString( QDateTime::fromString ( lineMessageRegex->cap(1), timeFormat ).toString("dd.MM.yyyy hh:mm:ss.zzz")) ), 1 );
 					// File Source
-					entry->getAttributes().setAttribute( boost::shared_ptr<QString>(new QString(lineMessageRegex->cap(3)) ), 5 );
+					entry->setAttribute( boost::shared_ptr<QString>(new QString(lineMessageRegex->cap(3)) ), 5 );
 					message = lineMessageRegex->cap(4);
 
 					QStringList lst = lineMessageRegex->cap(2).split( cellRegex );
 					if( lst.size() >= 2 )
 					{
 						// Severity
-						entry->getAttributes().setAttribute( boost::shared_ptr<QString>(new QString(lst[0]) ), 3 );
+						entry->setAttribute( boost::shared_ptr<QString>(new QString(lst[0]) ), 3 );
 						// Component
-						entry->getAttributes().setAttribute( boost::shared_ptr<QString>(new QString(lst[1]) ), 4 );
+						entry->setAttribute( boost::shared_ptr<QString>(new QString(lst[1]) ), 4 );
 					}
 
 					/*

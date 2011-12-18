@@ -8,7 +8,7 @@
 #include "LogEntryTableWindow.h"
 #include "Models/StringCacheTreeModel.h"
 #include "LogEntryParserModelConfiguration.h"
-#include "LogData/LogEntryAttributeFactory.h"
+#include "LogData/LogEntryFactory.h"
 
 FilterListView::FilterListView( QObject *parent, boost::shared_ptr<const LogEntryParserModelConfiguration> config, const int attr )
 : QTreeView( )
@@ -16,7 +16,7 @@ FilterListView::FilterListView( QObject *parent, boost::shared_ptr<const LogEntr
 , m_attr( attr )
 {
     m_strModel = new StringCacheTreeModel( parent
-            , &m_config->getLogEntryAttributeFactory()->getCache(attr)
+            , &m_config->getLogEntryFactory()->getCache(attr)
             , attr
             , m_config->getHierarchySplitString(attr) );
 
@@ -68,7 +68,7 @@ void FilterListView::addToTabs( QTabWidget *tabs, LogEntryTableWindow* widget  )
     if( m_strModel->getFilter() )
         widget->addFilter( m_strModel->getFilter() );
 
-    tabs->addTab( this, m_config->getLogEntryAttributeFactory()->getDescLong(m_attr) );
+    tabs->addTab( this, m_config->getLogEntryFactory()->getDescLong(m_attr) );
     show();
 }
 

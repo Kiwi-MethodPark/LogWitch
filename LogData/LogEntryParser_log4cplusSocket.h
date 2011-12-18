@@ -55,7 +55,7 @@ signals:
 private:
 	int m_port;
 
-	LogEntryFactory myFactory;
+	boost::shared_ptr<LogEntryFactory> myFactory;
 
 	boost::shared_ptr<LogEntryParserModelConfiguration> m_myModelConfig;
 

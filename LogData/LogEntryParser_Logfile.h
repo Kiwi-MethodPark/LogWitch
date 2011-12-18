@@ -19,7 +19,7 @@
 #include "LogEntryFactory.h"
 
 class QRegExp;
-class LogEntry;
+class LogEntryOld;
 class LogEntryParserModelConfiguration;
 
 class LogEntryParser_Logfile
@@ -69,7 +69,7 @@ private:
 
 	QString timeFormat;
 
-	LogEntryFactory myFactory;
+	boost::shared_ptr<LogEntryFactory> myFactory;
 
 	boost::shared_ptr<LogEntryParserModelConfiguration> m_myModelConfig;
 

@@ -4,7 +4,6 @@
 TEMPLATE = app
 TARGET = 
 SRCDIR = $$(PWD)
-
 CONFIG += qt \
     debug
 DEPENDPATH += SRCDIR \
@@ -19,7 +18,9 @@ QT += core \
     network
 
 # Input
-HEADERS += ActionRules/ExpressionFind.h \
+HEADERS += LogData/LogEntryFactory.h \
+    LogData/LogEntry.h \
+    ActionRules/ExpressionFind.h \
     ActionRules/ExpressionMatch.h \
     Help/HelpAssistant.h \
     LogData/NewLogEntryMessage.h \
@@ -60,10 +61,6 @@ HEADERS += ActionRules/ExpressionFind.h \
     LogEntryTableWindow.h \
     logfileanalyser.h \
     Types.h \
-    LogData/LogEntry.h \
-    LogData/LogEntryAttributeFactory.h \
-    LogData/LogEntryAttributes.h \
-    LogData/LogEntryFactory.h \
     LogData/LogEntryParser.h \
     LogData/LogEntryParser_dummy.h \
     LogData/LogEntryParser_log4cplusSocket.h \
@@ -77,7 +74,9 @@ HEADERS += ActionRules/ExpressionFind.h \
     Models/StringCacheTreeItem.h \
     Models/StringCacheTreeModel.h
 FORMS += logfileanalyser.ui
-SOURCES += ActionRules/ExpressionFind.cpp \
+SOURCES += LogData/LogEntryFactory.cpp \
+    LogData/LogEntry.cpp \
+    ActionRules/ExpressionFind.cpp \
     ActionRules/ExpressionMatch.cpp \
     Help/HelpAssistant.cpp \
     LogData/NewLogEntryMessage.cpp \
@@ -113,10 +112,6 @@ SOURCES += ActionRules/ExpressionFind.cpp \
     LogEntryTableWindow.cpp \
     logfileanalyser.cpp \
     main.cpp \
-    LogData/LogEntry.cpp \
-    LogData/LogEntryAttributeFactory.cpp \
-    LogData/LogEntryAttributes.cpp \
-    LogData/LogEntryFactory.cpp \
     LogData/LogEntryParser_dummy.cpp \
     LogData/LogEntryParser_log4cplusSocket.cpp \
     LogData/LogEntryParser_Logfile.cpp \

@@ -20,7 +20,7 @@
 #include "ActionRules/ExpressionFind.h"
 #include "ActionRules/ExpressionRegEx.h"
 #include "LogData/LogEntryParserModelConfiguration.h"
-#include "LogData/LogEntryAttributeFactory.h"
+#include "LogData/LogEntryFactory.h"
 #include "LogData/ObjectCache.hxx"
 
 #include "FilterListView.h"
@@ -345,11 +345,11 @@ QTabWidget *LogEntryTableWindow::getTabFilterWidget()
     {
         QTabWidget *tabs = new QTabWidget( );
 
-        int attributes = m_model->getParserModelConfiguration()->getLogEntryAttributeFactory()->getNumberOfFields();
+        int attributes = m_model->getParserModelConfiguration()->getLogEntryFactory()->getNumberOfFields();
         for(int attr = 0; attr < attributes; attr++ )
         {
             // Only show tabs with an active StringCahche.
-            if( m_model->getParserModelConfiguration()->getLogEntryAttributeFactory()->getCache(attr).isCaching() )
+            if( m_model->getParserModelConfiguration()->getLogEntryFactory()->getCache(attr).isCaching() )
             {
                 FilterListView *view = new FilterListView( this, m_model->getParserModelConfiguration(), attr );
                 view->addToTabs( tabs, this );

@@ -15,8 +15,7 @@
  #include <QMutexLocker>
 
 #include "LogData/LogEntry.h"
-#include "LogData/LogEntryAttributes.h"
-#include "LogData/LogEntryAttributeFactory.h"
+#include "LogData/LogEntryFactory.h"
 #include "LogData/LogEntryParser.h"
 #include "LogData/LogEntryParserModelConfiguration.h"
 
@@ -72,7 +71,7 @@ int LogEntryTableModel::columnCount(const QModelIndex &parent) const
     Q_UNUSED(parent);
     QMutexLocker lo( &m_mutex );
 
-    int value = m_modelConfiguration->getLogEntryAttributeFactory()->getNumberOfFields( );
+    int value = m_modelConfiguration->getLogEntryFactory()->getNumberOfFields( );
     return value;
 }
 
@@ -80,7 +79,7 @@ TconstSharedLogEntry LogEntryTableModel::getEntryByIndex( const QModelIndex &ind
 {
     QMutexLocker lo( &m_mutex );
 
-    if (index.column() >= (m_modelConfiguration->getLogEntryAttributeFactory()->getNumberOfFields( ) )
+    if (index.column() >= (m_modelConfiguration->getLogEntryFactory()->getNumberOfFields( ) )
       || index.column() < 0
       || index.row() < 0
       || index.row() >= int(m_table.size() ) )
@@ -88,7 +87,7 @@ TconstSharedLogEntry LogEntryTableModel::getEntryByIndex( const QModelIndex &ind
       qDebug() << "Returning empty item from model: index.column():" << index.column()
               << " index.row():" << index.row()
               << " table size:" << int(m_table.size() )
-              << " model columns:" << (m_modelConfiguration->getLogEntryAttributeFactory()->getNumberOfFields( ) );
+              << " model columns:" << (m_modelConfiguration->getLogEntryFactory()->getNumberOfFields( ) );
       return TconstSharedLogEntry();
     }
 
@@ -102,7 +101,7 @@ QVariant LogEntryTableModel::data(const QModelIndex &index, int role) const
     if (!index.isValid())
         return QVariant();
 
-    if (index.column() >= (m_modelConfiguration->getLogEntryAttributeFactory()->getNumberOfFields( ) )
+    if (index.column() >= (m_modelConfiguration->getLogEntryFactory()->getNumberOfFields( ) )
     		|| index.column() < 0
     		|| index.row() < 0
     		|| index.row() >= int(m_table.size() ) )
@@ -111,21 +110,21 @@ QVariant LogEntryTableModel::data(const QModelIndex &index, int role) const
     if (role == Qt::DisplayRole)
     {
     	TconstSharedLogEntry entry = m_table[index.row()];
-    	return *(entry->getAttributes().getAttribute(index.column() ));
+    	return *(entry->getAttribute(index.column() ));
     }
     return QVariant();
 }
 
 QVariant LogEntryTableModel::headerData(int section, Qt::Orientation orientation, int role) const
 {
-    if (section >= (m_modelConfiguration->getLogEntryAttributeFactory()->getNumberOfFields( ) ) || section < 0)
+    if (section >= (m_modelConfiguration->getLogEntryFactory()->getNumberOfFields( ) ) || section < 0)
         return QVariant();
 
     if (role == Qt::DisplayRole)
     {
 		if (orientation == Qt::Horizontal)
 		{
-			return m_modelConfiguration->getLogEntryAttributeFactory()->getDescLong( section );
+			return m_modelConfiguration->getLogEntryFactory()->getDescLong( section );
 		}
     }
     else if( role == 512 )
@@ -215,7 +214,7 @@ void LogEntryTableModel::exportToFile( const QString &target )
     QTextStream str( &file );
 
     // Determine sort order, we will put the message to the end.
-    const int fields = m_modelConfiguration->getLogEntryAttributeFactory()->getNumberOfFields();
+    const int fields = m_modelConfiguration->getLogEntryFactory()->getNumberOfFields();
     std::vector<int> order;
     for ( int i = 0; i < fields; i++ )
     {
@@ -231,7 +230,7 @@ void LogEntryTableModel::exportToFile( const QString &target )
         if( desc.length() )
             desc.append(" - ");
 
-        desc.append( m_modelConfiguration->getLogEntryAttributeFactory()->getDescShort( order[i] ) );
+        desc.append( m_modelConfiguration->getLogEntryFactory()->getDescShort( order[i] ) );
     }
 
     str << desc << "\n";
@@ -245,7 +244,7 @@ void LogEntryTableModel::exportToFile( const QString &target )
             if( line.length() )
                 line.append(" - ");
 
-            line.append( *(*it)->getAttributes()[order[i]] );
+            line.append( *(*it)->getAttribute(order[i]) );
         }
         str << line << "\n";
     }

@@ -1,24 +1,38 @@
 /*
- * LogEntry.cpp
+ * LogEntryAttributes.cpp
  *
- *  Created on: May 13, 2011
+ *  Created on: May 14, 2011
  *      Author: sven
  */
 
-#include "LogEntry.h"
+#include "LogData/LogEntry.h"
 
-LogEntry::LogEntry(const boost::shared_ptr<LogEntryAttributes> attr )
-	: indexedLogEntries( attr )
+#include <QString>
+
+#include "LogData/ObjectCache.hxx"
+#include "LogData/LogEntryFactory.h"
+
+LogEntry::LogEntry( LogEntryFactory *factory, const std::vector<TSharedConstQString > &defAttributes  )
+	: attributes( defAttributes )
+	, myFactory( factory )
 {
-
 }
 
-const LogEntryAttributes &LogEntry::getAttributes() const
-{
-	return *indexedLogEntries;
+LogEntry::~LogEntry() {
 }
 
-LogEntryAttributes &LogEntry::getAttributes()
+void LogEntry::setAttribute( TSharedConstQString str, int idx )
 {
-	return *indexedLogEntries;
+	attributes[idx] = myFactory->getCache(idx).getObject( str );
 }
+
+boost::shared_ptr<const QString> LogEntry::getAttribute( int idx ) const
+{
+	return attributes[idx];
+}
+
+const TSharedConstQString &LogEntry::operator []( int idx) const
+{
+    return attributes[idx];
+}
+

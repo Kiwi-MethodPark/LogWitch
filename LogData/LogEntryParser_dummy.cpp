@@ -7,27 +7,27 @@
 
 #include "LogEntryParser_dummy.h"
 #include "LogData/LogEntry.h"
-#include "LogData/LogEntryAttributes.h"
-#include "LogData/LogEntryAttributeFactory.h"
+#include "LogData/LogEntryFactory.h"
 #include "LogEntryAttributeNames.h"
 
 LogEntryParser_dummy::LogEntryParser_dummy()
 	: m_entries( 0 )
 	, m_abort( false )
 	, m_count( 12 )
+    , myFactory( new LogEntryFactory )
 {
 	// Preparing attributes factory
     LogEntryAttributeNames names;
-    myFactory.getLogEntryAttributeFactory()->addField(names.attDescNumber,false);
-    myFactory.getLogEntryAttributeFactory()->addField(names.attDescTimestamp,false);
-    myFactory.getLogEntryAttributeFactory()->addField(names.attDescMessage,false);
+    myFactory->addField(names.attDescNumber,false);
+    myFactory->addField(names.attDescTimestamp,false);
+    myFactory->addField(names.attDescMessage,false);
 
-	myFactory.getLogEntryAttributeFactory()->addField(names.attDescLoglevel,true);
-	myFactory.getLogEntryAttributeFactory()->addField(names.attDescLogger,true);
-	myFactory.getLogEntryAttributeFactory()->disallowAddingFields();
+	myFactory->addField(names.attDescLoglevel,true);
+	myFactory->addField(names.attDescLogger,true);
+	myFactory->disallowAddingFields();
 
 	m_myModelConfig = boost::shared_ptr<LogEntryParserModelConfiguration>( new LogEntryParserModelConfiguration("DummyLogger") );
-	m_myModelConfig->setLogEntryAttributeFactory( myFactory.getLogEntryAttributeFactory() );
+	m_myModelConfig->setLogEntryFactory( myFactory );
 	m_myModelConfig->setHierarchySplitString( 4, "\\.");
 
     m_myModelConfig->setFieldWidthHint( 0, 60 ); // number
@@ -107,35 +107,35 @@ TSharedLogEntry LogEntryParser_dummy::getNextLogEntry()
 		    emit signalError(QString("This is a generated error from dummy parser!"));
 		}
 
-		entry = myFactory.generateLogEntry( );
+		entry = myFactory->getNewLogEntry( );
 
-		entry->getAttributes().setAttribute( boost::shared_ptr<QString>(new QString(QString("%1").arg(m_entries)) ), 0 );
-		entry->getAttributes().setAttribute( boost::shared_ptr<QString>(new QString(QDateTime::currentDateTime().toString("dd.MM.yyyy hh:mm:ss.zzz")) ), 1 );
+		entry->setAttribute( boost::shared_ptr<QString>(new QString(QString("%1").arg(m_entries)) ), 0 );
+		entry->setAttribute( boost::shared_ptr<QString>(new QString(QDateTime::currentDateTime().toString("dd.MM.yyyy hh:mm:ss.zzz")) ), 1 );
 		QString message( QString("Message #").append(QString("%1").arg(m_entries) ) );
-		entry->getAttributes().setAttribute( boost::shared_ptr<QString>(new QString(message) ), 2 );
+		entry->setAttribute( boost::shared_ptr<QString>(new QString(message) ), 2 );
 
-		entry->getAttributes().setAttribute( boost::shared_ptr<QString>(new QString("DEBUG") ), 3 );
+		entry->setAttribute( boost::shared_ptr<QString>(new QString("DEBUG") ), 3 );
 		if( (m_entries % 20) == 0 )
-			entry->getAttributes().setAttribute( boost::shared_ptr<QString>(new QString("WARN") ), 3 );
+			entry->setAttribute( boost::shared_ptr<QString>(new QString("WARN") ), 3 );
 		if( (m_entries % 100) == 0 )
-			entry->getAttributes().setAttribute( boost::shared_ptr<QString>(new QString("ERROR") ), 3 );
+			entry->setAttribute( boost::shared_ptr<QString>(new QString("ERROR") ), 3 );
 
 
-		entry->getAttributes().setAttribute( boost::shared_ptr<QString>(new QString("MainUnit.Logging")), 4 );
+		entry->setAttribute( boost::shared_ptr<QString>(new QString("MainUnit.Logging")), 4 );
 		if( (m_entries % 3) == 0 )
-			entry->getAttributes().setAttribute( boost::shared_ptr<QString>(new QString("MainUnit.Logging1")), 4 );
+			entry->setAttribute( boost::shared_ptr<QString>(new QString("MainUnit.Logging1")), 4 );
 		if( (m_entries % 10) == 0 )
-			entry->getAttributes().setAttribute( boost::shared_ptr<QString>(new QString("MainUnit.Logging2")), 4 );
+			entry->setAttribute( boost::shared_ptr<QString>(new QString("MainUnit.Logging2")), 4 );
 		if( (m_entries % 15) == 0 )
-		entry->getAttributes().setAttribute( boost::shared_ptr<QString>(new QString("MainUnit5.Logging3")), 4 );
+		    entry->setAttribute( boost::shared_ptr<QString>(new QString("MainUnit5.Logging3")), 4 );
 		if( (m_entries % 20) == 0 )
-			entry->getAttributes().setAttribute( boost::shared_ptr<QString>(new QString("MainUnit3.Logging4")), 4 );
+			entry->setAttribute( boost::shared_ptr<QString>(new QString("MainUnit3.Logging4")), 4 );
 		if( (m_entries % 21) == 0 )
-			entry->getAttributes().setAttribute( boost::shared_ptr<QString>(new QString("Aplication2.Logging5")), 4 );
+			entry->setAttribute( boost::shared_ptr<QString>(new QString("Aplication2.Logging5")), 4 );
 		if( (m_entries % 25) == 0 )
-			entry->getAttributes().setAttribute( boost::shared_ptr<QString>(new QString("Aplication.Comp1")), 4 );
+			entry->setAttribute( boost::shared_ptr<QString>(new QString("Aplication.Comp1")), 4 );
 		if( (m_entries % 30) == 0 )
-			entry->getAttributes().setAttribute( boost::shared_ptr<QString>(new QString("Aplication1.XTray.Loop")), 4 );
+			entry->setAttribute( boost::shared_ptr<QString>(new QString("Aplication1.XTray.Loop")), 4 );
 
 	}
 
