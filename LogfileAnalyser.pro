@@ -18,7 +18,9 @@ QT += core \
     network
 
 # Input
-HEADERS += LogData/LogEntryFactory.h \
+HEADERS += GUITools/SlotToBoostFunction.h \
+    ContextMenuLogEntryHeader.h \
+    LogData/LogEntryFactory.h \
     LogData/LogEntry.h \
     ActionRules/ExpressionFind.h \
     ActionRules/ExpressionMatch.h \
@@ -74,7 +76,8 @@ HEADERS += LogData/LogEntryFactory.h \
     Models/StringCacheTreeItem.h \
     Models/StringCacheTreeModel.h
 FORMS += logfileanalyser.ui
-SOURCES += LogData/LogEntryFactory.cpp \
+SOURCES += ContextMenuLogEntryHeader.cpp \
+    LogData/LogEntryFactory.cpp \
     LogData/LogEntry.cpp \
     ActionRules/ExpressionFind.cpp \
     ActionRules/ExpressionMatch.cpp \

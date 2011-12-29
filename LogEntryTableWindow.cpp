@@ -7,6 +7,7 @@
 
 #include "LogEntryTableWindow.h"
 
+
 #include "Models/LogEntryTableModel.h"
 #include "Models/LogEntryTableFilter.h"
 #include "ActionRules/ValueGetterConstQString.h"
@@ -23,8 +24,9 @@
 #include "LogData/LogEntryFactory.h"
 #include "LogData/ObjectCache.hxx"
 
-#include "FilterListView.h"
+#include "ContextMenuLogEntryHeader.h"
 #include "EntryToTextFormater.h"
+#include "FilterListView.h"
 
 LogEntryTableWindow::LogEntryTableWindow( boost::shared_ptr<LogEntryTableModel> model, QWidget *parent )
 	:QMdiSubWindow(parent)
@@ -49,6 +51,10 @@ LogEntryTableWindow::LogEntryTableWindow( boost::shared_ptr<LogEntryTableModel> 
     m_tableView->setAlternatingRowColors(true);
     m_tableView->setSelectionBehavior(QAbstractItemView::SelectRows);
     m_tableView->setSelectionMode( QAbstractItemView::SingleSelection );
+
+    // Context menu for the HorizontalHeaderView
+    m_tableView->horizontalHeader()->setContextMenuPolicy( Qt::CustomContextMenu );
+    new ContextMenuLogEntryHeader( m_tableView->horizontalHeader() );
 
 	// Resize the columns to fit to the models defaults.
 	int count = m_model->columnCount( QModelIndex() );
