@@ -110,7 +110,15 @@ QVariant LogEntryTableModel::data(const QModelIndex &index, int role) const
     if (role == Qt::DisplayRole)
     {
     	TconstSharedLogEntry entry = m_table[index.row()];
-    	return *(entry->getAttributeAsString(index.column() ));
+    	const QVariant &var = entry->getAttribute( index.column() );
+    	if( var.canConvert<TSharedConstQString>() )
+    	{
+    	    // Return native QString instead our special pointer.
+    	    QString rv = *var.value<TSharedConstQString>();
+    	    return QVariant(rv );
+    	}
+
+    	return var;
     }
     return QVariant();
 }

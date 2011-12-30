@@ -137,7 +137,7 @@ TSharedLogEntry LogEntryParser_Logfile::getNextLogEntry()
 					{
 						//qDebug() << "Appending Message to last entry = " << message;
 
-						entry->setAttribute( QVariant( QString( QString("%1").arg(++m_logEntryNumber) ) ), 0 );
+						entry->setAttribute( QVariant( ++m_logEntryNumber ), 0 );
 						entry->setAttribute( QVariant( QString(message) ), 2 );
 						entryComplete = true;
 						entryReturn = entry;
@@ -146,7 +146,7 @@ TSharedLogEntry LogEntryParser_Logfile::getNextLogEntry()
 					entry = myFactory->getNewLogEntry( );
 
 					entry->setAttribute( QVariant(
-					        QDateTime::fromString ( lineMessageRegex->cap(1), timeFormat ).toString("dd.MM.yyyy hh:mm:ss.zzz")), 1 );
+					        QDateTime::fromString ( lineMessageRegex->cap(1), timeFormat ) ), 1 );
 					// File Source
 					entry->setAttribute( QVariant( lineMessageRegex->cap(3) ), 5 );
 					message = lineMessageRegex->cap(4);

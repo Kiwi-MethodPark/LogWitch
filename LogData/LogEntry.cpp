@@ -12,6 +12,7 @@
 
 #include "LogData/ObjectCache.hxx"
 #include "LogData/LogEntryFactory.h"
+#include <QtCore/QtCore>
 
 LogEntry::LogEntry( LogEntryFactory *factory, const std::vector< QVariant > &defAttributes )
 	: m_attributes( defAttributes )
@@ -27,18 +28,18 @@ LogEntry::~LogEntry()
 
 void LogEntry::setAttribute( const QVariant &value, int idx )
 {
-    if(   value.canConvert<TSharedConstQString>()  )
+    if( value.canConvert<TSharedConstQString>() )
     {
         TSharedConstQString str = value.value<TSharedConstQString>();
         str = myFactory->getCache(idx).getObject( str );
-        m_attributes[idx] = QVariant( str );
+        m_attributes[idx] = QVariant::fromValue( str );
         m_attributesStringCache[idx] = str;
     }
-    else if( value.canConvert<QString>() )
+    else if( value.type() == QVariant::String )
     {
         TSharedQString strIn( new QString( value.toString() ) );
         TSharedConstQString str =  myFactory->getCache(idx).getObject( strIn );
-        m_attributes[idx] = QVariant( str );
+        m_attributes[idx] = QVariant::fromValue( str );
         m_attributesStringCache[idx] = str;
     }
     else

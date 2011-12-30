@@ -123,7 +123,7 @@ TSharedLogEntry LogEntryParser_dummy::getNextLogEntry()
 		entry = myFactory->getNewLogEntry( );
 
 		entry->setAttribute( QVariant( m_entries ), 0 );
-		entry->setAttribute( QVariant(QDateTime::currentDateTime().toString("dd.MM.yyyy hh:mm:ss.zzz")), 1 );
+		entry->setAttribute( QVariant( QDateTime::currentDateTime() ), 1 );
 		QString message( QString("Message #").append(QString("%1").arg(m_entries) ) );
 		entry->setAttribute( QVariant(message), 2 );
 
