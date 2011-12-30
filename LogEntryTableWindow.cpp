@@ -27,7 +27,7 @@
 #include "ContextMenuLogEntryHeader.h"
 #include "EntryToTextFormater.h"
 #include "FilterListView.h"
-#include "TimeFormatingModel.h"
+#include "EntryFormatingModel.h"
 
 LogEntryTableWindow::LogEntryTableWindow( boost::shared_ptr<LogEntryTableModel> model, QWidget *parent )
 	:QMdiSubWindow(parent)
@@ -43,7 +43,7 @@ LogEntryTableWindow::LogEntryTableWindow( boost::shared_ptr<LogEntryTableModel> 
     m_proxyModel->setSourceModel(m_model.get());
 
     // Parametrize the table view for the log entries.
-    m_timeFormatModel = new TimeFormatingModel( m_tableView );
+    m_timeFormatModel = new EntryFormatingModel( m_tableView );
     m_timeFormatModel->setSourceModel( m_proxyModel );
 
     m_tableView->setModel( m_timeFormatModel );
@@ -244,8 +244,13 @@ void LogEntryTableWindow::search( bool backwards )
         if( m_tableView->selectionModel()->hasSelection() )
         {
             QItemSelection selection = m_tableView->selectionModel()->selection();
-            QModelIndex index = selection.front().topLeft();
-            startRow = index.row();
+            // There seems to be a QT Bug, if the ProxyFilterModel is removing the selection
+            // hasSelection retruns true while no selection is here!
+            if( !selection.isEmpty() )
+            {
+                QModelIndex index = selection.front().topLeft();
+                startRow = index.row();
+            }
         }
 
         const int inc = backwards ? -1 : 1;
@@ -383,9 +388,31 @@ void LogEntryTableWindow::newSelection ( const QItemSelection & selected, const 
 
 void LogEntryTableWindow::contextMenu( const QPoint & pt )
 {
-    QMenu *menu = new QMenu();
+    // Query the reference timestamp.
+    QDateTime dt;
+    bool found = false;
 
-    QModelIndex idx = m_tableView->indexAt( pt );
+    QModelIndex idxClick = mapToSource( m_tableView->indexAt( pt ) );
+
+    for( int i = 0; i < m_model->columnCount(); ++i )
+    {
+        QModelIndex idx = m_model->index( idxClick.row(), i );
+        QVariant var = m_model->data( idx, Qt::DisplayRole );
+        qDebug() << " i " << i << " var " << var;
+        if( var.type() == QVariant::DateTime )
+        {
+            dt = var.toDateTime();
+            found = true;
+            break;
+        }
+    }
+
+    if( !found )
+        return;
+
+    qDebug() << "Using reference time: " << dt;
+
+    QMenu *menu = new QMenu();
 
     QAction *timeStampsRelative = menu->addAction( tr("Set row as reference") );
     QAction *showTimestamps = menu->addAction( tr("Show absolute times") );
@@ -395,17 +422,16 @@ void LogEntryTableWindow::contextMenu( const QPoint & pt )
 
     if( pressed == timeStampsRelative )
     {
-        m_timeFormatModel->setTimeDiffReferenceRow( idx.row() );
-        m_timeFormatModel->setTimeDiffModeEnabled( true );
+        m_timeFormatModel->setTimeDiffReference( dt );
+        m_timeFormatModel->setTimeDiffModeEnabled( true, false );
     }
     else if( pressed == showTimestamps )
     {
-        m_timeFormatModel->setTimeDiffModeEnabled( false );
+        m_timeFormatModel->setTimeDiffModeEnabled( false, false );
     }
     else if( pressed == showDiffTimes )
     {
-        m_timeFormatModel->setTimeDiffReferenceRow( -1 );
-        m_timeFormatModel->setTimeDiffModeEnabled( true );
+        m_timeFormatModel->setTimeDiffModeEnabled( true, true );
     }
 
     delete menu;

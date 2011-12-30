@@ -17,7 +17,7 @@ class QSortFilterProxyModel;
 class LogEntryFilter;
 class LogEntryTableFilter;
 class QScrollDownTableView;
-class TimeFormatingModel;
+class EntryFormatingModel;
 
 class LogEntryTableWindow
 	: public QMdiSubWindow
@@ -98,7 +98,7 @@ private:
 
 	LogEntryTableFilter *m_proxyModel;
 
-	TimeFormatingModel *m_timeFormatModel;
+	EntryFormatingModel *m_timeFormatModel;
 
 	QLineEdit *m_quickSearch;
 
