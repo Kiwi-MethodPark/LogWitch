@@ -20,7 +20,7 @@ LogEntryTableFilter::LogEntryTableFilter( QObject *parent)
     QObject::connect(&m_filterChain, SIGNAL(filterUpdateFinished()),
                      this, SLOT(invalidate()));
     QObject::connect( m_ruleTable.get(), SIGNAL(changed()),
-            this, SLOT(invalidate()));
+            this, SLOT(updateChanges()));
 }
 
 LogEntryTableFilter::~LogEntryTableFilter()
@@ -83,9 +83,20 @@ bool LogEntryTableFilter::filterAcceptsRow( int sourceRow, const QModelIndex & )
     return true;
 }
 
-void LogEntryTableFilter::invalidate()
+void LogEntryTableFilter::updateChanges()
 {
-    m_discardExpressions = m_ruleTable->getExpressionsWithAction<TconstSharedActionDiscardRow>();
-
-    QSortFilterProxyModel::invalidate();
+    TExpressionVector newExpressions = m_ruleTable->getExpressionsWithAction<TconstSharedActionDiscardRow>();
+    if( newExpressions != m_discardExpressions )
+    {
+        // We have to invalidate the complete model here, because the discard filter has changed.
+        // This takes more time, than only invalidating data.
+        m_discardExpressions = newExpressions;
+        invalidate();
+    }
+    else
+    {
+        // This invalidates the item data only. This is much faster, because only
+        // the actual viewport will be updated.
+        emit dataChanged( index( 0, 0 ), index( rowCount()-1, columnCount()-1 ) );
+    }
 }

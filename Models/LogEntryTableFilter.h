@@ -34,7 +34,7 @@ public:
 	virtual ~LogEntryTableFilter();
 
 public slots:
-	void invalidate();
+	void updateChanges();
 
 
 protected:
