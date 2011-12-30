@@ -51,14 +51,11 @@ LogEntryParser_log4cplusSocket::LogEntryParser_log4cplusSocket( int port )
 	m_myModelConfig->setHierarchySplitString( 4, "\\.");
 	m_myModelConfig->setEntryToTextFormater( boost::shared_ptr<EntryToTextFormater>( new EntryToTextFormaterLog4cplus ) );
 
-	m_myModelConfig->setFieldWidthHint( 0, 60 ); // number
-	m_myModelConfig->setFieldWidthHint( 1, 180 ); // timestamp
-	m_myModelConfig->setFieldWidthHint( 2, 500 ); // message
-	m_myModelConfig->setFieldWidthHint( 3, 70 ); // severity
-	m_myModelConfig->setFieldWidthHint( 4, 250 ); // component
-	m_myModelConfig->setFieldWidthHint( 5, 150 ); // file source
-	m_myModelConfig->setFieldWidthHint( 6, 70 ); // thread
-	m_myModelConfig->setFieldWidthHint( 7, 100 ); // NDC
+	for( int i = 0; i < myFactory->getNumberOfFields(); ++i )
+	{
+	    const LogEntryAttributeNames::EntryConfiguration &cfg = names.getDefautlForColumn( myFactory->getDescShort( i ) );
+	    m_myModelConfig->setFieldWidthHint( i, cfg.defaultCellWidth  );
+	}
 
 	m_loglevelStringOff.reset(new QString("OFF"));
 	m_loglevelStringFatal.reset(new QString("FATAL"));

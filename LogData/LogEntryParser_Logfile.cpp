@@ -44,12 +44,11 @@ LogEntryParser_Logfile::LogEntryParser_Logfile( const QString &filename)
 	m_myModelConfig->setLogEntryFactory( myFactory );
 	m_myModelConfig->setHierarchySplitString( 4, "\\.");
 
-    m_myModelConfig->setFieldWidthHint( 0, 60 ); // number
-    m_myModelConfig->setFieldWidthHint( 1, 180 ); // timestamp
-    m_myModelConfig->setFieldWidthHint( 2, 500 ); // message
-	m_myModelConfig->setFieldWidthHint( 3, 70 ); // severity
-	m_myModelConfig->setFieldWidthHint( 4, 250 ); // component
-	m_myModelConfig->setFieldWidthHint( 5, 150 ); // file source
+    for( int i = 0; i < myFactory->getNumberOfFields(); ++i )
+    {
+        m_myModelConfig->setFieldWidthHint( i,
+                names.getDefautlForColumn( myFactory->getDescShort( i ) ).defaultCellWidth );
+    }
 }
 
 LogEntryParser_Logfile::~LogEntryParser_Logfile()

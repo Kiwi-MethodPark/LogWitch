@@ -13,7 +13,21 @@ class LogEntryAttributeNames
 {
     Q_DECLARE_TR_FUNCTIONS(LogEntryAttributeNames)
 public:
+    class EntryConfiguration
+    {
+    public:
+        EntryConfiguration( bool caching, int defaultCellWidth );
+
+        bool caching;
+        int defaultCellWidth;
+    };
+
     LogEntryAttributeNames();
+
+    /**
+     * Returns the default configuration for the colum named with name.
+     */
+    const EntryConfiguration &getDefautlForColumn( const QString &name ) const;
 
     typedef std::pair<QString,QString> TQStringPair;
 
@@ -25,6 +39,16 @@ public:
     const TQStringPair attDescThread;
     const TQStringPair attDescLogger;
     const TQStringPair attDescFileSource;
+
+private:
+
+    typedef std::map<QString, EntryConfiguration> StringIntMap;
+
+    StringIntMap m_defaultCellIfos;
+
+    EntryConfiguration m_defaultCellIfo;
+
+
 };
 
 

@@ -67,4 +67,17 @@ protected:
 	QString m_initError;
 };
 
+class LogFileParser
+{
+public:
+    virtual ~LogFileParser() { };
+
+    /**
+     * Returns true if the parser seems to be working (parsers should try some loglines
+     * if they can perse them and if this is possible, the return true here.)
+     */
+    virtual bool isParseable() const = 0;
+
+};
+
 #endif /* LOGENTRYPARSER_H_ */
