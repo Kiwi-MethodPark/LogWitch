@@ -107,7 +107,7 @@ void LogEntryParser_log4cplusSocket::newEntryFromReceiver( std::list<TSharedLogE
     }
     std::list<TSharedLogEntry>::iterator it;
     for( it = entries.begin(); it != entries.end(); ++it )
-        (*it)->setAttribute( TSharedConstQString( new QString( QString("%1").arg(m_logEntryNumber.fetchAndAddAcquire(1)) ) ) , 0 );
+        (*it)->setAttribute( QVariant( QString("%1").arg(m_logEntryNumber.fetchAndAddAcquire(1)) ) , 0 );
 
     QMutexLocker lo( &m_mutex );
 
@@ -271,15 +271,15 @@ TSharedLogEntry LogEntryParser_log4cplusSocket_Receiver::bufferToEntry()
 	else if( event.getLogLevel() >= log4cplus::TRACE_LOG_LEVEL )
 		logLevel = m_server->m_loglevelStringTrace;
 
-	entry->setAttribute( TSharedConstQString( new QString( timestamp.toString("dd.MM.yyyy hh:mm:ss.zzz") ) ), 1 );
-	entry->setAttribute( TSharedConstQString( new QString( event.getMessage().c_str() ) ), 2 );
-	entry->setAttribute( TSharedConstQString( logLevel ), 3 );
-	entry->setAttribute( TSharedConstQString(new QString( event.getLoggerName().c_str() ) ), 4 );
+	entry->setAttribute( QVariant( timestamp.toString("dd.MM.yyyy hh:mm:ss.zzz") ), 1 );
+	entry->setAttribute( QVariant( QString( event.getMessage().c_str() ) ), 2 );
+	entry->setAttribute( QVariant( logLevel ), 3 );
+	entry->setAttribute( QVariant( QString( event.getLoggerName().c_str() ) ), 4 );
 	TSharedQString source = TSharedQString( new QString( event.getFile().c_str() ) );
 	(*source) = (*source) + ":" + QString::number( event.getLine() );
-	entry->setAttribute( source, 5 );
-	entry->setAttribute( TSharedConstQString( new QString( event.getThread().c_str() ) ), 6 );
-	entry->setAttribute( TSharedConstQString( new QString( event.getNDC().c_str() ) ), 7 );
+	entry->setAttribute( QVariant( source ), 5 );
+	entry->setAttribute( QVariant( QString( event.getThread().c_str() ) ), 6 );
+	entry->setAttribute( QVariant(  QString( event.getNDC().c_str() ) ), 7 );
 	return entry;
 }
 

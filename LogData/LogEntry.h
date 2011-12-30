@@ -14,22 +14,45 @@
 class LogEntryFactory;
 class QString;
 
-class LogEntry {
+class LogEntry
+{
 public:
 	virtual ~LogEntry();
 
-	LogEntry( LogEntryFactory *factory, const std::vector< TSharedConstQString > &defAttributes );
+	LogEntry( LogEntryFactory *factory, const std::vector< QVariant > &defAttributes );
 
-	void setAttribute( TSharedConstQString, int idx );
-
-	TSharedConstQString getAttribute( int idx ) const;
-
+	/**
+	 * Returns the factory which was used to generate this log entry.
+	 * The factory also has more informations about the attributes and its
+	 * interpretation.
+	 */
 	const LogEntryFactory &getFactory() const { return *myFactory; }
 
-	const TSharedConstQString &operator []( int idx) const;
+	/**
+	 * Sets an attribute to the given value.
+	 */
+	void setAttribute( const QVariant &, int idx );
+
+	/**
+	 * Returns the raw value of the attribute
+	 */
+    const QVariant &getAttribute( int idx ) const;
+
+	/**
+	 * Returns the attribute as a string. If the attribute is not a string
+	 * it will be converted to. (internally we user a cache)
+	 */
+	TSharedConstQString getAttributeAsString( int idx ) const;
+
+	/**
+	 * This updates the representation of AsString from the internal values.
+	 */
+	void updateStringRepresentation();
 
 private:
-	std::vector< TSharedConstQString > attributes;
+	std::vector< QVariant > m_attributes;
+
+	std::vector< TSharedConstQString > m_attributesStringCache;
 
 	LogEntryFactory *myFactory;
 };

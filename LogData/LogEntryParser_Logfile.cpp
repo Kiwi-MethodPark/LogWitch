@@ -137,27 +137,27 @@ TSharedLogEntry LogEntryParser_Logfile::getNextLogEntry()
 					{
 						//qDebug() << "Appending Message to last entry = " << message;
 
-						entry->setAttribute( TSharedConstQString( new QString( QString("%1").arg(++m_logEntryNumber) ) ), 0 );
-						entry->setAttribute( boost::shared_ptr<QString>(new QString(message) ), 2 );
+						entry->setAttribute( QVariant( QString( QString("%1").arg(++m_logEntryNumber) ) ), 0 );
+						entry->setAttribute( QVariant( QString(message) ), 2 );
 						entryComplete = true;
 						entryReturn = entry;
 					}
 
 					entry = myFactory->getNewLogEntry( );
 
-					entry->setAttribute( boost::shared_ptr<QString>(
-					        new QString( QDateTime::fromString ( lineMessageRegex->cap(1), timeFormat ).toString("dd.MM.yyyy hh:mm:ss.zzz")) ), 1 );
+					entry->setAttribute( QVariant(
+					        QDateTime::fromString ( lineMessageRegex->cap(1), timeFormat ).toString("dd.MM.yyyy hh:mm:ss.zzz")), 1 );
 					// File Source
-					entry->setAttribute( boost::shared_ptr<QString>(new QString(lineMessageRegex->cap(3)) ), 5 );
+					entry->setAttribute( QVariant( lineMessageRegex->cap(3) ), 5 );
 					message = lineMessageRegex->cap(4);
 
 					QStringList lst = lineMessageRegex->cap(2).split( cellRegex );
 					if( lst.size() >= 2 )
 					{
 						// Severity
-						entry->setAttribute( boost::shared_ptr<QString>(new QString(lst[0]) ), 3 );
+						entry->setAttribute( QVariant( lst[0] ), 3 );
 						// Component
-						entry->setAttribute( boost::shared_ptr<QString>(new QString(lst[1]) ), 4 );
+						entry->setAttribute( QVariant( lst[1] ), 4 );
 					}
 
 					/*

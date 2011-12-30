@@ -23,11 +23,11 @@ QString EntryToTextFormaterDefault::formatEntry( TconstSharedLogEntry entry ) co
     for( int i = 0; i < entry->getFactory().getNumberOfFields(); i++ )
     {
         if( i != messageId )
-            str << "<b>" << entry->getFactory().getDescLong(i) << ":</b> " << *entry->getAttribute(i) << "<br/>";
+            str << "<b>" << entry->getFactory().getDescLong(i) << ":</b> " << *entry->getAttributeAsString(i) << "<br/>";
     }
 
     if( entry->getFactory().getNumberOfFields() > messageId)
-        tmp = *entry->getAttribute(messageId);
+        tmp = *entry->getAttributeAsString(messageId);
 
 	str << "<b>Message:</b><p> <pre> " << tmp.replace("\n","<br/>") << "</pre></p>";
 

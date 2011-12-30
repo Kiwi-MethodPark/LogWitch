@@ -72,7 +72,7 @@ ValueGetterLogEntry::~ValueGetterLogEntry()
 
 TSharedConstQString ValueGetterLogEntry::getValue( TconstSharedLogEntry &entry ) const
 {
-    return entry->getAttribute( m_fieldId );
+    return entry->getAttributeAsString( m_fieldId );
 }
 
 bool ValueGetterLogEntry::isValid( ) const

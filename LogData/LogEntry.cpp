@@ -8,31 +8,66 @@
 #include "LogData/LogEntry.h"
 
 #include <QString>
+#include <QtCore/QVariant>
 
 #include "LogData/ObjectCache.hxx"
 #include "LogData/LogEntryFactory.h"
 
-LogEntry::LogEntry( LogEntryFactory *factory, const std::vector<TSharedConstQString > &defAttributes  )
-	: attributes( defAttributes )
+LogEntry::LogEntry( LogEntryFactory *factory, const std::vector< QVariant > &defAttributes )
+	: m_attributes( defAttributes )
+    , m_attributesStringCache( defAttributes.size() )
 	, myFactory( factory )
 {
+    updateStringRepresentation();
 }
 
-LogEntry::~LogEntry() {
-}
-
-void LogEntry::setAttribute( TSharedConstQString str, int idx )
+LogEntry::~LogEntry()
 {
-	attributes[idx] = myFactory->getCache(idx).getObject( str );
 }
 
-boost::shared_ptr<const QString> LogEntry::getAttribute( int idx ) const
+void LogEntry::setAttribute( const QVariant &value, int idx )
 {
-	return attributes[idx];
+    if(   value.canConvert<TSharedConstQString>()  )
+    {
+        TSharedConstQString str = value.value<TSharedConstQString>();
+        str = myFactory->getCache(idx).getObject( str );
+        m_attributes[idx] = QVariant( str );
+        m_attributesStringCache[idx] = str;
+    }
+    else if( value.canConvert<QString>() )
+    {
+        TSharedQString strIn( new QString( value.toString() ) );
+        TSharedConstQString str =  myFactory->getCache(idx).getObject( strIn );
+        m_attributes[idx] = QVariant( str );
+        m_attributesStringCache[idx] = str;
+    }
+    else
+    {
+        TSharedQString str( new QString );
+        (*str) = value.toString();
+
+        m_attributes[idx] = value;
+        m_attributesStringCache[idx] = str;
+    }
 }
 
-const TSharedConstQString &LogEntry::operator []( int idx) const
+void LogEntry::updateStringRepresentation()
 {
-    return attributes[idx];
+    for( unsigned int idx = 0; idx < m_attributes.size(); ++idx  )
+    {
+        QVariant value = m_attributes[idx];
+        setAttribute( value, idx );
+    }
+}
+
+const QVariant &LogEntry::getAttribute( int idx ) const
+{
+    return m_attributes[idx];
+}
+
+
+boost::shared_ptr<const QString> LogEntry::getAttributeAsString( int idx ) const
+{
+	return m_attributesStringCache[idx];
 }
 

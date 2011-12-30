@@ -8,6 +8,7 @@
 #include "LogEntryFactory.h"
 
 #include <QString>
+#include <QtCore/QVariant>
 
 #include "Assert.h"
 #include "LogData/ObjectCache.hxx"
@@ -20,13 +21,14 @@ LogEntryFactory::LogEntryFactory()
 
 }
 
-LogEntryFactory::~LogEntryFactory() {
+LogEntryFactory::~LogEntryFactory()
+{
 
 }
 
 boost::shared_ptr<LogEntry> LogEntryFactory::getNewLogEntry()
 {
-	boost::shared_ptr<LogEntry> attr( new LogEntry(this, defaultLine ) );
+	boost::shared_ptr<LogEntry> attr( new LogEntry(this, m_defaultLine ) );
 
 	return attr;
 }
@@ -51,7 +53,7 @@ void LogEntryFactory::addField( const std::pair<QString,QString> &desc, bool cac
 	else
 	    fieldCaches.push_back( boost::shared_ptr< ObjectPasser<ObjectCacheQStringSignaller> >( new ObjectPasser<ObjectCacheQStringSignaller> ) );
 
-	defaultLine.push_back( fieldCaches.back()->getObject( boost::shared_ptr<QString>(new QString("")) ) );
+	m_defaultLine.push_back( QVariant( fieldCaches.back()->getObject( boost::shared_ptr<QString>(new QString("")) ) ) );
 }
 
 int LogEntryFactory::getNumberOfFields( ) const

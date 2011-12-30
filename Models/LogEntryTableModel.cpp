@@ -110,7 +110,7 @@ QVariant LogEntryTableModel::data(const QModelIndex &index, int role) const
     if (role == Qt::DisplayRole)
     {
     	TconstSharedLogEntry entry = m_table[index.row()];
-    	return *(entry->getAttribute(index.column() ));
+    	return *(entry->getAttributeAsString(index.column() ));
     }
     return QVariant();
 }
@@ -245,7 +245,7 @@ void LogEntryTableModel::exportToFile( const QString &target )
             if( line.length() )
                 line.append(" - ");
 
-            QString entry( *(*it)->getAttribute(order[i]) );
+            QString entry( *(*it)->getAttributeAsString(order[i]) );
             entry.replace(regexLineEnd,"\n " );
 
             line.append( entry );

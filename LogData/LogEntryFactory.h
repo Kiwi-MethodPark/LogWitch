@@ -73,7 +73,7 @@ private:
 
 	std::vector< boost::shared_ptr<GetObjectIF<ObjectCacheQStringSignaller> > > fieldCaches;
 
-	std::vector< TSharedConstQString > defaultLine;
+	std::vector< QVariant > m_defaultLine;
 
 	bool m_disallowAddingFields;
 };
