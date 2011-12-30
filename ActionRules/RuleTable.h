@@ -80,6 +80,24 @@ public:
         return false;
     }
 
+    /**
+     * Retrieve all expression which have the same action.
+     */
+    template<class T>
+    std::vector<TconstSharedExpression> getExpressionsWithAction()const
+    {
+        std::vector<TconstSharedExpression> rVec;
+        TRuleSet::const_iterator it;
+        for( it = m_rules.begin(); it != m_rules.end(); ++it )
+        {
+            T action = boost::dynamic_pointer_cast<typename T::element_type>( (*it)->getAction() );
+            if( action )
+                rVec.push_back( (*it)->getExpression() );
+        }
+
+        return rVec;
+    }
+
     void beginChange();
     void endChange();
 signals:

@@ -33,6 +33,9 @@ public:
 
 	virtual ~LogEntryTableFilter();
 
+public slots:
+	void invalidate();
+
 
 protected:
 	bool filterAcceptsRow ( int source_row, const QModelIndex & source_parent ) const;
@@ -43,6 +46,10 @@ private:
 	LogEntryFilterChain m_filterChain;
 
 	TSharedRuleTable m_ruleTable;
+
+	typedef std::vector<TconstSharedExpression> TExpressionVector;
+
+	TExpressionVector m_discardExpressions;
 };
 
 #endif /* LOGENTRYTABLEFILTER_H_ */

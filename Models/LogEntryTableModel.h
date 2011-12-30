@@ -39,6 +39,8 @@ public:
 
     QVariant headerData(int section, Qt::Orientation orientation, int role) const;
 
+    TconstSharedLogEntry getEntryByRow( const int &row ) const;
+
     TconstSharedLogEntry getEntryByIndex( const QModelIndex &index ) const;
 
     TSharedConstLogEntryParserModelConfiguration getParserModelConfiguration() const;

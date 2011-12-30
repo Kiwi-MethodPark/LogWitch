@@ -75,13 +75,25 @@ int LogEntryTableModel::columnCount(const QModelIndex &parent) const
     return value;
 }
 
+TconstSharedLogEntry LogEntryTableModel::getEntryByRow( const int &row ) const
+{
+    QMutexLocker lo( &m_mutex );
+
+    if (row < 0 || row >= int(m_table.size() ) )
+    {
+        qDebug() << "Returning empty item from model: index.row():" << row
+        << " table size:" << int( m_table.size() );
+        return TconstSharedLogEntry();
+    }
+
+    return m_table[row];
+}
+
 TconstSharedLogEntry LogEntryTableModel::getEntryByIndex( const QModelIndex &index ) const
 {
     QMutexLocker lo( &m_mutex );
 
-    if (index.column() >= (m_modelConfiguration->getLogEntryFactory()->getNumberOfFields( ) )
-      || index.column() < 0
-      || index.row() < 0
+    if (index.row() < 0
       || index.row() >= int(m_table.size() ) )
     {
       qDebug() << "Returning empty item from model: index.column():" << index.column()
