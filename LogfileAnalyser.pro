@@ -18,7 +18,8 @@ QT += core \
     network
 
 # Input
-HEADERS += GUITools/SlotToBoostFunction.h \
+HEADERS += LogData/TimeFormatingModel.h \
+    GUITools/SlotToBoostFunction.h \
     ContextMenuLogEntryHeader.h \
     LogData/LogEntryFactory.h \
     LogData/LogEntry.h \
@@ -76,7 +77,8 @@ HEADERS += GUITools/SlotToBoostFunction.h \
     Models/StringCacheTreeItem.h \
     Models/StringCacheTreeModel.h
 FORMS += logfileanalyser.ui
-SOURCES += ContextMenuLogEntryHeader.cpp \
+SOURCES += LogData/TimeFormatingModel.cpp \
+    ContextMenuLogEntryHeader.cpp \
     LogData/LogEntryFactory.cpp \
     LogData/LogEntry.cpp \
     ActionRules/ExpressionFind.cpp \

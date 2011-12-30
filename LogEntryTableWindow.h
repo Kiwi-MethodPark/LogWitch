@@ -17,6 +17,7 @@ class QSortFilterProxyModel;
 class LogEntryFilter;
 class LogEntryTableFilter;
 class QScrollDownTableView;
+class TimeFormatingModel;
 
 class LogEntryTableWindow
 	: public QMdiSubWindow
@@ -70,6 +71,11 @@ public slots:
 
     void exportLogfile( const QString &filename );
 
+    /**
+     * Opens the context menu at the given position. This will be connected to the table view.
+     */
+    void contextMenu( const QPoint & );
+
 private:
     enum SearchModes { Regex, Text, Expression};
 
@@ -91,6 +97,8 @@ private:
 	QScrollDownTableView *m_tableView;
 
 	LogEntryTableFilter *m_proxyModel;
+
+	TimeFormatingModel *m_timeFormatModel;
 
 	QLineEdit *m_quickSearch;
 

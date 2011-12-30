@@ -27,6 +27,7 @@
 #include "ContextMenuLogEntryHeader.h"
 #include "EntryToTextFormater.h"
 #include "FilterListView.h"
+#include "TimeFormatingModel.h"
 
 LogEntryTableWindow::LogEntryTableWindow( boost::shared_ptr<LogEntryTableModel> model, QWidget *parent )
 	:QMdiSubWindow(parent)
@@ -41,8 +42,11 @@ LogEntryTableWindow::LogEntryTableWindow( boost::shared_ptr<LogEntryTableModel> 
     m_proxyModel = new LogEntryTableFilter(m_tableView);
     m_proxyModel->setSourceModel(m_model.get());
 
-    // PArametrize the table view for the log entries.
-    m_tableView->setModel( m_proxyModel );
+    // Parametrize the table view for the log entries.
+    m_timeFormatModel = new TimeFormatingModel( m_tableView );
+    m_timeFormatModel->setSourceModel( m_proxyModel );
+
+    m_tableView->setModel( m_timeFormatModel );
     m_tableView->horizontalHeader()->moveSection(1, model->columnCount( QModelIndex() )-1 );
     m_tableView->horizontalHeader()->setMovable( true );
     m_tableView->verticalHeader()->setDefaultSectionSize( 20 );
@@ -52,6 +56,10 @@ LogEntryTableWindow::LogEntryTableWindow( boost::shared_ptr<LogEntryTableModel> 
     m_tableView->setSelectionBehavior(QAbstractItemView::SelectRows);
     m_tableView->setSelectionMode( QAbstractItemView::SingleSelection );
 
+    m_tableView->setContextMenuPolicy( Qt::CustomContextMenu );
+    QObject::connect(m_tableView, SIGNAL(customContextMenuRequested ( const QPoint &) ),
+                     this, SLOT(contextMenu(const QPoint & )));
+
     // Context menu for the HorizontalHeaderView
     m_tableView->horizontalHeader()->setContextMenuPolicy( Qt::CustomContextMenu );
     new ContextMenuLogEntryHeader( m_tableView->horizontalHeader() );
@@ -60,7 +68,7 @@ LogEntryTableWindow::LogEntryTableWindow( boost::shared_ptr<LogEntryTableModel> 
 	int count = m_model->columnCount( QModelIndex() );
 	for( int col = 0; col < count; col ++)
 	{
-		int width = m_proxyModel->headerData( col, Qt::Horizontal, 512 ).value<int>();
+		int width = m_timeFormatModel->headerData( col, Qt::Horizontal, 512 ).value<int>();
 		m_tableView->horizontalHeader()->resizeSection( col, width );
 	}
 
@@ -229,7 +237,7 @@ void LogEntryTableWindow::updateSearch()
 
 void LogEntryTableWindow::search( bool backwards )
 {
-    if( m_proxyModel->rowCount() > 0 && m_quickSearchExp )
+    if( m_timeFormatModel->rowCount() > 0 && m_quickSearchExp )
     {
         int startRow = -1;
 
@@ -243,14 +251,14 @@ void LogEntryTableWindow::search( bool backwards )
         const int inc = backwards ? -1 : 1;
         int nextRow = startRow + inc;
 
-        if( nextRow >= m_proxyModel->rowCount() )
+        if( nextRow >= m_timeFormatModel->rowCount() )
             nextRow = 0;
         if( nextRow < 0 )
-            nextRow =  m_proxyModel->rowCount() - 1;
+            nextRow =  m_timeFormatModel->rowCount() - 1;
 
         for( ; nextRow != startRow;  )
         {
-            TconstSharedLogEntry entry = m_model->getEntryByIndex( mapToSource( m_proxyModel->index( nextRow, 0 ) ) );
+            TconstSharedLogEntry entry = m_model->getEntryByIndex( mapToSource( m_timeFormatModel->index( nextRow, 0 ) ) );
             if( entry && m_quickSearchExp->match(entry ) )
                 break;
 
@@ -259,21 +267,21 @@ void LogEntryTableWindow::search( bool backwards )
             // - the table size may change during search
             if( startRow < 0 )
               startRow = nextRow;
-            if( startRow >= m_proxyModel->rowCount() )
-              startRow = m_proxyModel->rowCount() - 1;
+            if( startRow >= m_timeFormatModel->rowCount() )
+              startRow = m_timeFormatModel->rowCount() - 1;
 
             // Incrementing part
             nextRow += inc;
 
-            if( nextRow >= m_proxyModel->rowCount() )
+            if( nextRow >= m_timeFormatModel->rowCount() )
                 nextRow = 0;
             if( nextRow < 0 )
-                nextRow =  m_proxyModel->rowCount() - 1;
+                nextRow =  m_timeFormatModel->rowCount() - 1;
         }
 
         if( nextRow != startRow )
         {
-            m_tableView->setCurrentIndex( m_proxyModel->index( nextRow, 0 ) );
+            m_tableView->setCurrentIndex( m_timeFormatModel->index( nextRow, 0 ) );
             m_tableView->setFocus();
         }
     }
@@ -300,13 +308,8 @@ void LogEntryTableWindow::addFilter( boost::shared_ptr<LogEntryFilter> flt )
 
 QModelIndex LogEntryTableWindow::mapToSource ( const QModelIndex & proxyIndex ) const
 {
-	return m_proxyModel->mapToSource ( proxyIndex );
+	return m_proxyModel->mapToSource ( m_timeFormatModel->mapToSource( proxyIndex ) );
 }
-//
-//QTableView *LogEntryTableWindow::tableView()
-//{
-//    return m_tableView;
-//}
 
 LogEntryTableWindow::~LogEntryTableWindow()
 {
@@ -376,4 +379,34 @@ void LogEntryTableWindow::newSelection ( const QItemSelection & selected, const 
 {
     TconstSharedLogEntry entry = m_model->getEntryByIndex( mapToSource( selected.front().topLeft() ) );
     m_text->setHtml( m_model->getParserModelConfiguration()->getEntryToTextFormater()->formatEntry( entry ) );
+}
+
+void LogEntryTableWindow::contextMenu( const QPoint & pt )
+{
+    QMenu *menu = new QMenu();
+
+    QModelIndex idx = m_tableView->indexAt( pt );
+
+    QAction *timeStampsRelative = menu->addAction( tr("Set row as reference") );
+    QAction *showTimestamps = menu->addAction( tr("Show absolute times") );
+    QAction *showDiffTimes = menu->addAction( tr("Show difference times") );
+
+    QAction *pressed = menu->exec( m_tableView->mapToGlobal(pt) );
+
+    if( pressed == timeStampsRelative )
+    {
+        m_timeFormatModel->setTimeDiffReferenceRow( idx.row() );
+        m_timeFormatModel->setTimeDiffModeEnabled( true );
+    }
+    else if( pressed == showTimestamps )
+    {
+        m_timeFormatModel->setTimeDiffModeEnabled( false );
+    }
+    else if( pressed == showDiffTimes )
+    {
+        m_timeFormatModel->setTimeDiffReferenceRow( -1 );
+        m_timeFormatModel->setTimeDiffModeEnabled( true );
+    }
+
+    delete menu;
 }
