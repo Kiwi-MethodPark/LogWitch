@@ -109,32 +109,4 @@ void FilterListView::contextMenuPopup( const QPoint &pos)
 
 FilterListView::~FilterListView()
 {
-    // TODO Auto-generated destructor stub
 }
-
-/*
-_fpListWidget->setContextMenuPolicy(Qt::CustomContextMenu );
-
-
-
-}
-void IglFpga::fp_listWidgetContextMenuPopup( const QPoint &pos)
-{
-QListWidgetItem *lstItem =0;
-lstItem = _fpListWidget->itemAt( pos );
-if ( 0== lstItem ) {
-   QMenu menu( _fpListWidget );
-  QAction *act_1 = new QAction(tr("- 1"), _fpListWidget);
-   QAction *act_2 = new QAction(tr("- 2"), _fpListWidget);
-   menu.addAction( act_1 );
-   menu.addAction( act_2);
-   menu.exec(_fpListWidget->mapToGlobal( pos ));
-} else {
-  QMenu menu( _fpListWidget );
-   QAction *act_1 = new QAction(tr("+ 1"), _fpListWidget);
-   QAction *act_2 = new QAction(tr("+ 2"), _fpListWidget);
-   menu.addAction( act_1 );
-   menu.addAction( act_2);
-   menu.exec(_fpListWidget->mapToGlobal( pos ));
-}
-*/
