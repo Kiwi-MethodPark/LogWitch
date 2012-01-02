@@ -1,0 +1,15 @@
+#ifndef GENERATED_IFO_H
+#define GENERATED_IFO_H
+
+#include <QtCore>
+
+namespace globals
+{
+	const QString applicationName("LogWitch");
+	const QString applicationVersion( "@VERSION@" );
+	
+	// This is the directory the help files will be installed
+	const QString helpDirectory( "@HELPDIR@" );
+}
+
+#endif
