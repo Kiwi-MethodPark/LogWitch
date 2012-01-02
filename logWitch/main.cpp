@@ -22,13 +22,29 @@ int main(int argc, char *argv[])
 
     QCoreApplication::setOrganizationName("Steckmann");
     QCoreApplication::setOrganizationDomain("steckmann.de");
-    QCoreApplication::setApplicationName("LogfileAnalyser");
+    QCoreApplication::setApplicationName( globals::applicationName );
 
     QApplication a(argc, argv);
     LogfileAnalyser w;
 
-    w.setWindowTitle( globals::applicationName + " " + globals::applicationVersion );
+    const QString mainWindowGeometry_Identifier( "MainWindowGeometry" );
+
+    {
+        QSettings settings;
+        if( settings.contains( mainWindowGeometry_Identifier) )
+            w.restoreGeometry( settings.value( mainWindowGeometry_Identifier).toByteArray() );
+
+        w.setWindowTitle( globals::applicationName + " " + globals::applicationVersion );
+    }
 
     w.show();
-    return a.exec();
+    int returnValue = a.exec();
+
+    // Save window geometry
+    {
+        QSettings settings;
+        settings.setValue( mainWindowGeometry_Identifier, w.saveGeometry() );
+    }
+
+    return returnValue;
 }
