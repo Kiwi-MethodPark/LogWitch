@@ -1,0 +1,17 @@
+<RCC>
+    <qresource prefix="/icons">
+        <file alias="active">../icons/gear2.svg</file>
+        <file alias="error">../icons/error.svg</file>
+        <file alias="fatal">../icons/fatal.svg</file>
+        <file alias="information">../icons/information.svg</file>
+        <file alias="minus">../icons/minus.svg</file>
+        <file alias="network">../icons/network.svg</file>
+        <file alias="plus">../icons/plus.svg</file>
+        <file alias="search">../icons/magnify.svg</file>
+        <file alias="searchDown">../icons/downArrow.svg</file>
+        <file alias="searchUp">../icons/upArrow.svg</file>
+        <file alias="trace">../icons/bug.svg</file>
+        <file alias="trash">../icons/trash.svg</file>
+        <file alias="warning">../icons/warning.svg</file>
+    </qresource>
+</RCC>
