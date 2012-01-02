@@ -13,7 +13,7 @@
 #include "LogEntryFactory.h"
 #include "LogData/LogEntryFactory.h"
 #include "LogData/LogEntry.h"
-#include "LogEntryParserModelConfiguration.h"
+#include "LogData/LogEntryParserModelConfiguration.h"
 #include "LogEntryAttributeNames.h"
 
 LogEntryParser_Logfile::LogEntryParser_Logfile( const QString &filename)

@@ -13,10 +13,10 @@
 
 #include <QAbstractTableModel>
 #include <QtCore>
+#include <QtGui>
 
 #include "ActionRules/Action.h"
 #include "ActionRules/FilterRuleRaw.h"
-#include <QtGui>
 
 using boost::shared_ptr;
 

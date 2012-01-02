@@ -6,10 +6,13 @@
  */
 
 #include "FilterRuleSelectionWindow.h"
+
 #include <QtGui>
+
 #include "ActionRules/TableModelRules.h"
 #include "ActionRules/TableModelRulesCompiled.h"
 #include "ActionRules/CompiledRulesStateSaver.h"
+
 #include "Models/LogEntryTableFilter.h"
 
 FilterRuleSelectionWindow::FilterRuleSelectionWindow( QWidget* parent )

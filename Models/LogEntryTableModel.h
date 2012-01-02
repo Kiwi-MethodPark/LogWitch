@@ -13,8 +13,8 @@
 #include <QAbstractTableModel>
 #include <QtCore/QtCore>
 #include "LogData/LogEntry.h"
-#include "LogEntryParserModelConfiguration.h"
-#include "NewLogEntryMessage.h"
+#include "LogData/LogEntryParserModelConfiguration.h"
+#include "LogData/NewLogEntryMessage.h"
 
 class LogEntryParser;
 class LogEntryParserModelConfiguration;

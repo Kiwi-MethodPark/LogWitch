@@ -8,26 +8,29 @@
 #include "LogEntryTableWindow.h"
 
 
-#include "Models/LogEntryTableModel.h"
-#include "Models/LogEntryTableFilter.h"
-#include "ActionRules/ValueGetterConstQString.h"
-#include "ActionRules/RuleTable.h"
 #include "ActionRules/ActionDataRewriter.h"
-#include "ActionRules/ExpressionMatch.h"
-#include "ActionRules/ValueGetterLogEntry.h"
-#include "GUITools/QScrollDownTableView.h"
-#include "ActionRules/ExpressionParser.h"
 #include "ActionRules/ActionParser.h"
 #include "ActionRules/ExpressionFind.h"
+#include "ActionRules/ExpressionMatch.h"
+#include "ActionRules/ExpressionParser.h"
 #include "ActionRules/ExpressionRegEx.h"
+#include "ActionRules/RuleTable.h"
+#include "ActionRules/ValueGetterConstQString.h"
+#include "ActionRules/ValueGetterLogEntry.h"
+
+#include "GUITools/QScrollDownTableView.h"
+
 #include "LogData/LogEntryParserModelConfiguration.h"
 #include "LogData/LogEntryFactory.h"
 #include "LogData/ObjectCache.hxx"
 
-#include "ContextMenuLogEntryHeader.h"
+#include "Models/LogEntryTableModel.h"
+#include "Models/LogEntryTableFilter.h"
+#include "Models/EntryFormatingModel.h"
+
 #include "EntryToTextFormater.h"
+#include "ContextMenuLogEntryHeader.h"
 #include "FilterListView.h"
-#include "EntryFormatingModel.h"
 
 LogEntryTableWindow::LogEntryTableWindow( boost::shared_ptr<LogEntryTableModel> model, QWidget *parent )
 	:QMdiSubWindow(parent)

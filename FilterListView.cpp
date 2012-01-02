@@ -7,7 +7,7 @@
 #include "FilterListView.h"
 #include "LogEntryTableWindow.h"
 #include "Models/StringCacheTreeModel.h"
-#include "LogEntryParserModelConfiguration.h"
+#include "LogData/LogEntryParserModelConfiguration.h"
 #include "LogData/LogEntryFactory.h"
 
 FilterListView::FilterListView( QObject *parent, boost::shared_ptr<const LogEntryParserModelConfiguration> config, const int attr )

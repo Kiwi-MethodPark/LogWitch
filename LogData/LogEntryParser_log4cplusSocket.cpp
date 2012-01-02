@@ -21,7 +21,7 @@
 #include "LogData/LogEntry.h"
 #include "LogEntryFactory.h"
 #include "LogEntryFactory.h"
-#include "LogEntryParserModelConfiguration.h"
+#include "LogData/LogEntryParserModelConfiguration.h"
 #include "LogEntryAttributeNames.h"
 
 

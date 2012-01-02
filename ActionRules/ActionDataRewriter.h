@@ -12,7 +12,7 @@
 #include <QtCore/QVariant>
 
 #include "ActionRules/Action.h"
-#include "LogEntryParserModelConfiguration.h"
+#include "LogData/LogEntryParserModelConfiguration.h"
 
 class ActionDataRewriter
     : public Action

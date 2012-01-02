@@ -5,7 +5,7 @@
  *      Author: sven
  */
 
-#include "LogEntryParserModelConfiguration.h"
+#include "LogData/LogEntryParserModelConfiguration.h"
 #include "EntryToTextFormaterDefault.h"
 
 LogEntryParserModelConfiguration::LogEntryParserModelConfiguration( const QString &configurationString )

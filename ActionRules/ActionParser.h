@@ -11,7 +11,7 @@
 #include <QtCore>
 
 #include "ActionRules/Action.h"
-#include "LogEntryParserModelConfiguration.h"
+#include "LogData/LogEntryParserModelConfiguration.h"
 
 class ActionParser
 {

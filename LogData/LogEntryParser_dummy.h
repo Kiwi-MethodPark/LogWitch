@@ -12,7 +12,7 @@
 
 #include "LogData/LogEntryFactory.h"
 #include "LogData/LogEntryParser.h"
-#include "LogEntryParserModelConfiguration.h"
+#include "LogData/LogEntryParserModelConfiguration.h"
 
 class LogEntryParserModelConfiguration;
 

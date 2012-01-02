@@ -14,7 +14,7 @@
 #include "LogData/LogEntry.h"
 #include "Types.h"
 #include "ValueGetter.h"
-#include "LogEntryParserModelConfiguration.h"
+#include "LogData/LogEntryParserModelConfiguration.h"
 
 
 class ValueGetterLogEntry

@@ -9,7 +9,6 @@
 
 #include <QtGui>
 
-#include "LogEntryParserModelConfiguration.h"
 #include "LogData/LogEntryFactory.h"
 
 ActionDataRewriter::ActionDataRewriter(TSharedConstLogEntryParserModelConfiguration configuration)

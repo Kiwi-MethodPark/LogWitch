@@ -12,7 +12,7 @@
 #include <boost/shared_ptr.hpp>
 #include "ActionRules/TableModelRulesCompiled.h"
 #include "Models/LogEntryTableModel.h"
-#include "LogEntryParserModelConfiguration.h"
+#include "LogData/LogEntryParserModelConfiguration.h"
 
 class FilterRuleSelectionWindow;
 

@@ -13,7 +13,7 @@
 
 #include "Models/StringCacheTreeModel.h"
 #include "LogData/LogEntryParser_Logfile.h"
-#include "LogEntryParser_log4cplusSocket.h"
+#include "LogData/LogEntryParser_log4cplusSocket.h"
 #include "GUITools/WidgetStateSaver.h"
 #include "GUITools/GetSetStateSaver.hxx"
 #include "GUITools/SignalMultiplexerStateApplier.h"
