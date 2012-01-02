@@ -1,3 +1,5 @@
 .settings
 *.qhc
 *.qch
+moc_*.cxx
+

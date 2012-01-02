@@ -4,4 +4,9 @@ makefile*
 *.settings
 *.cmake
 *.a
+moc_*.cxx
 CMakeCache.txt
+BuildIfos.h
+*.depends
+qrc_*.cxx
+ui_*.h

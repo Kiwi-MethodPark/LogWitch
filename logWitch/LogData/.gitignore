@@ -4,4 +4,5 @@ makefile*
 *.settings
 *.cmake
 *.a
+moc_*.cxx
 CMakeCache.txt
