@@ -29,6 +29,7 @@ SET(LFA_RESOURCES
 INCLUDE_DIRECTORIES(
   ${CMAKE_CURRENT_SOURCE_DIR}
   ${QT_INCLUDES}
+  ${CMAKE_CURRENT_BINARY_DIR}  # Neede for moc files in out of source builds.
 )
 
 SET(LFA_RULES_LIB "logfileanalyzer_rules_lib")
