@@ -23,6 +23,7 @@ int main(int argc, char *argv[])
     QCoreApplication::setOrganizationName("Steckmann");
     QCoreApplication::setOrganizationDomain("steckmann.de");
     QCoreApplication::setApplicationName( globals::applicationName );
+    QCoreApplication::setApplicationVersion( globals::applicationVersion );
 
     QApplication a(argc, argv);
     LogfileAnalyser w;
