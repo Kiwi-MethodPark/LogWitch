@@ -28,6 +28,10 @@ FilterRuleSelectionWindow::FilterRuleSelectionWindow( QWidget* parent )
     m_ruleView->setSelectionBehavior(QAbstractItemView::SelectRows);
     m_ruleView->setSelectionMode( QAbstractItemView::ExtendedSelection );
 
+    m_ruleView->setDragEnabled( true );
+    m_ruleView->setDropIndicatorShown(true);
+    m_ruleView->setDragDropMode( QAbstractItemView::DragDrop );
+
     QWidget *displayWidget = new QWidget(); //This is the pane
     QVBoxLayout* vbox = new QVBoxLayout(displayWidget);
     displayWidget->setLayout(vbox);
