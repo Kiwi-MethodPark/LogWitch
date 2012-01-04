@@ -8,6 +8,7 @@
 #include "ActionParser.h"
 
 #include <boost/spirit/home/phoenix/object/construct.hpp>
+#include <boost/spirit/home/phoenix/object/new.hpp>
 #include <boost/spirit/include/qi.hpp>
 #include <boost/spirit/include/qi_uint.hpp>
 #include <boost/spirit/include/phoenix_core.hpp>
@@ -147,6 +148,7 @@ namespace actionParser
             using boost::phoenix::ref;
             using boost::phoenix::at_c;
             using boost::phoenix::construct;
+            using boost::phoenix::new_;
             using boost::spirit::ascii::alpha;
             using boost::spirit::qi::uint_parser;
             using boost::spirit::qi::locals;
@@ -155,10 +157,10 @@ namespace actionParser
 
             action = actionDataRewriter [_val = _1]
                     | actionDiscardRow [_val = _1]
-                    | qi::eps [ _val = construct<TSharedAction>( val(new ActionDoNothing) ) ];
+                    | qi::eps [ _val = construct<TSharedAction>( new_<ActionDoNothing>( ) ) ];
 
             actionDataRewriter =
-                    qi::eps [_val = construct<TSharedActionDataRewriter>( val( new ActionDataRewriter( cfg ) ) )]
+                    qi::eps [_val = construct<TSharedActionDataRewriter>( new_<ActionDataRewriter>( cfg ) )]
                     >> "rewrite("
                     >>  ( rewriteRule [ addRewriteRule(_val, _1)]
                            | rewriteRuleColumn [ addRewriteRule(_val, _1)]
@@ -166,7 +168,7 @@ namespace actionParser
                     >> ')' ;
 
             actionDiscardRow =
-                    lit("discard()") [_val = construct<TSharedAction>( val(new ActionDiscardRow) )];
+                    lit("discard()") [_val = construct<TSharedAction>( new_<ActionDiscardRow>() )];
 
            rewriteRule %= rewriteRuleColor
                    | rewriteRuleIcon
