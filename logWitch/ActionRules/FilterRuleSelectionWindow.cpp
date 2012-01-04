@@ -9,7 +9,6 @@
 
 #include <QtGui>
 
-#include "ActionRules/TableModelRules.h"
 #include "ActionRules/TableModelRulesCompiled.h"
 #include "ActionRules/CompiledRulesStateSaver.h"
 
@@ -23,7 +22,7 @@ FilterRuleSelectionWindow::FilterRuleSelectionWindow( QWidget* parent )
     m_ruleView->verticalHeader()->setDefaultSectionSize( 20 );
     m_ruleView->horizontalHeader()->setDefaultSectionSize( 190 );
     m_ruleView->verticalHeader()->setResizeMode(QHeaderView::Fixed);
-    m_rulesModel = new TableModelRules( m_ruleView );
+    m_rulesModel = new TableModelRulesCompiled( m_ruleView );
     m_ruleView->setModel( m_rulesModel );
     m_ruleView->setSelectionBehavior(QAbstractItemView::SelectRows);
     m_ruleView->setSelectionMode( QAbstractItemView::ExtendedSelection );
@@ -62,6 +61,34 @@ FilterRuleSelectionWindow::FilterRuleSelectionWindow( QWidget* parent )
     setSizes ( he );
     setStretchFactor ( 0, 10 );
     setStretchFactor ( 1, 10 );
+
+    loadRules();
+}
+
+void FilterRuleSelectionWindow::loadRules()
+{
+    QSettings settings;
+
+    const int size = settings.beginReadArray("Rules");
+    for (int i = 0; i < size; ++i)
+    {
+         settings.setArrayIndex(i);
+         m_rulesModel->appendRule( settings.value("rule").toString() );
+    }
+
+    settings.endArray();
+}
+
+void FilterRuleSelectionWindow::storeRules() const
+{
+    QSettings settings;
+    settings.beginWriteArray("Rules");
+    for (unsigned int i = 0; i < m_rulesModel->rowCount(); ++i)
+    {
+        settings.setArrayIndex(i);
+        settings.setValue("rule", m_rulesModel->getRule(i) );
+    }
+    settings.endArray();
 }
 
 void FilterRuleSelectionWindow::setWindow( TSharedCompiledRulesStateSaver state )
@@ -113,7 +140,7 @@ void FilterRuleSelectionWindow::addSelectionToCompiled( )
         QModelIndexList::Iterator it;
         for( it = selection.begin(); it != selection.end(); ++it )
         {
-            TSharedFilterRuleRaw rule = m_rulesModel->getRaw( *it );
+            const QString rule = m_rulesModel->getRule( it->row() );
             m_compiledRules->m_rulesCompiledModel->appendRule( rule );
         }
     }
@@ -131,4 +158,5 @@ void FilterRuleSelectionWindow::removeSelectionFromCompiled( )
 
 FilterRuleSelectionWindow::~FilterRuleSelectionWindow()
 {
+    storeRules();
 }

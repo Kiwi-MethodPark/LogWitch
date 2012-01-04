@@ -1,11 +1,9 @@
 SET(LFA_RULES_MOC_CLASSES
 	CompiledRulesStateSaver.h
 	FilterRuleCompiled.h
-	FilterRuleRaw.h
 	FilterRuleSelectionWindow.h
 	RuleTable.h
 	RulesTableView.h
-	TableModelRules.h
 	TableModelRulesCompiled.h
 )
 
@@ -23,13 +21,11 @@ SET(LFA_RULES_LIB_SOURCES
     ExpressionParser.cpp
     ExpressionRegEx.cpp
     FilterRuleCompiled.cpp
-    FilterRuleRaw.cpp
     FilterRuleSelectionWindow.cpp
     Rule.cpp
     RuleTable.cpp
     RulesTableView.cpp
     TableModelRulesCompiled.cpp
-    TableModelRules.cpp
     ValueGetterConstQString.cpp
     ValueGetterLogEntry.cpp
     ValueGetter.cpp

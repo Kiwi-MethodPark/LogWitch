@@ -8,7 +8,6 @@
 #ifndef FILTERRULESELECTIONWINDOW_H_
 #define FILTERRULESELECTIONWINDOW_H_
 #include <QtGui>
-#include "ActionRules/TableModelRules.h"
 #include "ActionRules/TableModelRulesCompiled.h"
 #include "ActionRules/CompiledRulesStateSaver.h"
 #include "ActionRules/RulesTableView.h"
@@ -49,9 +48,11 @@ public slots:
     void trashSelectedRules();
 
 private:
+    void loadRules();
+    void storeRules() const;
 
     RulesTableView *m_ruleView;
-    TableModelRules *m_rulesModel;
+    TableModelRulesCompiled *m_rulesModel;
 
     TSharedCompiledRulesStateSaver m_compiledRules;
 

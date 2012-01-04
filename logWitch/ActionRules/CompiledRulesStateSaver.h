@@ -33,7 +33,6 @@ public:
 
 private:
     bool m_connected;
-    QAction *m_addSelectedRules;
     QAction *m_removeSelectedRules;
 };
 

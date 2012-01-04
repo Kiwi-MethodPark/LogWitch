@@ -9,9 +9,12 @@
 #include <boost/shared_ptr.hpp>
 
 #include "ActionRules/Action.h"
+#include "ActionRules/ActionParser.h"
 #include "ActionRules/Expression.h"
-#include "ActionRules/FilterRuleRaw.h"
+#include "ActionRules/ExpressionParser.h"
 #include "ActionRules/Rule.h"
+
+#include "LogData/LogEntryParserModelConfiguration.h"
 
 class FilterRuleCompiled;
 typedef boost::shared_ptr<FilterRuleCompiled> TSharedFilterRuleCompiled;
@@ -22,8 +25,60 @@ class FilterRuleCompiled
 {
     Q_OBJECT
 public:
-    FilterRuleCompiled(TSharedConstFilterRuleRaw desc, TSharedConstLogEntryParserModelConfiguration cfg );
+    FilterRuleCompiled( const QString &str, TSharedConstLogEntryParserModelConfiguration cfg = TSharedConstLogEntryParserModelConfiguration() );
     ~FilterRuleCompiled();
+
+    /**
+     * Sets an expression string and parses him.
+     */
+    void expressionString( const QString &exp );
+
+    /**
+     * Retrieves the current expresseion string.
+     */
+    const QString &expressionString( ) const;
+
+    /**
+     * Returns true if the current set expression is compileable.
+     */
+    bool isExpressionOk() const;
+
+    /**
+     * Returns the error from the parser if isExpressionOk returns false.
+     */
+    const QString &getExpressionError() const;
+
+    /**
+     * Sets a new string for an action.
+     */
+    void actionString( const QString &act);
+
+    /**
+     * Retrieve the string for the action.
+     */
+    const QString &actionString() const;
+
+    /**
+     * Returns true if actionString is parseable to an Action object.
+     */
+    bool isActionOk() const;
+
+    /**
+     * If isActionOk is false, this function retrieves the error.
+     */
+    const QString &getActionError() const;
+
+    /**
+     * This holds an action drawer which knows how to draw the current
+     * actionAsString in a more human readable way.
+     */
+    TconstSharedDisplayItemData getActionDisplayer() const;
+
+    /**
+     * Returns a full description of the rule, which can be used to recreate the
+     * basic rule.
+     */
+    QString toString() const;
 
     /**
      *  If the expression is valid within the current
@@ -41,19 +96,7 @@ public:
      */
     bool validWithinContext() const;
 
-    /**
-     * If the action is compileable within the current context
-     * this holds the compiled action.
-     * At the moment an action is always compileable, so this
-     * can be used also for rendering the action for the display.
-     *
-     * Actually actions does not need any context.
-     */
-    // TconstSharedAction compiledAction;
 
-    TSharedConstFilterRuleRaw getDescription() const;
-
-    /// This is the complete rule bounded to a given context.
     TSharedRule getCompiledRule();
 
 signals:
@@ -63,17 +106,19 @@ protected slots:
     void parseRule();
 
 private:
-    /**
-     *  This is the parent filtering rule (the parent is always the rule from the pool).
-     *  This pool holds all rules and from this pool a rule will be compiled to the
-     *  different contexts.
-     */
-    TSharedConstFilterRuleRaw m_rawRule;
+    /// This is the expression in the common string notation.
+    QString m_expressionAsString;
 
+    /// This is the action in the common string notation.
+    QString m_actionAsString;
+
+    /// The expression parser with the parsed expression if any.
     ExpressionParser m_expression;
 
+    /// The action parser with the parsed action if any.
     ActionParser m_action;
 
+    /// This is the compiled rule which is used for filtering.
     TSharedRule m_compiledRule;
 };
 

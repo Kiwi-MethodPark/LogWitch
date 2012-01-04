@@ -25,7 +25,16 @@ class TableModelRulesCompiled
 {
     Q_OBJECT
 public:
-    TableModelRulesCompiled( QObject *parent, TSharedConstLogEntryParserModelConfiguration cfg, TSharedRuleTable ruleTable  );
+    /**
+     * Constructs a new Model. The model is bound to a specific parser configuration and
+     * a rule table which should be used for filtering.
+     * If the configuration or the ruleTable is empty, they will be ignored. The configuration
+     * can only be empty if the ruleTable is also empty!
+     */
+    TableModelRulesCompiled( QObject *parent,
+            TSharedConstLogEntryParserModelConfiguration cfg = TSharedConstLogEntryParserModelConfiguration(),
+            TSharedRuleTable ruleTable = TSharedRuleTable()  );
+
     virtual ~TableModelRulesCompiled();
 
     int rowCount(const QModelIndex &parent = QModelIndex()) const;
@@ -40,7 +49,26 @@ public:
 
     Qt::ItemFlags flags(const QModelIndex & index ) const;
 
-    void appendRule( TSharedFilterRuleRaw rule );
+    Qt::DropActions supportedDropActions() const;
+
+    QStringList mimeTypes() const;
+
+    QMimeData *mimeData(const QModelIndexList &indexes) const;
+
+    bool dropMimeData(const QMimeData *data,
+            Qt::DropAction action, int row, int column, const QModelIndex &parent);
+
+    /**
+     * This appends the given rule. This copies the contents and creates
+     * a new one inside the actual context.
+     */
+    // void appendRule( TSharedFilterRuleCompiled rule );
+    void appendRule( const QString &rule );
+
+    /**
+     * Retrieves the rule for the given row.
+     */
+    QString getRule( const int row ) const;
 
     void removeRule( const QModelIndex &index );
 
@@ -49,7 +77,18 @@ public:
 public slots:
     void updateFilterRuleTable();
 
+    void insertEmptyRule();
+
 private:
+    /**
+     * Checks if the model contains the given rule.
+     */
+    bool hasRule( const QString &rule ) const;
+
+    QByteArray getIdentification() const;
+
+    void dumpTable() const;
+
     typedef std::vector<TSharedFilterRuleCompiled> TCompiledRulesTable;
     TCompiledRulesTable m_table;
 

@@ -11,6 +11,7 @@
 
 #include "ActionRules/ActionDataRewriter.h"
 #include "ActionRules/FilterRuleCompiled.h"
+#include "FilterRuleCompiled.h"
 
 TableModelRulesCompiled::TableModelRulesCompiled( QObject *parent, TSharedConstLogEntryParserModelConfiguration cfg, TSharedRuleTable ruleTable )
     :QAbstractTableModel( parent )
@@ -48,13 +49,13 @@ QVariant TableModelRulesCompiled::data(const QModelIndex &index, int role) const
 
     TSharedFilterRuleCompiled row = m_table[index.row()];
 
-    if( !row->validWithinContext() )
+    if( !row->validWithinContext() && m_configuration )
     {
-        if( !row->getDescription()->isExpressionOk() )
+        if( !row->isExpressionOk() )
         {
             if( role == Qt::ToolTipRole )
             {
-                return row->getDescription()->getExpressionError();
+                return row->getExpressionError();
             }
             if( role == Qt::BackgroundColorRole )
                 return Qt::red;
@@ -72,19 +73,13 @@ QVariant TableModelRulesCompiled::data(const QModelIndex &index, int role) const
 
     if( index.column() == 0 )
     {
-        if (role == Qt::DisplayRole)
+        if (    role == Qt::DisplayRole
+            ||  role == Qt::EditRole )
         {
-            return row->getDescription()->expressionAsString();
-        }
-    }
-    else if( index.column() == 1 )
-    {
-        if( role == Qt::EditRole )
-        {
-            return row->getDescription()->actionString();
+            return row->expressionString();
         }
 
-        if( !row->getDescription()->isActionOk())
+        if( !row->isExpressionOk())
         {
             if( role == Qt::BackgroundColorRole )
             {
@@ -92,26 +87,51 @@ QVariant TableModelRulesCompiled::data(const QModelIndex &index, int role) const
             }
             if( role == Qt::ToolTipRole )
             {
-                return row->getDescription()->getActionError();
+                return row->getExpressionError();
+            }
+        }
+    }
+    else if( index.column() == 1 )
+    {
+        if( role == Qt::EditRole )
+        {
+            return row->actionString();
+        }
+
+        if( !row->isActionOk())
+        {
+            if( role == Qt::BackgroundColorRole )
+            {
+                return Qt::red;
+            }
+            if( role == Qt::ToolTipRole )
+            {
+                return row->getActionError();
             }
         }
 
-        if( row->getDescription()->getActionDisplayer() )
+        if( row->getActionDisplayer() )
         {
-            return row->getDescription()->getActionDisplayer()->toDisplay( role );
+            return row->getActionDisplayer()->toDisplay( role );
         }
         else if (role == Qt::DisplayRole )
         {
-            return row->getDescription()->actionString();
+            return row->actionString();
         }
     }
 
     return QVariant();
 }
 
-Qt::ItemFlags TableModelRulesCompiled::flags(const QModelIndex & index ) const
+Qt::ItemFlags TableModelRulesCompiled::flags(const QModelIndex &index  ) const
 {
-    return QAbstractItemModel::flags( index );
+    Qt::ItemFlags defaultFlags = QAbstractTableModel::flags(index);
+
+     if (index.isValid())
+         return Qt::ItemIsEnabled | Qt::ItemIsSelectable | Qt::ItemIsEditable
+              | Qt::ItemIsDragEnabled | Qt::ItemIsDropEnabled | defaultFlags;
+     else
+         return Qt::ItemIsDropEnabled | defaultFlags;
 }
 
 QVariant TableModelRulesCompiled::headerData(int section, Qt::Orientation orientation, int role) const
@@ -130,43 +150,84 @@ QVariant TableModelRulesCompiled::headerData(int section, Qt::Orientation orient
     return QVariant();
 }
 
-bool TableModelRulesCompiled::setData( const QModelIndex &index, const QVariant& , int  )
+
+bool TableModelRulesCompiled::setData( const QModelIndex &index, const QVariant& value , int role  )
 {
     if( !index.isValid())
         return false;
 
-    return false;
-}
+    if (index.column() >= m_columnCount
+         || index.column() < 0
+         || index.row() < 0
+         || index.row() >= (m_table.size() ) )
+        return false;
 
-TSharedConstFilterRuleRaw compiledToRaw (TSharedFilterRuleCompiled c)
-{
-  return c->getDescription();
+    if (role != Qt::EditRole)
+        return false;
+
+    TSharedFilterRuleCompiled row = m_table[index.row()];
+
+    if( index.column() == 0 )
+    {
+        row->expressionString( value.toString() );
+        updateFilterRuleTable();
+        return true;
+    }
+    else if( index.column() == 1 )
+    {
+        row->actionString( value.toString() );
+        updateFilterRuleTable();
+        return true;
+    }
+
+    return false;
 }
 
 void TableModelRulesCompiled::updateFilterRuleTable()
 {
     qDebug() << "TableModelRulesCompiled::updateFilterRuleTable()";
-    m_ruleTable->beginChange();
-    m_ruleTable->clear("filters");
-
-    TCompiledRulesTable::iterator it;
-    for( it = m_table.begin(); it != m_table.end(); ++it)
+    if( m_ruleTable )
     {
-        TSharedRule rule = (*it)->getCompiledRule();
-        if( rule && rule->isValid() )
-            m_ruleTable->addRule( "filters", rule );
-    }
-    m_ruleTable->endChange();
+        m_ruleTable->beginChange();
+        m_ruleTable->clear("filters");
 
-    reset();
+        TCompiledRulesTable::iterator it;
+        for( it = m_table.begin(); it != m_table.end(); ++it)
+        {
+            TSharedRule rule = (*it)->getCompiledRule();
+            if( rule && rule->isValid() )
+                m_ruleTable->addRule( "filters", rule );
+        }
+        m_ruleTable->endChange();
+    }
 }
 
-void TableModelRulesCompiled::appendRule( TSharedFilterRuleRaw rule )
+namespace
 {
-    // Check if we have already this entry
-    TCompiledRulesTable::iterator it;
-    it = std::find_if(m_table.begin(), m_table.end(), boost::bind( &compiledToRaw, _1 ) == rule );
-    if( it != m_table.end() )
+    bool ruleEquals( const TSharedFilterRuleCompiled &rule, const QString &ruleStr )
+    {
+        return rule->toString() == ruleStr;
+    }
+}
+
+QString TableModelRulesCompiled::getRule( const int row ) const
+{
+    if( row >= 0 && row < m_table.size() )
+        return m_table[row]->toString();
+    else
+        return QString();
+}
+
+bool TableModelRulesCompiled::hasRule( const QString &rule ) const
+{
+    TCompiledRulesTable::const_iterator it;
+    it = std::find_if(m_table.begin(), m_table.end(), boost::bind( &ruleEquals, _1, rule ) );
+    return it != m_table.end();
+}
+
+void TableModelRulesCompiled::appendRule( const QString &rule )
+{
+    if( hasRule( rule ) )
         return;
 
     TSharedFilterRuleCompiled cr( new FilterRuleCompiled( rule, m_configuration ) );
@@ -174,8 +235,6 @@ void TableModelRulesCompiled::appendRule( TSharedFilterRuleRaw rule )
     int newPos = m_table.size();
     beginInsertRows( QModelIndex(), newPos, newPos );
     m_table.push_back( cr );
-    QObject::connect( cr.get(), SIGNAL(changed())
-            , this, SLOT(updateFilterRuleTable()));
     endInsertRows();
 
     updateFilterRuleTable();
@@ -225,3 +284,180 @@ void TableModelRulesCompiled::removeRules( const QModelIndexList &idxList )
     updateFilterRuleTable();
 }
 
+void TableModelRulesCompiled::insertEmptyRule()
+{
+    TSharedFilterRuleCompiled row = TSharedFilterRuleCompiled( new FilterRuleCompiled( "", m_configuration) );
+
+    int newPos = m_table.size();
+    beginInsertRows( QModelIndex(), newPos, newPos );
+    m_table.push_back( row );
+    endInsertRows();
+}
+
+Qt::DropActions TableModelRulesCompiled::supportedDropActions() const
+{
+     return Qt::CopyAction;
+}
+
+QStringList TableModelRulesCompiled::mimeTypes() const
+{
+    QStringList types;
+    types << QLatin1String("application/x-de.steckmann.LogWitch.rule");
+    types << QLatin1String("text/plain");
+    return types;
+}
+
+void TableModelRulesCompiled::dumpTable() const
+{
+    qDebug()<<"Dumping rule table:";
+    TCompiledRulesTable::const_iterator it;
+    for( it = m_table.begin(); it != m_table.end(); ++it )
+    {
+        qDebug() << (*it)->toString();
+    }
+}
+
+bool TableModelRulesCompiled::dropMimeData(const QMimeData *data,
+    Qt::DropAction action, int row, int column, const QModelIndex &parent)
+{
+    if (action == Qt::IgnoreAction)
+        return true;
+
+    int insertPos = (parent.row() < 0) ? m_table.size() : parent.row();
+    if( insertPos >= m_table.size() )
+        insertPos = m_table.size();
+
+    QStringList formats = data->formats();
+
+    for( QStringList::const_iterator it = formats.begin(); it != formats.end(); ++it )
+    {
+        if( *it == mimeTypes().front() )
+        {
+            const QByteArray id = getIdentification();
+            QByteArray dataArr = data->data( *it );
+            QDataStream stream( &dataArr, QIODevice::ReadOnly );
+
+            // We will move data here, because this data is coming from us!
+            if( dataArr.startsWith(id ) )
+            {
+                dataArr.remove( 0, id.length() );
+                std::list<int> srcRows;
+                while( !stream.atEnd() )
+                {
+                    int row;
+                    stream >> row;
+                    srcRows.push_back( row );
+                }
+
+                srcRows.sort();
+
+                // Now extract the rows and place them to the new position.
+                std::list<TSharedFilterRuleCompiled> rules;
+                for( std::list<int>::reverse_iterator it = srcRows.rbegin(); it != srcRows.rend(); ++it )
+                {
+                    int rowMapped = *it;
+                    if( rowMapped < m_table.size() && rowMapped >= 0)
+                    {
+                        rules.push_front( m_table[rowMapped] );
+                        m_table.erase( m_table.begin() + rowMapped );
+                        if( rowMapped <= insertPos )
+                        {
+                            if( insertPos > 0 )
+                                insertPos--;
+                        }
+                    }
+                }
+
+                for( std::list<TSharedFilterRuleCompiled>::reverse_iterator it = rules.rbegin()
+                    ; it != rules.rend()
+                    ; ++it )
+                {
+                    m_table.insert( m_table.begin() + insertPos, *it );
+                }
+
+                updateFilterRuleTable();
+                return true;
+            }
+        }
+    }
+
+    if( data->hasText() )
+    {
+        QString ruleText = data->text();
+        QStringList singleRuleTexts = ruleText.split( '\n' );
+
+        for( QStringList::iterator it = singleRuleTexts.begin()
+            ; it != singleRuleTexts.end()
+            ; ++it )
+        {
+            if( !hasRule( *it ) )
+            {
+                TSharedFilterRuleCompiled rule = TSharedFilterRuleCompiled( new FilterRuleCompiled( *it, m_configuration ) );
+
+                if( rule->isActionOk() && rule->isExpressionOk() )
+                {
+                    beginInsertRows( QModelIndex(), insertPos, insertPos );
+                    m_table.insert( m_table.begin() + insertPos, rule );
+                    endInsertRows();
+                    insertPos++;
+                }
+            }
+        }
+
+        updateFilterRuleTable();
+        return true;
+    }
+
+    return false;
+}
+
+QByteArray TableModelRulesCompiled::getIdentification() const
+{
+    QByteArray encSource;
+    QDataStream srcStream(&encSource, QIODevice::WriteOnly);
+    srcStream << QCoreApplication::applicationPid() << ((qint64)this);
+    return encSource;
+}
+
+QMimeData *TableModelRulesCompiled::mimeData(const QModelIndexList &indexes) const
+{
+    if (indexes.count() <= 0)
+        return 0;
+    QStringList types = mimeTypes();
+    if (types.isEmpty())
+        return 0;
+    QMimeData *data = new QMimeData();
+    QString format = types.at(0);
+
+    QString encoded;
+    QTextStream stream(&encoded, QIODevice::WriteOnly);
+
+    QByteArray encSource;
+    QDataStream srcStream(&encSource, QIODevice::WriteOnly);
+
+    std::list<int> rowSet;
+
+    QModelIndexList::ConstIterator it = indexes.begin();
+    bool lEnd = false;
+    for (; it != indexes.end(); ++it)
+    {
+        const int row = (*it).row();
+        if( find( rowSet.begin(), rowSet.end(), row ) == rowSet.end() )
+        {
+            rowSet.push_back( row );
+            if( row >= 0 && row < m_table.size() )
+            {
+                if( lEnd )
+                    stream << '\n';
+                stream << m_table[row]->toString();
+                lEnd = true;
+
+                srcStream << row;
+            }
+        }
+    }
+
+    data->setData( format, encSource.prepend( getIdentification() ) );
+    data->setText( encoded );
+    return data;
+}

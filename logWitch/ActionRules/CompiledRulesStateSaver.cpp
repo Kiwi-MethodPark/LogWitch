@@ -19,10 +19,8 @@ CompiledRulesStateSaver::CompiledRulesStateSaver(  TSharedConstLogEntryParserMod
    m_displayWidget->setLayout(vbox);
 
    QToolBar* toolBar = new QToolBar( m_compiledRuleView);
-   m_addSelectedRules = toolBar->addAction("add");
-   m_addSelectedRules->setIcon(QIcon(":/icons/plus"));
-   m_removeSelectedRules = toolBar->addAction("remove");
-   m_removeSelectedRules->setIcon(QIcon(":/icons/minus"));
+   m_removeSelectedRules = toolBar->addAction("Trash");
+   m_removeSelectedRules->setIcon(QIcon(":/icons/trash"));
    toolBar->setIconSize(QSize(16,16));
    vbox->addWidget(toolBar);
 
@@ -33,6 +31,10 @@ CompiledRulesStateSaver::CompiledRulesStateSaver(  TSharedConstLogEntryParserMod
    m_compiledRuleView->horizontalHeader()->setDefaultSectionSize( 190 );
    m_compiledRuleView->setSelectionBehavior(QAbstractItemView::SelectRows);
    m_compiledRuleView->setSelectionMode( QAbstractItemView::ExtendedSelection );
+
+   m_compiledRuleView->setDragEnabled( true );
+   m_compiledRuleView->setDropIndicatorShown(true);
+   m_compiledRuleView->setDragDropMode( QAbstractItemView::DragDrop );
 
    // Set Model
    m_rulesCompiledModel = new TableModelRulesCompiled( m_compiledRuleView, cfg, ruleTable );
@@ -46,8 +48,6 @@ void CompiledRulesStateSaver::connectActions( FilterRuleSelectionWindow *wnd )
     if( m_connected )
         return;
 
-    QObject::connect(m_addSelectedRules, SIGNAL(triggered()),
-            wnd, SLOT(addSelectionToCompiled()));
     QObject::connect(m_removeSelectedRules, SIGNAL(triggered()),
             wnd, SLOT(removeSelectionFromCompiled()));
 
