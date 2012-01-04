@@ -5,9 +5,15 @@
  *      Author: sven
  */
 
-#include "CompiledRulesStateSaver.h"
-#include "ActionRules/TableModelRulesCompiled.h"
+#include "ActionRules/CompiledRulesStateSaver.h"
+
+#include <boost/bind.hpp>
+
 #include "ActionRules/FilterRuleSelectionWindow.h"
+#include "ActionRules/TableModelRulesCompiled.h"
+#include "ActionRules/ToolButtonTrashFilter.h"
+
+#include "GUITools/EventFilterToBoostFunction.h"
 
 CompiledRulesStateSaver::CompiledRulesStateSaver(  TSharedConstLogEntryParserModelConfiguration cfg, TSharedRuleTable ruleTable )
     : m_compiledRuleView(NULL)
@@ -19,8 +25,6 @@ CompiledRulesStateSaver::CompiledRulesStateSaver(  TSharedConstLogEntryParserMod
    m_displayWidget->setLayout(vbox);
 
    QToolBar* toolBar = new QToolBar( m_compiledRuleView);
-   m_removeSelectedRules = toolBar->addAction("Trash");
-   m_removeSelectedRules->setIcon(QIcon(":/icons/trash"));
    toolBar->setIconSize(QSize(16,16));
    vbox->addWidget(toolBar);
 
@@ -41,6 +45,10 @@ CompiledRulesStateSaver::CompiledRulesStateSaver(  TSharedConstLogEntryParserMod
    m_compiledRuleView->setModel( m_rulesCompiledModel );
 
    vbox->addWidget(m_compiledRuleView);
+
+   m_removeSelectedRules = new QAction("Trash", this);
+   m_removeSelectedRules->setIcon(QIcon(":/icons/trash"));
+   toolBar->addWidget( new ToolButtonTrashFilter( m_removeSelectedRules, m_rulesCompiledModel ) );
 }
 
 void CompiledRulesStateSaver::connectActions( FilterRuleSelectionWindow *wnd )
@@ -50,6 +58,11 @@ void CompiledRulesStateSaver::connectActions( FilterRuleSelectionWindow *wnd )
 
     QObject::connect(m_removeSelectedRules, SIGNAL(triggered()),
             wnd, SLOT(removeSelectionFromCompiled()));
+
+    m_compiledRuleView->installEventFilter( new EventFilterToBoostFunction( this,
+            boost::bind( &evtFunc::keyPressed, _1, _2, Qt::Key_Delete,
+                    boost::function< void(void ) >( boost::bind( &FilterRuleSelectionWindow::removeSelectionFromCompiled, wnd ) ) ) ) );
+
 
     m_connected = true;
 }

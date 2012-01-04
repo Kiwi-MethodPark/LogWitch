@@ -43,7 +43,6 @@ public:
     TSharedCompiledRulesStateSaver getWindow();
 
 public slots:
-    void addSelectionToCompiled();
     void removeSelectionFromCompiled();
     void trashSelectedRules();
 

@@ -74,6 +74,12 @@ public:
 
     void removeRules( const QModelIndexList &idxList );
 
+    void removeRules( const std::list<int> &rowList );
+
+    void removeRules( const QMimeData *data );
+
+    static const QString ruleMimeType;
+
 public slots:
     void updateFilterRuleTable();
 
@@ -84,6 +90,13 @@ private:
      * Checks if the model contains the given rule.
      */
     bool hasRule( const QString &rule ) const;
+
+    /**
+     * Retrieve the rows from the mime data. Appends all rows to srcRows, if dataArr
+     * has the correct identification. If the scrRows can be extracted,
+     * this method returns true.
+     */
+    bool getRowsFromData( std::list<int> &srcRows, const QByteArray &dataArr ) const;
 
     QByteArray getIdentification() const;
 

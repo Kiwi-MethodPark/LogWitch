@@ -13,6 +13,8 @@
 #include "ActionRules/FilterRuleCompiled.h"
 #include "FilterRuleCompiled.h"
 
+const QString TableModelRulesCompiled::ruleMimeType("application/x-de.steckmann.LogWitch.rule");
+
 TableModelRulesCompiled::TableModelRulesCompiled( QObject *parent, TSharedConstLogEntryParserModelConfiguration cfg, TSharedRuleTable ruleTable )
     :QAbstractTableModel( parent )
     , m_configuration( cfg )
@@ -290,23 +292,44 @@ namespace
     }
 }
 
+void TableModelRulesCompiled::removeRules( const std::list<int> &rowList )
+{
+    // Removing many is complex, because the rows within idxList always reference
+    // to the state before removing a row. So we sort everything in reverse order
+    // and then start removing from the back on.
+    std::list<int> sortRowList( rowList );
+    sortRowList.sort();
+
+    int toRemoveLast = -1;
+
+    for( std::list<int>::const_reverse_iterator it = sortRowList.rbegin()
+        ; it != sortRowList.rend(); ++it )
+    {
+        if(   toRemoveLast != *it
+           && *it >= 0
+           && *it < m_table.size() )
+        {
+            beginRemoveRows(QModelIndex(), *it, *it);
+            m_table.erase( m_table.begin() + *it );
+            endRemoveRows();
+            toRemoveLast = *it;
+        }
+    }
+
+    updateFilterRuleTable();
+}
+
 void TableModelRulesCompiled::removeRules( const QModelIndexList &idxList )
 {
     // Removing many is complex, because the rows within idxList always reference
     // to the state before removing a row. So we sort everything in reverse order
     // and then start removing from the back on.
-    QModelIndexList myList( idxList );
-    qSort( myList.begin(), myList.end(), indexRow );
+    std::list<int> rowList;
+    QModelIndexList::const_iterator it;
+    for( it = idxList.begin(); it != idxList.end(); ++it )
+        rowList.push_back( it->row() );
 
-    QModelIndexList::Iterator it;
-    for( it = myList.begin(); it != myList.end(); ++it )
-    {
-        beginRemoveRows(QModelIndex(), it->row(), it->row());
-        m_table.erase( m_table.begin() + it->row() );
-        endRemoveRows();
-    }
-
-    updateFilterRuleTable();
+    removeRules( rowList );
 }
 
 void TableModelRulesCompiled::insertEmptyRule()
@@ -327,7 +350,7 @@ Qt::DropActions TableModelRulesCompiled::supportedDropActions() const
 QStringList TableModelRulesCompiled::mimeTypes() const
 {
     QStringList types;
-    types << QLatin1String("application/x-de.steckmann.LogWitch.rule");
+    types << ruleMimeType;
     types << QLatin1String("text/plain");
     return types;
 }
@@ -342,6 +365,29 @@ void TableModelRulesCompiled::dumpTable() const
     }
 }
 
+bool TableModelRulesCompiled::getRowsFromData( std::list<int> &srcRows, const QByteArray &dataArr ) const
+{
+    const QByteArray id = getIdentification();
+    QByteArray data( dataArr );
+    QDataStream stream( &data, QIODevice::ReadOnly );
+
+    // We will move data here, because this data is coming from us!
+    if( dataArr.startsWith(id ) )
+    {
+        stream.skipRawData( id.length() );
+        while( !stream.atEnd() )
+        {
+            int row;
+            stream >> row;
+            srcRows.push_back( row );
+        }
+
+        return true;
+    }
+
+    return false;
+}
+
 bool TableModelRulesCompiled::dropMimeData(const QMimeData *data,
     Qt::DropAction action, int row, int column, const QModelIndex &parent)
 {
@@ -352,57 +398,40 @@ bool TableModelRulesCompiled::dropMimeData(const QMimeData *data,
     if( insertPos >= m_table.size() )
         insertPos = m_table.size();
 
-    QStringList formats = data->formats();
-
-    for( QStringList::const_iterator it = formats.begin(); it != formats.end(); ++it )
+    if( data->hasFormat( ruleMimeType ) )
     {
-        if( *it == mimeTypes().front() )
+        // We will move data here, because this data is coming from us!
+        std::list<int> srcRows;
+        if( getRowsFromData(srcRows,data->data( ruleMimeType ) ) )
         {
-            const QByteArray id = getIdentification();
-            QByteArray dataArr = data->data( *it );
-            QDataStream stream( &dataArr, QIODevice::ReadOnly );
+            srcRows.sort();
 
-            // We will move data here, because this data is coming from us!
-            if( dataArr.startsWith(id ) )
+            // Now extract the rows and place them to the new position.
+            std::list<TSharedFilterRuleCompiled> rules;
+            for( std::list<int>::reverse_iterator it = srcRows.rbegin(); it != srcRows.rend(); ++it )
             {
-                dataArr.remove( 0, id.length() );
-                std::list<int> srcRows;
-                while( !stream.atEnd() )
+                int rowMapped = *it;
+                if( rowMapped < m_table.size() && rowMapped >= 0)
                 {
-                    int row;
-                    stream >> row;
-                    srcRows.push_back( row );
-                }
-
-                srcRows.sort();
-
-                // Now extract the rows and place them to the new position.
-                std::list<TSharedFilterRuleCompiled> rules;
-                for( std::list<int>::reverse_iterator it = srcRows.rbegin(); it != srcRows.rend(); ++it )
-                {
-                    int rowMapped = *it;
-                    if( rowMapped < m_table.size() && rowMapped >= 0)
+                    rules.push_front( m_table[rowMapped] );
+                    m_table.erase( m_table.begin() + rowMapped );
+                    if( rowMapped <= insertPos )
                     {
-                        rules.push_front( m_table[rowMapped] );
-                        m_table.erase( m_table.begin() + rowMapped );
-                        if( rowMapped <= insertPos )
-                        {
-                            if( insertPos > 0 )
-                                insertPos--;
-                        }
+                        if( insertPos > 0 )
+                            insertPos--;
                     }
                 }
-
-                for( std::list<TSharedFilterRuleCompiled>::reverse_iterator it = rules.rbegin()
-                    ; it != rules.rend()
-                    ; ++it )
-                {
-                    m_table.insert( m_table.begin() + insertPos, *it );
-                }
-
-                updateFilterRuleTable();
-                return true;
             }
+
+            for( std::list<TSharedFilterRuleCompiled>::reverse_iterator it = rules.rbegin()
+                ; it != rules.rend()
+                ; ++it )
+            {
+                m_table.insert( m_table.begin() + insertPos, *it );
+            }
+
+            updateFilterRuleTable();
+            return true;
         }
     }
 
@@ -434,6 +463,17 @@ bool TableModelRulesCompiled::dropMimeData(const QMimeData *data,
     }
 
     return false;
+}
+
+void TableModelRulesCompiled::removeRules( const QMimeData *data )
+{
+    if( data->hasFormat( ruleMimeType ) )
+    {
+        // We will move data here, because this data is coming from us!
+        std::list<int> srcRows;
+        if( getRowsFromData(srcRows,data->data( ruleMimeType ) ) )
+            removeRules( srcRows );
+    }
 }
 
 QByteArray TableModelRulesCompiled::getIdentification() const

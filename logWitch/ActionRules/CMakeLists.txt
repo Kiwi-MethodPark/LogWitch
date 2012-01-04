@@ -5,6 +5,7 @@ SET(LFA_RULES_MOC_CLASSES
 	RuleTable.h
 	RulesTableView.h
 	TableModelRulesCompiled.h
+	ToolButtonTrashFilter.h
 )
 
 SET(LFA_RULES_LIB_SOURCES
@@ -26,6 +27,7 @@ SET(LFA_RULES_LIB_SOURCES
     RuleTable.cpp
     RulesTableView.cpp
     TableModelRulesCompiled.cpp
+    ToolButtonTrashFilter.cpp
     ValueGetterConstQString.cpp
     ValueGetterLogEntry.cpp
     ValueGetter.cpp

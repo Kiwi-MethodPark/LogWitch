@@ -8,11 +8,16 @@
 #include "FilterRuleSelectionWindow.h"
 
 #include <QtGui>
+#include <boost/bind.hpp>
 
-#include "ActionRules/TableModelRulesCompiled.h"
 #include "ActionRules/CompiledRulesStateSaver.h"
+#include "ActionRules/TableModelRulesCompiled.h"
+#include "ActionRules/ToolButtonTrashFilter.h"
+
+#include "GUITools/EventFilterToBoostFunction.h"
 
 #include "Models/LogEntryTableFilter.h"
+
 
 FilterRuleSelectionWindow::FilterRuleSelectionWindow( QWidget* parent )
 : QSplitter( Qt::Vertical, parent )
@@ -31,21 +36,21 @@ FilterRuleSelectionWindow::FilterRuleSelectionWindow( QWidget* parent )
     m_ruleView->setDropIndicatorShown(true);
     m_ruleView->setDragDropMode( QAbstractItemView::DragDrop );
 
+    // Filter "Key_Delete" Key and pass it to trashSelectedRules.
+    m_ruleView->installEventFilter( new EventFilterToBoostFunction( this,
+            boost::bind( &evtFunc::keyPressed, _1, _2, Qt::Key_Delete,
+                    boost::function< void(void ) >( boost::bind( &FilterRuleSelectionWindow::trashSelectedRules, this ) ) ) ) );
+
     QWidget *displayWidget = new QWidget(); //This is the pane
     QVBoxLayout* vbox = new QVBoxLayout(displayWidget);
     displayWidget->setLayout(vbox);
 
     QToolBar* toolBar = new QToolBar( displayWidget );
 
-    // Add new Rule action
-    m_addSelectedRules = toolBar->addAction("addNew");
-    m_addSelectedRules->setIcon(QIcon(":/icons/plus"));
-    QObject::connect(m_addSelectedRules, SIGNAL(triggered()),
-            m_rulesModel, SLOT(insertEmptyRule()));
-
     // Add trash selected rule action
-    m_trashSelectedRules = toolBar->addAction("Trash");
+    m_trashSelectedRules = new QAction("Trash", this);
     m_trashSelectedRules->setIcon(QIcon(":/icons/trash"));
+    toolBar->addWidget( new ToolButtonTrashFilter( m_trashSelectedRules, m_rulesModel ) );
     QObject::connect(m_trashSelectedRules, SIGNAL(triggered()),
             this, SLOT(trashSelectedRules()));
 
@@ -135,21 +140,6 @@ void FilterRuleSelectionWindow::trashSelectedRules()
     QItemSelectionModel *selMod = m_ruleView->selectionModel();
     QModelIndexList selection = selMod->selectedRows();
     m_rulesModel->removeRules( selection );
-}
-
-void FilterRuleSelectionWindow::addSelectionToCompiled( )
-{
-    if( m_compiledRules )
-    {
-        QItemSelectionModel *selMod = m_ruleView->selectionModel();
-        QModelIndexList selection = selMod->selectedRows();
-        QModelIndexList::Iterator it;
-        for( it = selection.begin(); it != selection.end(); ++it )
-        {
-            const QString rule = m_rulesModel->getRule( it->row() );
-            m_compiledRules->m_rulesCompiledModel->appendRule( rule );
-        }
-    }
 }
 
 void FilterRuleSelectionWindow::removeSelectionFromCompiled( )
