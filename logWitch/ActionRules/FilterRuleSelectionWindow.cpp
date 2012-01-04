@@ -83,10 +83,16 @@ void FilterRuleSelectionWindow::storeRules() const
 {
     QSettings settings;
     settings.beginWriteArray("Rules");
+    unsigned int arrRow = 0;
     for (unsigned int i = 0; i < m_rulesModel->rowCount(); ++i)
     {
-        settings.setArrayIndex(i);
-        settings.setValue("rule", m_rulesModel->getRule(i) );
+        QString rule = m_rulesModel->getRule(i);
+        // We will ignore empty rules, such a rule is for eg. the new insertion rule.
+        if( rule.length() )
+        {
+            settings.setArrayIndex( arrRow++ );
+            settings.setValue("rule", rule );
+        }
     }
     settings.endArray();
 }

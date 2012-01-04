@@ -27,7 +27,7 @@ TableModelRulesCompiled::~TableModelRulesCompiled()
 int TableModelRulesCompiled::rowCount(const QModelIndex &parent) const
 {
     Q_UNUSED(parent);
-    return m_table.size();
+    return m_table.size() + 1;
 }
 
 int TableModelRulesCompiled::columnCount(const QModelIndex &parent) const
@@ -44,8 +44,16 @@ QVariant TableModelRulesCompiled::data(const QModelIndex &index, int role) const
     if (index.column() >= m_columnCount
          || index.column() < 0
          || index.row() < 0
-         || index.row() >= (m_table.size() ) )
+         || index.row() > (m_table.size() ) )
      return QVariant();
+
+    if( index.row() == m_table.size() )
+    {
+        if( role == Qt::DisplayRole && index.column() == 0 )
+            return QString(" * ");
+
+        return QVariant();
+    }
 
     TSharedFilterRuleCompiled row = m_table[index.row()];
 
@@ -125,13 +133,18 @@ QVariant TableModelRulesCompiled::data(const QModelIndex &index, int role) const
 
 Qt::ItemFlags TableModelRulesCompiled::flags(const QModelIndex &index  ) const
 {
-    Qt::ItemFlags defaultFlags = QAbstractTableModel::flags(index);
+    Qt::ItemFlags flags = QAbstractTableModel::flags(index);
 
      if (index.isValid())
+     {
+         if( index.row() < rowCount() )
+             flags |= Qt::ItemIsDragEnabled;
+
          return Qt::ItemIsEnabled | Qt::ItemIsSelectable | Qt::ItemIsEditable
-              | Qt::ItemIsDragEnabled | Qt::ItemIsDropEnabled | defaultFlags;
+              | Qt::ItemIsDropEnabled | flags;
+     }
      else
-         return Qt::ItemIsDropEnabled | defaultFlags;
+         return Qt::ItemIsDropEnabled | flags;
 }
 
 QVariant TableModelRulesCompiled::headerData(int section, Qt::Orientation orientation, int role) const
@@ -156,14 +169,26 @@ bool TableModelRulesCompiled::setData( const QModelIndex &index, const QVariant&
     if( !index.isValid())
         return false;
 
+    if (role != Qt::EditRole)
+        return false;
+
     if (index.column() >= m_columnCount
          || index.column() < 0
          || index.row() < 0
-         || index.row() >= (m_table.size() ) )
+         || index.row() > (m_table.size() ) )
         return false;
 
-    if (role != Qt::EditRole)
-        return false;
+    if( index.row() == m_table.size() )
+    {
+        if( value.toString().length() == 0 )
+            return false;
+
+        TSharedFilterRuleCompiled rule = TSharedFilterRuleCompiled( new FilterRuleCompiled( "", m_configuration ) );
+
+        beginInsertRows( QModelIndex(), m_table.size(), m_table.size() );
+        m_table.push_back( rule );
+        endInsertRows();
+    }
 
     TSharedFilterRuleCompiled row = m_table[index.row()];
 
