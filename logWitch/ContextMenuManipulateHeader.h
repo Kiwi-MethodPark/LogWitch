@@ -5,21 +5,20 @@
  *      Author: sven
  */
 
-#ifndef CONTEXTMENULOGENTRYHEADER_H_
-#define CONTEXTMENULOGENTRYHEADER_H_
+#ifndef CONTEXTMENUMANIPULATEHEADER_H_
+#define CONTEXTMENUMANIPULATEHEADER_H_
 #include <QtGui>
 
 /**
  * This class is responsible for showing the context menu which
  * manipulates the horizontal header of the log entry table window.
- *
  */
-class ContextMenuLogEntryHeader
+class ContextMenuManipulateHeader
 : public QMenu
 {
     Q_OBJECT
 public:
-    ContextMenuLogEntryHeader( QHeaderView *header );
+    ContextMenuManipulateHeader( QHeaderView *header );
 
 public slots:
     void contextMenuRequest( const QPoint & pos );

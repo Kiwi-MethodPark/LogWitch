@@ -29,7 +29,7 @@
 #include "Models/EntryFormatingModel.h"
 
 #include "EntryToTextFormater.h"
-#include "ContextMenuLogEntryHeader.h"
+#include "ContextMenuManipulateHeader.h"
 #include "FilterListView.h"
 
 LogEntryTableWindow::LogEntryTableWindow( boost::shared_ptr<LogEntryTableModel> model, QWidget *parent )
@@ -65,7 +65,7 @@ LogEntryTableWindow::LogEntryTableWindow( boost::shared_ptr<LogEntryTableModel> 
 
     // Context menu for the HorizontalHeaderView
     m_tableView->horizontalHeader()->setContextMenuPolicy( Qt::CustomContextMenu );
-    new ContextMenuLogEntryHeader( m_tableView->horizontalHeader() );
+    new ContextMenuManipulateHeader( m_tableView->horizontalHeader() );
 
 	// Resize the columns to fit to the models defaults.
 	int count = m_model->columnCount( QModelIndex() );

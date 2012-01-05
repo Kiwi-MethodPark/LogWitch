@@ -9,14 +9,14 @@ SET(LFA_FORMS
 )
 
 SET(LFA_MOC_CLASSES
-	ContextMenuLogEntryHeader.h
+	ContextMenuManipulateHeader.h
 	FilterListView.h
 	LogEntryTableWindow.h
 	logfileanalyser.h
 )
 
 SET(LFA_SOURCES
-	ContextMenuLogEntryHeader.cpp
+	ContextMenuManipulateHeader.cpp
 	EntryToTextFormaterDefault.cpp
 	EntryToTextFormaterLog4cplus.cpp
 	FilterListView.cpp

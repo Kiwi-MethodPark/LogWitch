@@ -91,7 +91,6 @@ private:
 
     QTabWidget *m_myFilterTabs;
 
-
     QDockWidget *m_dockFilterShouldDockedTo;
 
 	QScrollDownTableView *m_tableView;

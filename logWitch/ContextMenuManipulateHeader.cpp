@@ -5,14 +5,14 @@
  *      Author: sven
  */
 
-#include "ContextMenuLogEntryHeader.h"
+#include "ContextMenuManipulateHeader.h"
 
 #include <boost/bind.hpp>
 
 #include "GUITools/SlotToBoostFunction.h"
 #include "GUITools/SynchronizedHeaderView.h"
 
-ContextMenuLogEntryHeader::ContextMenuLogEntryHeader( QHeaderView *parent )
+ContextMenuManipulateHeader::ContextMenuManipulateHeader( QHeaderView *parent )
 : QMenu( parent )
 , m_header( parent )
 {
@@ -26,7 +26,7 @@ ContextMenuLogEntryHeader::ContextMenuLogEntryHeader( QHeaderView *parent )
                      this, SLOT( hideColumn() ) );
 }
 
-void ContextMenuLogEntryHeader::contextMenuRequest( const QPoint & pos )
+void ContextMenuManipulateHeader::contextMenuRequest( const QPoint & pos )
 {
     m_headerToWorkOn = m_header->logicalIndexAt( pos );
 
@@ -43,7 +43,7 @@ void ContextMenuLogEntryHeader::contextMenuRequest( const QPoint & pos )
 
             connect( action,SIGNAL(triggered()),
                     // Destruction of this will be handled by the action itself.
-                    new SlotToBoostFunction(action,boost::bind(&ContextMenuLogEntryHeader::showColumn,this,i)),
+                    new SlotToBoostFunction(action,boost::bind(&ContextMenuManipulateHeader::showColumn,this,i)),
                     SLOT(handleSignal()));
         }
     }
@@ -55,7 +55,7 @@ void ContextMenuLogEntryHeader::contextMenuRequest( const QPoint & pos )
     popup( m_header->mapToGlobal( pos ) );
 }
 
-void ContextMenuLogEntryHeader::hideColumn()
+void ContextMenuManipulateHeader::hideColumn()
 {
     // Ensure at least one column is not hidden ....
     if( m_header->hiddenSectionCount() < m_header->count() - 1 )
@@ -69,7 +69,7 @@ void ContextMenuLogEntryHeader::hideColumn()
     }
 }
 
-void ContextMenuLogEntryHeader::showColumn( int i )
+void ContextMenuManipulateHeader::showColumn( int i )
 {
     qDebug() << " showing " << i << " on header " << m_header;
 
