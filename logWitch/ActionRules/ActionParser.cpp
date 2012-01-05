@@ -26,28 +26,10 @@
 #include "ActionRules/ActionDoNothing.h"
 #include "ActionRules/ActionDiscardRow.h"
 
+#include "Auxiliary/BoostSpiritQStringAdaption.hxx"
+
 using boost::spirit::tag::space;
 using boost::spirit::locals;
-
-namespace boost { namespace spirit { namespace traits
-{
-    // Make Qi recognize QString as a container
-    template <> struct is_container<QString> : mpl::true_ {};
-
-    // Expose the container's (QString's) value_type
-    template <> struct container_value<QString> : mpl::identity<QChar> {};
-
-    // Define how to insert a new element at the end of the container (QString)
-    template <>
-    struct push_back_container<QString, QChar>
-    {
-        static bool call(QString& c, QChar const& val)
-        {
-            c.append(val);
-            return true;
-        }
-    };
-}}}
 
 namespace actionParser
 {
