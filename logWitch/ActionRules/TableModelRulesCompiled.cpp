@@ -129,6 +129,13 @@ QVariant TableModelRulesCompiled::data(const QModelIndex &index, int role) const
             return row->actionString();
         }
     }
+    else if( index.column() == 2 )
+    {
+        if( role == Qt::EditRole || role == Qt::DisplayRole )
+        {
+            return row->getUserDescription();
+        }
+    }
 
     return QVariant();
 }
@@ -159,6 +166,8 @@ QVariant TableModelRulesCompiled::headerData(int section, Qt::Orientation orient
                 return QString(tr("Expression"));
             if( section == 1 )
                 return QString(tr("Action"));
+            if( section == 2 )
+                return QString(tr("Description"));
         }
     }
 
@@ -204,6 +213,11 @@ bool TableModelRulesCompiled::setData( const QModelIndex &index, const QVariant&
     {
         row->actionString( value.toString() );
         updateFilterRuleTable();
+        return true;
+    }
+    else if( index.column() == 2 )
+    {
+        row->setUserDescription( value.toString() );
         return true;
     }
 

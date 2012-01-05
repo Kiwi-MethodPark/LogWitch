@@ -96,8 +96,21 @@ public:
      */
     bool validWithinContext() const;
 
-
+    /**
+     * Returns the compiled rules. This rule is ready for using inside the filter.
+     * The compiled rule may be empty if the expression or the action is invalid.
+     */
     TSharedRule getCompiledRule();
+
+    /**
+     * Returns the user description of this rule.
+     */
+    const QString &getUserDescription() const;
+
+    /**
+     * Sets the user description.
+     */
+    void setUserDescription( const QString &desc );
 
 signals:
     void changed();
@@ -120,6 +133,11 @@ private:
 
     /// This is the compiled rule which is used for filtering.
     TSharedRule m_compiledRule;
+
+    /**
+     * This description is a note for the user to identify its rule.
+     */
+    QString m_userDescription;
 };
 
 #endif /* FILTERRULECOMPILED_H_ */

@@ -105,7 +105,7 @@ private:
     typedef std::vector<TSharedFilterRuleCompiled> TCompiledRulesTable;
     TCompiledRulesTable m_table;
 
-    static const int m_columnCount = 2;
+    static const int m_columnCount = 3;
 
     /**
      * The configuration this table is for.

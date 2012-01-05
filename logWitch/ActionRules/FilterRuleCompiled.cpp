@@ -7,24 +7,101 @@
 
 #include "FilterRuleCompiled.h"
 
+#include <boost/fusion/include/adapt_struct.hpp>
+#include <boost/fusion/include/tag_of.hpp>
+#include <boost/spirit/home/phoenix/core/value.hpp>
+#include <boost/spirit/include/phoenix_core.hpp>
+#include <boost/spirit/include/phoenix_operator.hpp>
+#include <boost/spirit/include/phoenix_object.hpp>
+#include <boost/spirit/include/qi.hpp>
+
+#include "Auxiliary/BoostSpiritQStringAdaption.hxx"
+
 // take the string and search for => as an special expression.
 static const QString seperator("=>");
 
-FilterRuleCompiled::FilterRuleCompiled( const QString &str, TSharedConstLogEntryParserModelConfiguration cfg )
+namespace ruleParser
+{
+    namespace fusion = boost::fusion;
+    namespace phoenix = boost::phoenix;
+    namespace qi = boost::spirit::qi;
+    namespace ascii = boost::spirit::ascii;
+
+    struct ruleParts
+    {
+        QString description;
+        QString expression;
+        QString action;
+    };
+}
+
+BOOST_FUSION_ADAPT_STRUCT(
+    ruleParser::ruleParts,
+    (QString, description)
+    (QString, expression)
+    (QString, action)
+)
+
+namespace ruleParser
+{
+    template <typename Iterator>
+    struct ruleParts_parser : qi::grammar<Iterator, ruleParts(), ascii::space_type>
+    {
+        ruleParts_parser() : ruleParts_parser::base_type(top)
+        {
+            using qi::lit;
+            using qi::lexeme;
+            using ascii::char_;
+            using namespace qi::labels;
+            using boost::phoenix::val;
+
+            // Example: "Description":{Expression}=>{Action}
+            top = quotedQString('"','"') >> lit(":") >> quotedQString('{','}') >> lit( seperator.toStdString() ) >> quotedQString('{','}');
+
+            quotedQString = lexeme[
+                                   lit(_r1)
+                                   >> *(
+                                           ( '\\' >> char_ )      [_val += _1]
+                                        || (char_ - lit(_r2) )    [_val += _1]
+                                   )
+                                   >> lit(_r2)];
+        }
+
+        qi::rule<Iterator, ruleParts(), ascii::space_type> top;
+        qi::rule<Iterator, QString(const char,const char), ascii::space_type> quotedQString;
+    };
+}
+
+FilterRuleCompiled::FilterRuleCompiled( const QString &rule, TSharedConstLogEntryParserModelConfiguration cfg )
 : m_expression( cfg )
 , m_action( cfg )
 {
-    // Check if we can parse the string ...
-    QStringList vals = str.split(seperator);
+    std::string str = rule.toStdString();
+    ruleParser::ruleParts parts;
 
-    if( vals.size() == 1 )
+    typedef ruleParser::ruleParts_parser<std::string::const_iterator> rule_grammar;
+    rule_grammar ruleGrammar; // Our grammar
+
+    using boost::spirit::ascii::space;
+    std::string::const_iterator iter = str.begin();
+    std::string::const_iterator end = str.end();
+    bool r = phrase_parse(iter, end, ruleGrammar, space, parts);
+
+    if (r && iter == end)
     {
-        expressionString( vals.front() );
+        setUserDescription( parts.description );
+        expressionString( parts.expression );
+        actionString( parts.action );
     }
-    else if( vals.size() == 2 )
+    else
     {
-        expressionString( vals.at(0) );
-        actionString( vals.at(1) );
+        std::string::const_iterator some = iter+30;
+        std::string context(iter, (some>end)?end:some);
+        qDebug() << "-------------------------";
+        qDebug() << "Rule extraction failed";
+        qDebug() << "stopped at: "<< QString::fromStdString(context) << "...";
+        qDebug() << "Complete rule: " << rule;
+        qDebug() << "-------------------------";
     }
 
     parseRule();
@@ -66,7 +143,16 @@ TSharedRule FilterRuleCompiled::getCompiledRule()
 
 QString FilterRuleCompiled::toString() const
 {
-    return expressionString() + seperator + actionString();
+    QString quotedDescription = getUserDescription();
+    quotedDescription.replace('\\',"\\\\").replace( '\"', "\\\"");
+
+    QString quotedExpression = expressionString();
+    quotedExpression.replace('\\',"\\\\").replace( '}', "\\}");
+
+    QString quotedAction = actionString();
+    quotedAction.replace('\\',"\\\\").replace( '}', "\\}");
+
+    return "\"" + quotedDescription + "\":{" + quotedExpression + "}" + seperator + "{" + quotedAction + "}";
 }
 
 void FilterRuleCompiled::expressionString( const QString &exp )
@@ -118,4 +204,14 @@ bool FilterRuleCompiled::isActionOk() const
 const QString &FilterRuleCompiled::getActionError() const
 {
     return m_action.getError();
+}
+
+const QString &FilterRuleCompiled::getUserDescription() const
+{
+    return m_userDescription;
+}
+
+void FilterRuleCompiled::setUserDescription( const QString &desc )
+{
+    m_userDescription = desc;
 }
