@@ -10,6 +10,7 @@
 #include <boost/bind.hpp>
 
 #include "GUITools/SlotToBoostFunction.h"
+#include "GUITools/SynchronizedHeaderView.h"
 
 ContextMenuLogEntryHeader::ContextMenuLogEntryHeader( QHeaderView *parent )
 : QMenu( parent )
@@ -58,10 +59,24 @@ void ContextMenuLogEntryHeader::hideColumn()
 {
     // Ensure at least one column is not hidden ....
     if( m_header->hiddenSectionCount() < m_header->count() - 1 )
-        m_header->hideSection( m_headerToWorkOn );
+    {
+        // This is necessary, because these methods are not virtual in QT *grr*
+        SynchronizedHeaderView *syncHeader = dynamic_cast<SynchronizedHeaderView *>(m_header);
+        if( syncHeader )
+            syncHeader->hideSection( m_headerToWorkOn );
+        else
+            m_header->hideSection( m_headerToWorkOn );
+    }
 }
 
 void ContextMenuLogEntryHeader::showColumn( int i )
 {
-    m_header->showSection( i );
+    qDebug() << " showing " << i << " on header " << m_header;
+
+    // This is necessary, because these methods are not virtual in QT *grr*
+    SynchronizedHeaderView *syncHeader = dynamic_cast<SynchronizedHeaderView *>(m_header);
+    if( syncHeader )
+        syncHeader->showSection( i );
+    else
+        m_header->showSection( i );
 }

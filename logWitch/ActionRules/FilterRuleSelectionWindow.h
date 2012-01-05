@@ -42,6 +42,12 @@ public:
      */
     TSharedCompiledRulesStateSaver getWindow();
 
+    /**
+     * This synchronizes header changes between this view and the others.
+     * This will handle resizing and also setting the correct defautl values.
+     */
+    void tieHeaderChangesTo( QTableView *other );
+
 public slots:
     void removeSelectionFromCompiled();
     void trashSelectedRules();

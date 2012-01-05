@@ -15,6 +15,8 @@
 
 #include "GUITools/EventFilterToBoostFunction.h"
 
+#include "ContextMenuManipulateHeader.h"
+
 CompiledRulesStateSaver::CompiledRulesStateSaver(  TSharedConstLogEntryParserModelConfiguration cfg, TSharedRuleTable ruleTable )
     : m_compiledRuleView(NULL)
     , m_connected( false)
@@ -33,6 +35,7 @@ CompiledRulesStateSaver::CompiledRulesStateSaver(  TSharedConstLogEntryParserMod
    m_compiledRuleView->verticalHeader()->setDefaultSectionSize( 20 );
    m_compiledRuleView->verticalHeader()->setResizeMode(QHeaderView::Fixed);
    m_compiledRuleView->horizontalHeader()->setDefaultSectionSize( 190 );
+
    m_compiledRuleView->setSelectionBehavior(QAbstractItemView::SelectRows);
    m_compiledRuleView->setSelectionMode( QAbstractItemView::ExtendedSelection );
 
@@ -63,6 +66,10 @@ void CompiledRulesStateSaver::connectActions( FilterRuleSelectionWindow *wnd )
             boost::bind( &evtFunc::keyPressed, _1, _2, Qt::Key_Delete,
                     boost::function< void(void ) >( boost::bind( &FilterRuleSelectionWindow::removeSelectionFromCompiled, wnd ) ) ) ) );
 
+    wnd->tieHeaderChangesTo( m_compiledRuleView );
+
+    m_compiledRuleView->horizontalHeader()->setContextMenuPolicy( Qt::CustomContextMenu );
+    new ContextMenuManipulateHeader( m_compiledRuleView->horizontalHeader() );
 
     m_connected = true;
 }

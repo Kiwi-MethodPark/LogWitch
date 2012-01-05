@@ -15,17 +15,32 @@
 #include "ActionRules/ToolButtonTrashFilter.h"
 
 #include "GUITools/EventFilterToBoostFunction.h"
+#include "GUITools/SlotToBoostFunction.h"
+#include "GUITools/SynchronizedHeaderView.h"
 
 #include "Models/LogEntryTableFilter.h"
 
+#include "ContextMenuManipulateHeader.h"
+
+const QString filterRuleTableState_Identifier("FilterRuleSelectionTableState");
 
 FilterRuleSelectionWindow::FilterRuleSelectionWindow( QWidget* parent )
 : QSplitter( Qt::Vertical, parent )
 , m_compiledRules( )
 {
+    QSettings settings;
+
     m_ruleView = new RulesTableView( );
-    m_ruleView->verticalHeader()->setDefaultSectionSize( 20 );
+
+    m_ruleView->setHorizontalHeader( new SynchronizedHeaderView( NULL, Qt::Horizontal, m_ruleView ) );
     m_ruleView->horizontalHeader()->setDefaultSectionSize( 190 );
+    m_ruleView->horizontalHeader()->setMovable( true );
+    if( settings.contains( filterRuleTableState_Identifier ) )
+        m_ruleView->horizontalHeader()->restoreState( settings.value( filterRuleTableState_Identifier).toByteArray() );
+    m_ruleView->horizontalHeader()->setContextMenuPolicy( Qt::CustomContextMenu );
+    new ContextMenuManipulateHeader( m_ruleView->horizontalHeader() );
+
+    m_ruleView->verticalHeader()->setDefaultSectionSize( 20 );
     m_ruleView->verticalHeader()->setResizeMode(QHeaderView::Fixed);
     m_rulesModel = new TableModelRulesCompiled( m_ruleView );
     m_ruleView->setModel( m_rulesModel );
@@ -102,6 +117,18 @@ void FilterRuleSelectionWindow::storeRules() const
     settings.endArray();
 }
 
+void FilterRuleSelectionWindow::tieHeaderChangesTo( QTableView *other )
+{
+    SynchronizedHeaderView *header = dynamic_cast<SynchronizedHeaderView*>( m_ruleView->horizontalHeader() );
+
+    if( header )
+    {
+        SynchronizedHeaderView *headerOther = new SynchronizedHeaderView( header, Qt::Horizontal, other );
+        other->setHorizontalHeader( headerOther );
+        headerOther->synchronize();
+    }
+}
+
 void FilterRuleSelectionWindow::setWindow( TSharedCompiledRulesStateSaver state )
 {
     if( !state )
@@ -155,4 +182,7 @@ void FilterRuleSelectionWindow::removeSelectionFromCompiled( )
 FilterRuleSelectionWindow::~FilterRuleSelectionWindow()
 {
     storeRules();
+
+    QSettings settings;
+    settings.setValue( filterRuleTableState_Identifier, m_ruleView->horizontalHeader()->saveState() );
 }

@@ -2,6 +2,7 @@ SET(LFA_LOGDATA_MOC_CLASSES
 	QScrollDownTableView.h
 	SignalMultiplexer.h
 	SlotToBoostFunction.h
+	SynchronizedHeaderView.h
 	EventFilterToBoostFunction.h
 )
 
@@ -10,6 +11,7 @@ SET(LFA_LOGDATA_LIB_SOURCES
     QScrollDownTableView.cpp
     SignalMultiplexerStateApplier.cpp
     SignalMultiplexer.cpp
+    SynchronizedHeaderView.cpp
     WidgetStateSaver.cpp
 )
 
