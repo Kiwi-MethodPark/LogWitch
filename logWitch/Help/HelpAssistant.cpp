@@ -90,9 +90,21 @@ bool HelpAssistant::startAssistant()
         app += QLatin1String("Assistant.app/Contents/MacOS/Assistant");
 #endif
 
+        QString helpFilename( "help.qhc" );
+        QString helpFile( globals::helpDirectory + "/" + helpFilename );
+
+        if( !QFile::exists( helpFile ) )
+        {
+            helpFile = "Help/" + helpFilename;
+            if( !QFile::exists( helpFile ) )
+            {
+                qDebug() << "Unable to find helpfile: " << helpFilename;
+            }
+        }
+
         QStringList args;
         args << QLatin1String("-collectionFile")
-             << ( globals::helpDirectory + "/help.qhc" )
+             << helpFile
              << QLatin1String("-enableRemoteControl");
 
         qDebug() << " Starting Assistant";
