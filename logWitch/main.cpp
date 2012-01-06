@@ -15,6 +15,10 @@
 
 int main(int argc, char *argv[])
 {
+#ifndef NDEBUG
+    qDebug() << "WARNING: Running with debug compile options. Performance may be lower.";
+#endif
+
     qRegisterMetaType<TSharedLogEntry>("TSharedLogEntry");
     qRegisterMetaType<TSharedConstQString>("TSharedConstQString");
     qRegisterMetaType<TSharedNewLogEntryMessage>("TSharedNewLogEntryMessage");

@@ -233,7 +233,6 @@ bool TableModelRulesCompiled::setData( const QModelIndex &index, const QVariant&
 
 void TableModelRulesCompiled::updateFilterRuleTable()
 {
-    qDebug() << "TableModelRulesCompiled::updateFilterRuleTable()";
     if( m_ruleTable )
     {
         m_ruleTable->beginChange();

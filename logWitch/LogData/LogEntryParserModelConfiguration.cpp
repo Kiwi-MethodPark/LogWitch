@@ -164,7 +164,6 @@ void LogEntryParserModelConfiguration::restoreHintsFromSettings()
 
     if( settings.contains("Order") )
     {
-        qDebug() << "Loading Order.";
         QList<QVariant> vList = settings.value( "Order" ).value< QList<QVariant> >();
 
         m_fieldOrderHint.clear();

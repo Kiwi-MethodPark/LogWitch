@@ -233,10 +233,12 @@ bool ActionParser::parse(  const QString &expression )
         m_action = TSharedAction();
         std::string::const_iterator some = iter+30;
         std::string context(iter, (some>end)?end:some);
+#ifndef NDEBUG
         std::cout << "-------------------------\n";
         std::cout << "Parsing failed\n";
         std::cout << "stopped at: \": " << context << "...\"\n";
         std::cout << "-------------------------\n";
+#endif
         m_error = QString::fromStdString( "Parsing failed near: " + context );
     }
 
