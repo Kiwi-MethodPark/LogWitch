@@ -19,6 +19,9 @@
 class LogEntryParser;
 class LogEntryParserModelConfiguration;
 
+/**
+ * This is the central model for LogEntries.
+ */
 class LogEntryTableModel: public QAbstractTableModel
 {
 	Q_OBJECT
@@ -27,8 +30,18 @@ public:
 	LogEntryTableModel( boost::shared_ptr<LogEntryParser> parser );
 	virtual ~LogEntryTableModel();
 
+	/**
+	 * Returns a name for this model. The name will be fetched from
+	 * the parser to identify an opened file or a listening socket.
+	 * This name should be used to show it to the user.
+	 */
 	QString getModelName() const { return m_ModelName; };
 
+	/**
+	 * This starts the model. If the startup was finished, using
+	 * this method will start the parser and everything necessary
+	 * for populating the model.
+	 */
 	void startModel() ;
 
     int rowCount(const QModelIndex &parent = QModelIndex() ) const;
@@ -46,12 +59,19 @@ public:
     TSharedConstLogEntryParserModelConfiguration getParserModelConfiguration() const;
 
 public slots:
+    /**
+     * This slot inserts a new entry to the model. The position for this
+     * entry is the end of the model.
+     */
 	void insertEntry( TconstSharedNewLogEntryMessage );
 
+	/**
+	 * If this slot is invoked, all stored log entries will be dropped.
+	 */
 	void clearTable();
 
 	/**
-	 * This sets the mamimum numbers of entries to the model. If the model
+	 * This sets the maxmimum numbers of entries to the model. If the model
 	 * receives more entries it will drop older entries first.
 	 *
 	 * @param count Numbers of entries to keep at maximum. If set to 0, disables
@@ -59,13 +79,32 @@ public slots:
 	 */
 	void setMaxEntries( int count );
 
+	/**
+	 * Enables or disables capturing of new log entries.
+	 * @param active If true, the model will store incoming log entries.
+	 */
 	void capture( bool active );
 
+	/**
+	 * This slot receives errors from the parser and handles it over to
+	 * the view or something elese.
+	 */
     void signalErrorFromParser( QString error );
 
+    /**
+     * This slot exports the model to the file named with target.
+     *
+     * @param target Filename to the file the data should be written to.
+     */
     void exportToFile( const QString &target );
 
 signals:
+    /**
+     * This signal is emitted if an error from a parser was received.
+     * This signal should be used to inform the user or do something else.
+     *
+     * @param error A brief description of the occurred error.
+     */
     void signalError( QString error );
 
 private:
