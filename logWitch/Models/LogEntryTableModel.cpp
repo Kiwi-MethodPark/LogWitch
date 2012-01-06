@@ -266,6 +266,8 @@ void LogEntryTableModel::capture( bool active )
 
 void LogEntryTableModel::exportToFile( const QString &target )
 {
+    QMutexLocker lo( &m_mutex );
+
     QFile file( target );
     file.open(QIODevice::WriteOnly);
     QTextStream str( &file );
