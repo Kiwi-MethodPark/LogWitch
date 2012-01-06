@@ -8,6 +8,7 @@
 #include "TableModelRulesCompiled.h"
 
 #include <boost/bind.hpp>
+#include <QtGui>
 
 #include "ActionRules/ActionDataRewriter.h"
 #include "ActionRules/FilterRuleCompiled.h"
@@ -59,25 +60,39 @@ QVariant TableModelRulesCompiled::data(const QModelIndex &index, int role) const
 
     TSharedFilterRuleCompiled row = m_table[index.row()];
 
-    if( !row->validWithinContext() && m_configuration )
+    if( role == Qt::ToolTipRole )
     {
+        QString tooltip;
         if( !row->isExpressionOk() )
         {
-            if( role == Qt::ToolTipRole )
-            {
-                return row->getExpressionError();
-            }
-            if( role == Qt::BackgroundColorRole )
-                return Qt::red;
+            tooltip = tr("Expression has errros: ") + row->getExpressionError();
         }
-        else
+
+        if( !row->isActionOk() )
         {
-            if( role == Qt::ToolTipRole )
-            {
-                return QString("The expression is not valid within context. One or more fields are not defined within model.");
-            }
-            if( role == Qt::BackgroundColorRole )
-                return Qt::gray;
+            if( !tooltip.isEmpty() )
+                tooltip.append("\n");
+
+            tooltip += tr("Action has errors: ") + row->getActionError();
+        }
+
+        if( !row->validWithinContext() && m_configuration )
+        {
+            if( !tooltip.isEmpty() )
+                tooltip.append("\n");
+            tooltip += tr("Not valid with this parser: At least one field not found!");
+        }
+
+        return tooltip;
+    }
+
+    if( role == Qt::FontRole )
+    {
+        if( !row->validWithinContext() && m_configuration )
+        {
+            QFont font;
+            font.setStrikeOut(true);
+            return font;
         }
     }
 
@@ -95,10 +110,6 @@ QVariant TableModelRulesCompiled::data(const QModelIndex &index, int role) const
             {
                 return Qt::red;
             }
-            if( role == Qt::ToolTipRole )
-            {
-                return row->getExpressionError();
-            }
         }
     }
     else if( index.column() == 1 )
@@ -113,10 +124,6 @@ QVariant TableModelRulesCompiled::data(const QModelIndex &index, int role) const
             if( role == Qt::BackgroundColorRole )
             {
                 return Qt::red;
-            }
-            if( role == Qt::ToolTipRole )
-            {
-                return row->getActionError();
             }
         }
 
