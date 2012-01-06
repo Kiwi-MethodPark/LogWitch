@@ -7,6 +7,7 @@
 
 #include "LogEntryTableWindow.h"
 
+#include <limits>
 
 #include "ActionRules/ActionDataRewriter.h"
 #include "ActionRules/ActionParser.h"
@@ -50,7 +51,6 @@ LogEntryTableWindow::LogEntryTableWindow( boost::shared_ptr<LogEntryTableModel> 
     m_timeFormatModel->setSourceModel( m_proxyModel );
 
     m_tableView->setModel( m_timeFormatModel );
-    m_tableView->horizontalHeader()->moveSection(1, model->columnCount( QModelIndex() )-1 );
     m_tableView->horizontalHeader()->setMovable( true );
     m_tableView->verticalHeader()->setDefaultSectionSize( 20 );
     m_tableView->verticalHeader()->setResizeMode(QHeaderView::Fixed);
@@ -67,13 +67,60 @@ LogEntryTableWindow::LogEntryTableWindow( boost::shared_ptr<LogEntryTableModel> 
     m_tableView->horizontalHeader()->setContextMenuPolicy( Qt::CustomContextMenu );
     new ContextMenuManipulateHeader( m_tableView->horizontalHeader() );
 
-	// Resize the columns to fit to the models defaults.
-	int count = m_model->columnCount( QModelIndex() );
-	for( int col = 0; col < count; col ++)
-	{
-		int width = m_timeFormatModel->headerData( col, Qt::Horizontal, 512 ).value<int>();
-		m_tableView->horizontalHeader()->resizeSection( col, width );
-	}
+	// Condition the view from the model.
+    {
+        int count = m_model->columnCount( QModelIndex() );
+        for( int col = 0; col < count; col ++)
+        {
+            int width = m_timeFormatModel->headerData( col, Qt::Horizontal, 512 ).value<int>();
+            bool show = m_timeFormatModel->headerData( col, Qt::Horizontal, 513 ).toBool();
+
+            m_tableView->horizontalHeader()->resizeSection( col, width );
+            //m_tableView->horizontalHeader()->setSectionHidden( col, show );
+        }
+
+        QHeaderView *view = m_tableView->horizontalHeader();
+
+        // This moves the header sections around to fit the needs to the order.
+        int visIndex = 0;
+        std::set<int> doneColumns;
+        for( visIndex = 0; visIndex < view->count(); ++visIndex )
+        {
+            // First find the column we want to display. This is the column with the lowest number.
+            int modelColumn = -1;
+            int lowestPrio = std::numeric_limits<int>::max();
+            // Find the first element, which has the lowest priority and is not
+            // within our doneColumns set. This is then the next column to display.
+            for( int i = view->count() - 1; i >= 0; i-- )
+            {
+                if( doneColumns.end() == doneColumns.find( i ) )
+                {
+                    int prio = m_timeFormatModel->headerData( i, Qt::Horizontal, 514 ).value<int>();
+                    if( prio <= lowestPrio )
+                    {
+                        lowestPrio = prio;
+                        modelColumn = i;
+                    }
+                }
+            }
+
+            doneColumns.insert( modelColumn );
+            int visIndexToFind;
+
+            // Find the column in the current header here.
+            for( visIndexToFind = 0;
+                 visIndexToFind < view->count() && modelColumn != view->logicalIndex( visIndexToFind );
+                 ++visIndexToFind )
+                ;
+
+            if( visIndexToFind < view->count() )
+                view->moveSection( visIndexToFind, visIndex );
+        }
+
+
+
+        //m_tableView->horizontalHeader()->moveSection(1, model->columnCount( QModelIndex() )-1 );
+    }
 
 	// Create quicksearch bar
 	QWidget *quickSearchBar = new QWidget;

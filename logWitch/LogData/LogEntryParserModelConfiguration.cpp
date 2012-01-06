@@ -6,6 +6,9 @@
  */
 
 #include "LogData/LogEntryParserModelConfiguration.h"
+
+#include <limits>
+
 #include "EntryToTextFormaterDefault.h"
 
 LogEntryParserModelConfiguration::LogEntryParserModelConfiguration( const QString &configurationString )
@@ -45,7 +48,7 @@ int LogEntryParserModelConfiguration::getFieldWidthHint( int idx ) const
         return 150;
 }
 
-void LogEntryParserModelConfiguration::setFieldWidthHint( int idx, int width )
+void LogEntryParserModelConfiguration::setFieldWidthHint( int idx, int width, bool def )
 {
     while( idx >= (int)m_fieldWidthHints.size() )
         m_fieldWidthHints.push_back(-1);
@@ -61,7 +64,7 @@ bool LogEntryParserModelConfiguration::getFieldShowHint( int idx ) const
         return true;
 }
 
-void LogEntryParserModelConfiguration::setFieldShowHint( int idx, bool show )
+void LogEntryParserModelConfiguration::setFieldShowHint( int idx, bool show, bool def )
 {
     while( idx >= (int)m_fieldShowHint.size() )
         m_fieldShowHint.push_back(true);
@@ -69,12 +72,12 @@ void LogEntryParserModelConfiguration::setFieldShowHint( int idx, bool show )
     m_fieldShowHint[idx] = show;
 }
 
-const std::vector<int> &LogEntryParserModelConfiguration::getFieldOrderHint() const
+int LogEntryParserModelConfiguration::getFieldOrderHint( int idx) const
 {
-    return m_fieldOrderHint;
+    return (idx < m_fieldOrderHint.size() && idx >= 0) ? m_fieldOrderHint[idx] : std::numeric_limits<int>::max();
 }
 
-void LogEntryParserModelConfiguration::setFieldOrderHint( const std::vector<int> &in )
+void LogEntryParserModelConfiguration::setFieldOrderHint( const std::vector<int> &in, bool def )
 {
     m_fieldOrderHint = in;
 }

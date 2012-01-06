@@ -8,13 +8,23 @@
 #ifndef ENTRYTOTEXTFORMATER_H_
 #define ENTRYTOTEXTFORMATER_H_
 #include <QtCore/QtCore>
+
 #include "LogData/LogEntry.h"
 
+/**
+ * The interface is responsible for formatting the entry to a
+ * readable text.
+ */
 class EntryToTextFormater
 {
 public:
 	virtual ~EntryToTextFormater(){};
 
+	/**
+	 * Formats the entry to a human readable html-text.
+	 * @param entry Entry to format.
+	 * @return Returns a html-text to display this entry.
+	 */
 	virtual QString formatEntry( TconstSharedLogEntry entry ) const = 0;
 };
 

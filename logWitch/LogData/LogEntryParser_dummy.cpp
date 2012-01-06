@@ -6,9 +6,12 @@
  */
 
 #include "LogEntryParser_dummy.h"
+
+#include <boost/assign/list_of.hpp>
+
 #include "LogData/LogEntry.h"
+#include "LogData/LogEntryAttributeNames.h"
 #include "LogData/LogEntryFactory.h"
-#include "LogEntryAttributeNames.h"
 
 LogEntryParser_dummy::LogEntryParser_dummy()
 	: m_entries( 0 )
@@ -30,9 +33,14 @@ LogEntryParser_dummy::LogEntryParser_dummy()
 	m_myModelConfig->setLogEntryFactory( myFactory );
 	m_myModelConfig->setHierarchySplitString( 4, "\\.");
 
-    m_myModelConfig->setFieldWidthHint( 0, 60 ); // number
-    m_myModelConfig->setFieldWidthHint( 1, 180 ); // timestamp
-    m_myModelConfig->setFieldWidthHint( 2, 500 ); // message
+    for( int i = 0; i < myFactory->getNumberOfFields(); ++i )
+    {
+        const LogEntryAttributeNames::EntryConfiguration &cfg = names.getDefautlForColumn( myFactory->getDescShort( i ) );
+        m_myModelConfig->setFieldWidthHint( i, cfg.defaultCellWidth, true  );
+    }
+
+    m_myModelConfig->setFieldOrderHint(
+            boost::assign::list_of(0)(4)(1)(2)(3), true );
 }
 
 LogEntryParser_dummy::~LogEntryParser_dummy()

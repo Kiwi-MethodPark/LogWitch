@@ -9,6 +9,7 @@
 
 #include <algorithm>
 #include <boost/shared_ptr.hpp>
+#include <boost/assign/list_of.hpp>
 #include <iostream>
 
 #include <log4cplus/socketappender.h>
@@ -54,8 +55,10 @@ LogEntryParser_log4cplusSocket::LogEntryParser_log4cplusSocket( int port )
 	for( int i = 0; i < myFactory->getNumberOfFields(); ++i )
 	{
 	    const LogEntryAttributeNames::EntryConfiguration &cfg = names.getDefautlForColumn( myFactory->getDescShort( i ) );
-	    m_myModelConfig->setFieldWidthHint( i, cfg.defaultCellWidth  );
+	    m_myModelConfig->setFieldWidthHint( i, cfg.defaultCellWidth, true  );
 	}
+	m_myModelConfig->setFieldOrderHint(
+	        boost::assign::list_of(0)(7)(1)(2)(3)(4)(5)(6), true );
 
 	m_loglevelStringOff.reset(new QString("OFF"));
 	m_loglevelStringFatal.reset(new QString("FATAL"));

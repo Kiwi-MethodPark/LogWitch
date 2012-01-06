@@ -155,6 +155,14 @@ QVariant LogEntryTableModel::headerData(int section, Qt::Orientation orientation
 
     	return rVal;
     }
+    else if( role == 513 )
+    {
+        return m_modelConfiguration->getFieldShowHint( section );
+    }
+    else if( role == 514 )
+    {
+        return m_modelConfiguration->getFieldOrderHint( section );
+    }
 
     return QVariant();
 }

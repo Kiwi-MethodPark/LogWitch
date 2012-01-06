@@ -7,8 +7,9 @@
 
 #include "LogEntryParser_Logfile.h"
 
-#include <QRegExp>
+#include <boost/assign/list_of.hpp>
 #include <QtCore/QtCore>
+#include <QRegExp>
 
 #include "LogEntryFactory.h"
 #include "LogData/LogEntryFactory.h"
@@ -47,8 +48,11 @@ LogEntryParser_Logfile::LogEntryParser_Logfile( const QString &filename)
     for( int i = 0; i < myFactory->getNumberOfFields(); ++i )
     {
         m_myModelConfig->setFieldWidthHint( i,
-                names.getDefautlForColumn( myFactory->getDescShort( i ) ).defaultCellWidth );
+                names.getDefautlForColumn( myFactory->getDescShort( i ) ).defaultCellWidth, true );
     }
+
+    m_myModelConfig->setFieldOrderHint(
+            boost::assign::list_of(0)(5)(1)(2)(3)(4), true );
 }
 
 LogEntryParser_Logfile::~LogEntryParser_Logfile()
