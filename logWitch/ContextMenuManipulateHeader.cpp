@@ -33,6 +33,8 @@ void ContextMenuManipulateHeader::contextMenuRequest( const QPoint & pos )
     // Configure menu ....
     m_showMenu->clear();
 
+    SynchronizedHeaderView *syncHeader = dynamic_cast<SynchronizedHeaderView *>(m_header);
+
     for( int i = 0; i < m_header->model()->columnCount(); i++ )
     {
         if( m_header->isSectionHidden( i ) )
@@ -41,10 +43,20 @@ void ContextMenuManipulateHeader::contextMenuRequest( const QPoint & pos )
             QString name = v.toString();
             QAction *action = m_showMenu->addAction( name );
 
-            connect( action,SIGNAL(triggered()),
+            if( syncHeader )
+            {
+                connect( action,SIGNAL(triggered()),
                     // Destruction of this will be handled by the action itself.
-                    new SlotToBoostFunction(action,boost::bind(&ContextMenuManipulateHeader::showColumn,this,i)),
+                    new SlotToBoostFunction(action,boost::bind(&SynchronizedHeaderView::showSection,syncHeader,i)),
                     SLOT(handleSignal()));
+            }
+            else
+            {
+                connect( action,SIGNAL(triggered()),
+                    // Destruction of this will be handled by the action itself.
+                    new SlotToBoostFunction(action,boost::bind(&QHeaderView::showSection,m_header,i)),
+                    SLOT(handleSignal()));
+            }
         }
     }
 
@@ -69,14 +81,3 @@ void ContextMenuManipulateHeader::hideColumn()
     }
 }
 
-void ContextMenuManipulateHeader::showColumn( int i )
-{
-    qDebug() << " showing " << i << " on header " << m_header;
-
-    // This is necessary, because these methods are not virtual in QT *grr*
-    SynchronizedHeaderView *syncHeader = dynamic_cast<SynchronizedHeaderView *>(m_header);
-    if( syncHeader )
-        syncHeader->showSection( i );
-    else
-        m_header->showSection( i );
-}

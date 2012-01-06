@@ -25,8 +25,6 @@ public slots:
 
     void hideColumn();
 
-    void showColumn( int col );
-
 private:
     /// This is the logical index of the header the user has clicked on.
     int m_headerToWorkOn;
