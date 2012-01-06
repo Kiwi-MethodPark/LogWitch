@@ -52,3 +52,29 @@ void LogEntryParserModelConfiguration::setFieldWidthHint( int idx, int width )
 
     m_fieldWidthHints[idx] = width;
 }
+
+bool LogEntryParserModelConfiguration::getFieldShowHint( int idx ) const
+{
+    if( idx < (int)m_fieldShowHint.size() )
+        m_fieldShowHint[idx];
+    else
+        return true;
+}
+
+void LogEntryParserModelConfiguration::setFieldShowHint( int idx, bool show )
+{
+    while( idx >= (int)m_fieldShowHint.size() )
+        m_fieldShowHint.push_back(true);
+
+    m_fieldShowHint[idx] = show;
+}
+
+const std::vector<int> &LogEntryParserModelConfiguration::getFieldOrderHint() const
+{
+    return m_fieldOrderHint;
+}
+
+void LogEntryParserModelConfiguration::setFieldOrderHint( const std::vector<int> &in )
+{
+    m_fieldOrderHint = in;
+}

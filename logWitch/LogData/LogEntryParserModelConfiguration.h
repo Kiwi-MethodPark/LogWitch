@@ -49,8 +49,13 @@ public:
 	void setLogEntryFactory( boost::shared_ptr<LogEntryFactory> factory) { m_attr = factory;}
 
 	int getFieldWidthHint( int idx ) const;
-
 	void setFieldWidthHint( int idx, int width );
+
+	bool getFieldShowHint( int idx ) const;
+	void setFieldShowHint( int idx, bool show );
+
+	const std::vector<int> &getFieldOrderHint() const;
+	void setFieldOrderHint( const std::vector<int> & );
 
 private:
 	QVector<QString> m_hierarchySplitstrings;
@@ -60,6 +65,10 @@ private:
 	boost::shared_ptr<LogEntryFactory> m_attr;
 
 	std::vector<int> m_fieldWidthHints;
+
+	std::vector<bool> m_fieldShowHint;
+
+	std::vector<int> m_fieldOrderHint;
 
 	const QString m_configurationString;
 };
