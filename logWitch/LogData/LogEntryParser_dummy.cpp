@@ -40,7 +40,7 @@ LogEntryParser_dummy::LogEntryParser_dummy()
     }
 
     m_myModelConfig->setFieldOrderHint(
-            boost::assign::list_of(0)(4)(1)(2)(3), true );
+            QVector<int>::fromStdVector( boost::assign::list_of(0)(4)(1)(2)(3) ), true );
 }
 
 LogEntryParser_dummy::~LogEntryParser_dummy()

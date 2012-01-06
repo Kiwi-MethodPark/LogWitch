@@ -58,7 +58,7 @@ LogEntryParser_log4cplusSocket::LogEntryParser_log4cplusSocket( int port )
 	    m_myModelConfig->setFieldWidthHint( i, cfg.defaultCellWidth, true  );
 	}
 	m_myModelConfig->setFieldOrderHint(
-	        boost::assign::list_of(0)(7)(1)(2)(3)(4)(5)(6), true );
+	        QVector<int>::fromStdVector( boost::assign::list_of(0)(7)(1)(2)(3)(4)(5)(6) ), true );
 
 	m_loglevelStringOff.reset(new QString("OFF"));
 	m_loglevelStringFatal.reset(new QString("FATAL"));

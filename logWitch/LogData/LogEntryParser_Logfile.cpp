@@ -52,7 +52,7 @@ LogEntryParser_Logfile::LogEntryParser_Logfile( const QString &filename)
     }
 
     m_myModelConfig->setFieldOrderHint(
-            boost::assign::list_of(0)(5)(1)(2)(3)(4), true );
+            QVector<int>::fromStdVector( boost::assign::list_of(0)(5)(1)(2)(3)(4) ), true );
 }
 
 LogEntryParser_Logfile::~LogEntryParser_Logfile()

@@ -8,14 +8,21 @@
 #include "LogData/LogEntryParserModelConfiguration.h"
 
 #include <limits>
+#include <algorithm>
+#include <boost/bind.hpp>
+
+#include <QtCore>
 
 #include "EntryToTextFormaterDefault.h"
 
 LogEntryParserModelConfiguration::LogEntryParserModelConfiguration( const QString &configurationString )
     : m_formater( new EntryToTextFormaterDefault )
     , m_configurationString( configurationString )
+    , m_fieldWidthHintsLoaded( false )
+    , m_fieldShowHintLoaded( false )
+    , m_fieldOrderHintLoaded(false )
 {
-
+    restoreHintsFromSettings();
 }
 
 LogEntryParserModelConfiguration::~LogEntryParserModelConfiguration()
@@ -37,6 +44,8 @@ void LogEntryParserModelConfiguration::setHierarchySplitString( int idx, const Q
         m_hierarchySplitstrings.resize(idx+1);
 
     m_hierarchySplitstrings[idx] = fmt;
+
+    saveHintsToSettings();
 }
 
 
@@ -50,26 +59,36 @@ int LogEntryParserModelConfiguration::getFieldWidthHint( int idx ) const
 
 void LogEntryParserModelConfiguration::setFieldWidthHint( int idx, int width, bool def )
 {
+    if( m_fieldWidthHintsLoaded && def )
+        return;
+
     while( idx >= (int)m_fieldWidthHints.size() )
         m_fieldWidthHints.push_back(-1);
 
     m_fieldWidthHints[idx] = width;
+
+    saveHintsToSettings();
 }
 
 bool LogEntryParserModelConfiguration::getFieldShowHint( int idx ) const
 {
     if( idx < (int)m_fieldShowHint.size() )
-        m_fieldShowHint[idx];
+        return m_fieldShowHint[idx];
     else
         return true;
 }
 
 void LogEntryParserModelConfiguration::setFieldShowHint( int idx, bool show, bool def )
 {
+    if( m_fieldShowHintLoaded && def )
+        return;
+
     while( idx >= (int)m_fieldShowHint.size() )
         m_fieldShowHint.push_back(true);
 
     m_fieldShowHint[idx] = show;
+
+    saveHintsToSettings();
 }
 
 int LogEntryParserModelConfiguration::getFieldOrderHint( int idx) const
@@ -77,7 +96,111 @@ int LogEntryParserModelConfiguration::getFieldOrderHint( int idx) const
     return (idx < m_fieldOrderHint.size() && idx >= 0) ? m_fieldOrderHint[idx] : std::numeric_limits<int>::max();
 }
 
-void LogEntryParserModelConfiguration::setFieldOrderHint( const std::vector<int> &in, bool def )
+void LogEntryParserModelConfiguration::setFieldOrderHint( const QVector<int> &in, bool def )
 {
+    if( m_fieldOrderHintLoaded && def )
+        return;
+
     m_fieldOrderHint = in;
+
+    saveHintsToSettings();
+}
+
+void LogEntryParserModelConfiguration::setFieldOrderHint( int idx, int value, bool def )
+{
+    if( m_fieldOrderHintLoaded && def )
+        return;
+
+    while( idx >= (int)m_fieldOrderHint.size() )
+        m_fieldOrderHint.push_back(true);
+
+    qDebug() << " set field order hint: idx " << idx << " value " << value;
+    m_fieldOrderHint[idx] = value;
+
+    saveHintsToSettings();
+}
+
+namespace
+{
+    template<class T>
+    void convertToAndPushBack( QVector<T> *l, QVariant &v )
+    {
+        T val = v.value<T>();
+        l->push_back( val );
+    }
+}
+
+void LogEntryParserModelConfiguration::restoreHintsFromSettings()
+{
+    QSettings settings;
+
+    settings.beginGroup( "ModelConfigurations");
+    settings.beginGroup( m_configurationString );
+
+    if( settings.contains("Widths") )
+    {
+        QList<QVariant> vList = settings.value( "Widths" ).value< QList<QVariant> >();
+
+        m_fieldWidthHints.clear();
+        std::for_each( vList.begin(), vList.end(),
+                boost::bind( &convertToAndPushBack<int>, &m_fieldWidthHints, _1 ) );
+
+        m_fieldWidthHintsLoaded = true;
+    }
+
+    if( settings.contains("Show") )
+    {
+        QList<QVariant> vList = settings.value( "Show" ).value< QList<QVariant> >();
+
+        m_fieldShowHint.clear();
+        std::for_each( vList.begin(), vList.end(),
+                boost::bind( &convertToAndPushBack<bool>, &m_fieldShowHint, _1 ) );
+
+        m_fieldShowHintLoaded = true;
+    }
+
+    if( settings.contains("Order") )
+    {
+        qDebug() << "Loading Order.";
+        QList<QVariant> vList = settings.value( "Order" ).value< QList<QVariant> >();
+
+        m_fieldOrderHint.clear();
+        std::for_each( vList.begin(), vList.end(),
+                boost::bind( &convertToAndPushBack<int>, &m_fieldOrderHint, _1 ) );
+
+        m_fieldOrderHintLoaded = true;
+    }
+
+    settings.endGroup();
+    settings.endGroup();
+}
+
+void LogEntryParserModelConfiguration::saveHintsToSettings() const
+{
+    QSettings settings;
+
+    settings.beginGroup( "ModelConfigurations");
+    settings.beginGroup( m_configurationString );
+
+    QList<QVariant> vList;
+
+    std::for_each( m_fieldWidthHints.begin(), m_fieldWidthHints.end(),
+            boost::bind( &QList<QVariant>::push_back, &vList, _1 ) );
+
+    settings.setValue( "Widths", vList );
+
+    vList.clear();
+    std::for_each( m_fieldShowHint.begin(), m_fieldShowHint.end(),
+            boost::bind( &QList<QVariant>::push_back, &vList, _1 ) );
+
+    settings.setValue( "Show", vList );
+
+    vList.clear();
+    std::for_each( m_fieldOrderHint.begin(), m_fieldOrderHint.end(),
+            boost::bind( &QList<QVariant>::push_back, &vList, _1 ) );
+
+    settings.setValue( "Order", vList );
+
+    settings.endGroup();
+    settings.endGroup();
 }

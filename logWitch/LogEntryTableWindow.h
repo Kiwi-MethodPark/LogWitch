@@ -76,6 +76,14 @@ public slots:
      */
     void contextMenu( const QPoint & );
 
+private slots:
+    /**
+     * This function is used to update the size of the header to the model.
+     */
+    void updateHeaderSizeToModel( int section, int, int newSize );
+
+    void updateHeaderPositionToModel( int section, int, int  );
+
 private:
     enum SearchModes { Regex, Text, Expression};
 

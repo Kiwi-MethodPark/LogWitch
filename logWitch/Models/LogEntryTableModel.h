@@ -52,6 +52,8 @@ public:
 
     QVariant headerData(int section, Qt::Orientation orientation, int role) const;
 
+    bool setHeaderData ( int section, Qt::Orientation orientation, const QVariant & value, int role );
+
     TconstSharedLogEntry getEntryByRow( const int &row ) const;
 
     TconstSharedLogEntry getEntryByIndex( const QModelIndex &index ) const;
@@ -112,7 +114,7 @@ private:
 
     TLogEntryTable m_table;
 
-    TSharedConstLogEntryParserModelConfiguration m_modelConfiguration;
+    TSharedLogEntryParserModelConfiguration m_modelConfiguration;
 
     boost::shared_ptr<LogEntryParser> m_entryLoader;
 

@@ -33,6 +33,27 @@
 #include "ContextMenuManipulateHeader.h"
 #include "FilterListView.h"
 
+void LogEntryTableWindow::updateHeaderSizeToModel( int column, int, int newSize )
+{
+    if( newSize == 0 )
+    {
+        // This happens if hide is called.
+        m_model->setHeaderData( column, Qt::Horizontal, false, 513 );
+    }
+    else
+    {
+        m_model->setHeaderData( column, Qt::Horizontal, true, 513 );
+        m_model->setHeaderData( column, Qt::Horizontal, newSize, 512 );
+    }
+}
+
+void LogEntryTableWindow::updateHeaderPositionToModel( int, int, int  )
+{
+    QHeaderView *view = m_tableView->horizontalHeader();
+    for( int col = 0; col < view->count(); col++ )
+        m_model->setHeaderData( view->logicalIndex(col), Qt::Horizontal, col, 514 );
+}
+
 LogEntryTableWindow::LogEntryTableWindow( boost::shared_ptr<LogEntryTableModel> model, QWidget *parent )
 	:QMdiSubWindow(parent)
 	, m_model( model )
@@ -51,7 +72,6 @@ LogEntryTableWindow::LogEntryTableWindow( boost::shared_ptr<LogEntryTableModel> 
     m_timeFormatModel->setSourceModel( m_proxyModel );
 
     m_tableView->setModel( m_timeFormatModel );
-    m_tableView->horizontalHeader()->setMovable( true );
     m_tableView->verticalHeader()->setDefaultSectionSize( 20 );
     m_tableView->verticalHeader()->setResizeMode(QHeaderView::Fixed);
     m_tableView->verticalHeader()->hide();
@@ -64,6 +84,7 @@ LogEntryTableWindow::LogEntryTableWindow( boost::shared_ptr<LogEntryTableModel> 
                      this, SLOT(contextMenu(const QPoint & )));
 
     // Context menu for the HorizontalHeaderView
+    m_tableView->horizontalHeader()->setMovable( true );
     m_tableView->horizontalHeader()->setContextMenuPolicy( Qt::CustomContextMenu );
     new ContextMenuManipulateHeader( m_tableView->horizontalHeader() );
 
@@ -73,10 +94,10 @@ LogEntryTableWindow::LogEntryTableWindow( boost::shared_ptr<LogEntryTableModel> 
         for( int col = 0; col < count; col ++)
         {
             int width = m_timeFormatModel->headerData( col, Qt::Horizontal, 512 ).value<int>();
-            bool show = m_timeFormatModel->headerData( col, Qt::Horizontal, 513 ).toBool();
+            bool show = m_timeFormatModel->headerData( col, Qt::Horizontal, 513 ).value<bool>();
 
             m_tableView->horizontalHeader()->resizeSection( col, width );
-            //m_tableView->horizontalHeader()->setSectionHidden( col, show );
+            m_tableView->horizontalHeader()->setSectionHidden( col, !show );
         }
 
         QHeaderView *view = m_tableView->horizontalHeader();
@@ -116,11 +137,12 @@ LogEntryTableWindow::LogEntryTableWindow( boost::shared_ptr<LogEntryTableModel> 
             if( visIndexToFind < view->count() )
                 view->moveSection( visIndexToFind, visIndex );
         }
-
-
-
-        //m_tableView->horizontalHeader()->moveSection(1, model->columnCount( QModelIndex() )-1 );
     }
+    // Connect resize signals of the horizontal header to the model update.
+    QObject::connect( m_tableView->horizontalHeader(),SIGNAL(sectionResized(int , int , int )),
+            this, SLOT(updateHeaderSizeToModel(int,int,int)));
+    QObject::connect( m_tableView->horizontalHeader(),SIGNAL(sectionMoved(int , int , int )),
+            this, SLOT(updateHeaderPositionToModel(int,int,int)));
 
 	// Create quicksearch bar
 	QWidget *quickSearchBar = new QWidget;

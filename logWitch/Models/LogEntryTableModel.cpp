@@ -156,7 +156,8 @@ QVariant LogEntryTableModel::headerData(int section, Qt::Orientation orientation
     }
     else if( role == 513 )
     {
-        return m_modelConfiguration->getFieldShowHint( section );
+        bool rVal = m_modelConfiguration->getFieldShowHint( section );
+        return rVal;
     }
     else if( role == 514 )
     {
@@ -164,6 +165,35 @@ QVariant LogEntryTableModel::headerData(int section, Qt::Orientation orientation
     }
 
     return QVariant();
+}
+
+bool LogEntryTableModel::setHeaderData ( int section, Qt::Orientation orientation, const QVariant & value, int role )
+{
+    if (section >= (m_modelConfiguration->getLogEntryFactory()->getNumberOfFields( ) )
+        || section < 0
+        || orientation != Qt::Horizontal )
+        return false;
+
+    if( role == 512 )
+    {
+        m_modelConfiguration->setFieldWidthHint( section, value.value<int>(), false );
+
+        // We do not need to emit this, because we change only the default values for the model.
+        // emit headerDataChanged( orientation, section, section );
+        return true;
+    }
+    else if( role == 513 )
+    {
+        m_modelConfiguration->setFieldShowHint( section, value.toBool(), false );
+        return true;
+    }
+    else if( role == 514 )
+    {
+        m_modelConfiguration->setFieldOrderHint( section, value.toInt(), false );
+        return true;
+    }
+
+    return false;
 }
 
 void LogEntryTableModel::clearTable()

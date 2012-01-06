@@ -104,7 +104,16 @@ public:
      * If def is set to true, this value is marked as a default
      * value. Default values can be overwritten by the saved settings.
      */
-	void setFieldOrderHint( const std::vector<int> &, bool def );
+	void setFieldOrderHint( const QVector<int> &, bool def );
+
+    void setFieldOrderHint( int idx, int value, bool def );
+
+    /**
+     * This saves the hints to the setting storage.
+     */
+    void saveHintsToSettings() const;
+
+    void restoreHintsFromSettings();
 
 private:
 	QVector<QString> m_hierarchySplitstrings;
@@ -113,11 +122,14 @@ private:
 
 	boost::shared_ptr<LogEntryFactory> m_attr;
 
-	std::vector<int> m_fieldWidthHints;
+	QVector<int> m_fieldWidthHints;
+	bool m_fieldWidthHintsLoaded;
 
-	std::vector<bool> m_fieldShowHint;
+	QVector<bool> m_fieldShowHint;
+	bool m_fieldShowHintLoaded;
 
-	std::vector<int> m_fieldOrderHint;
+	QVector<int> m_fieldOrderHint;
+	bool m_fieldOrderHintLoaded;
 
 	const QString m_configurationString;
 };
