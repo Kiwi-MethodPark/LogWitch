@@ -39,16 +39,16 @@ void LogEntryParserModelConfiguration::setHierarchySplitString( int idx, const Q
 
 int LogEntryParserModelConfiguration::getFieldWidthHint( int idx ) const
 {
-    if( idx < (int)m_filedWidthHints.size() )
-        return m_filedWidthHints[idx] < 0 ? 150 : m_filedWidthHints[idx];
+    if( idx < (int)m_fieldWidthHints.size() )
+        return m_fieldWidthHints[idx] < 0 ? 150 : m_fieldWidthHints[idx];
     else
         return 150;
 }
 
 void LogEntryParserModelConfiguration::setFieldWidthHint( int idx, int width )
 {
-    while( idx >= (int)m_filedWidthHints.size() )
-        m_filedWidthHints.push_back(-1);
+    while( idx >= (int)m_fieldWidthHints.size() )
+        m_fieldWidthHints.push_back(-1);
 
-    m_filedWidthHints[idx] = width;
+    m_fieldWidthHints[idx] = width;
 }

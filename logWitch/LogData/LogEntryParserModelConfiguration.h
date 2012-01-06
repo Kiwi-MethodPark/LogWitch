@@ -59,7 +59,7 @@ private:
 
 	boost::shared_ptr<LogEntryFactory> m_attr;
 
-	std::vector<int> m_filedWidthHints;
+	std::vector<int> m_fieldWidthHints;
 
 	const QString m_configurationString;
 };

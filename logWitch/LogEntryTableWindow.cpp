@@ -41,7 +41,7 @@ LogEntryTableWindow::LogEntryTableWindow( boost::shared_ptr<LogEntryTableModel> 
     , m_tableView( new QScrollDownTableView(  ) )
     , m_searchMode( Text )
 {
-    // Paramtrize the filtering model, connect it to the table view.
+    // Parametrize the filtering model, connect it to the table view.
     m_proxyModel = new LogEntryTableFilter(m_tableView);
     m_proxyModel->setSourceModel(m_model.get());
 
