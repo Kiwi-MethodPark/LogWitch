@@ -22,7 +22,6 @@
 LogEntryTableModel::LogEntryTableModel( boost::shared_ptr<LogEntryParser> parser )
 	: m_table( )
 	, m_modelConfiguration( parser->getParserModelConfiguration() )
-	, m_dateTimeConversionString("dd.MM.yyyy hh:mm:ss.zzz")
 	, m_entryLoader( parser )
 	, m_ModelName("Untitled")
     , m_mutex( QMutex::Recursive )

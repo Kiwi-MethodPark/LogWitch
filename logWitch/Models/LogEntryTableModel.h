@@ -114,8 +114,6 @@ private:
 
     TSharedConstLogEntryParserModelConfiguration m_modelConfiguration;
 
-    QString m_dateTimeConversionString;
-
     boost::shared_ptr<LogEntryParser> m_entryLoader;
 
     QString m_ModelName;
