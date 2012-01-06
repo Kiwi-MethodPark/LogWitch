@@ -15,60 +15,64 @@
 #include <QtCore/QtCore>
 
 LogEntry::LogEntry( LogEntryFactory *factory, const std::vector< QVariant > &defAttributes )
-	: m_attributes( defAttributes )
-    , m_attributesStringCache( defAttributes.size() )
+	: m_attributes( new QVariant[defAttributes.size()] )
 	, myFactory( factory )
 {
-    updateStringRepresentation();
+    Q_ASSERT( defAttributes.size() == myFactory->getNumberOfFields() );
+
+    for( int i = 0; i < defAttributes.size(); ++i )
+        m_attributes[i] = defAttributes[i];
 }
 
 LogEntry::~LogEntry()
 {
+    delete [] m_attributes;
 }
 
 void LogEntry::setAttribute( const QVariant &value, int idx )
 {
+    Q_ASSERT( idx >= 0 && idx < myFactory->getNumberOfFields() );
+
     if( value.canConvert<TSharedConstQString>() )
     {
         TSharedConstQString str = value.value<TSharedConstQString>();
+        if( str->length() < str->capacity() )
+        {
+            qDebug() << " Capacity too high, squeezing! Consider optimizing your parser! capacity: " << str->capacity() << " length: " << str->length();
+            TSharedQString sNew( new QString( *str ) );
+            sNew->squeeze();
+            str = sNew;
+        }
         str = myFactory->getCache(idx).getObject( str );
         m_attributes[idx] = QVariant::fromValue( str );
-        m_attributesStringCache[idx] = str;
     }
     else if( value.type() == QVariant::String )
     {
         TSharedQString strIn( new QString( value.toString() ) );
+        strIn->squeeze();
         TSharedConstQString str =  myFactory->getCache(idx).getObject( strIn );
         m_attributes[idx] = QVariant::fromValue( str );
-        m_attributesStringCache[idx] = str;
     }
     else
     {
-        TSharedQString str( new QString );
-        (*str) = value.toString();
-
         m_attributes[idx] = value;
-        m_attributesStringCache[idx] = str;
-    }
-}
-
-void LogEntry::updateStringRepresentation()
-{
-    for( unsigned int idx = 0; idx < m_attributes.size(); ++idx  )
-    {
-        QVariant value = m_attributes[idx];
-        setAttribute( value, idx );
     }
 }
 
 const QVariant &LogEntry::getAttribute( int idx ) const
 {
+    Q_ASSERT( idx >= 0 && idx < myFactory->getNumberOfFields() );
     return m_attributes[idx];
 }
 
-
 boost::shared_ptr<const QString> LogEntry::getAttributeAsString( int idx ) const
 {
-	return m_attributesStringCache[idx];
+    Q_ASSERT( idx >= 0 && idx < myFactory->getNumberOfFields() );
+
+    const QVariant &value = m_attributes[idx];
+    if( value.canConvert<TSharedConstQString>() )
+        return value.value<TSharedConstQString>();
+    else
+        return boost::shared_ptr<const QString>( new QString( value.toString() ) );
 }
 

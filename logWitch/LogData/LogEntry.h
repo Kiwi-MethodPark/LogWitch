@@ -44,15 +44,12 @@ public:
 	 */
 	TSharedConstQString getAttributeAsString( int idx ) const;
 
-	/**
-	 * This updates the representation of AsString from the internal values.
-	 */
-	void updateStringRepresentation();
-
 private:
-	std::vector< QVariant > m_attributes;
-
-	std::vector< TSharedConstQString > m_attributesStringCache;
+	/**
+	 *  These are our attributes. We use a raw pointer here, to save memory if
+	 *  we have many objects of this class. Gives ~3%.
+	 */
+	QVariant *m_attributes;
 
 	LogEntryFactory *myFactory;
 };
