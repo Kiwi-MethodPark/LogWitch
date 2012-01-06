@@ -56,6 +56,11 @@ public:
 	const QString& getDescShort( int idx ) const;
 
 	/**
+	 * Returns a string containing the complete descriptions with - as separator.
+	 */
+	QString getDescShortAsLongSring() const;
+
+	/**
 	 * Returns the corresponding string cache.
 	 */
 	GetObjectIF<ObjectCacheQStringSignaller>& getCache( int idx );

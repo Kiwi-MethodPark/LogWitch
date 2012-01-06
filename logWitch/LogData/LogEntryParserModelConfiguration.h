@@ -30,7 +30,7 @@ public:
      *
      * @param configurationString This string is an identifier to save and load default settings.
      */
-	LogEntryParserModelConfiguration( const QString &configurationString );
+	LogEntryParserModelConfiguration( const QString &configurationString, boost::shared_ptr<LogEntryFactory> factory );
 	virtual ~LogEntryParserModelConfiguration();
 
 	/**
@@ -54,8 +54,6 @@ public:
 	 * This factory also hold the names for the columns referenced here.
 	 */
 	boost::shared_ptr<const LogEntryFactory> getLogEntryFactory() const { return m_attr;}
-
-	void setLogEntryFactory( boost::shared_ptr<LogEntryFactory> factory) { m_attr = factory;}
 
 	/**
 	 * Returns the suggested width of the column.

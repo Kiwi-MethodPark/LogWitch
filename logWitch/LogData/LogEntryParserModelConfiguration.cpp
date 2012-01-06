@@ -14,9 +14,11 @@
 #include <QtCore>
 
 #include "EntryToTextFormaterDefault.h"
+#include "LogData/LogEntryFactory.h"
 
-LogEntryParserModelConfiguration::LogEntryParserModelConfiguration( const QString &configurationString )
+LogEntryParserModelConfiguration::LogEntryParserModelConfiguration( const QString &configurationString, boost::shared_ptr<LogEntryFactory> factory )
     : m_formater( new EntryToTextFormaterDefault )
+    , m_attr( factory )
     , m_configurationString( configurationString )
     , m_fieldWidthHintsLoaded( false )
     , m_fieldShowHintLoaded( false )
@@ -136,6 +138,7 @@ void LogEntryParserModelConfiguration::restoreHintsFromSettings()
 
     settings.beginGroup( "ModelConfigurations");
     settings.beginGroup( m_configurationString );
+    settings.beginGroup( m_attr->getDescShortAsLongSring() );
 
     if( settings.contains("Widths") )
     {
@@ -173,6 +176,7 @@ void LogEntryParserModelConfiguration::restoreHintsFromSettings()
 
     settings.endGroup();
     settings.endGroup();
+    settings.endGroup();
 }
 
 void LogEntryParserModelConfiguration::saveHintsToSettings() const
@@ -181,6 +185,7 @@ void LogEntryParserModelConfiguration::saveHintsToSettings() const
 
     settings.beginGroup( "ModelConfigurations");
     settings.beginGroup( m_configurationString );
+    settings.beginGroup( m_attr->getDescShortAsLongSring() );
 
     QList<QVariant> vList;
 
@@ -201,6 +206,7 @@ void LogEntryParserModelConfiguration::saveHintsToSettings() const
 
     settings.setValue( "Order", vList );
 
+    settings.endGroup();
     settings.endGroup();
     settings.endGroup();
 }

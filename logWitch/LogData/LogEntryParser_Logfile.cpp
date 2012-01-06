@@ -41,8 +41,7 @@ LogEntryParser_Logfile::LogEntryParser_Logfile( const QString &filename)
 	myFactory->addField(names.attDescFileSource, true);
 	myFactory->disallowAddingFields();
 
-	m_myModelConfig = boost::shared_ptr<LogEntryParserModelConfiguration>( new LogEntryParserModelConfiguration("Logfile") );
-	m_myModelConfig->setLogEntryFactory( myFactory );
+	m_myModelConfig = boost::shared_ptr<LogEntryParserModelConfiguration>( new LogEntryParserModelConfiguration("Logfile",myFactory) );
 	m_myModelConfig->setHierarchySplitString( 4, "\\.");
 
     for( int i = 0; i < myFactory->getNumberOfFields(); ++i )

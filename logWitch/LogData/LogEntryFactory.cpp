@@ -7,8 +7,7 @@
 
 #include "LogEntryFactory.h"
 
-#include <QString>
-#include <QtCore/QVariant>
+#include <QtCore>
 
 #include "Assert.h"
 #include "LogData/ObjectCache.hxx"
@@ -72,6 +71,20 @@ const QString& LogEntryFactory::getDescShort( int idx ) const
 {
 	LFA_ASSERT_D( m_disallowAddingFields, "Getting descriptions of fields only allowed if all fields are added!" );
 	return fieldDescriptions[idx].first;
+}
+
+QString LogEntryFactory::getDescShortAsLongSring() const
+{
+    QStringList stringList;
+
+    std::vector<std::pair<QString,QString> >::const_iterator it;
+
+    for( it = fieldDescriptions.begin(); it != fieldDescriptions.end(); ++it )
+    {
+        stringList << it->first;
+    }
+
+    return stringList.join("-");
 }
 
 

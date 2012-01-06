@@ -29,8 +29,7 @@ LogEntryParser_dummy::LogEntryParser_dummy()
 	myFactory->addField(names.attDescLogger,true);
 	myFactory->disallowAddingFields();
 
-	m_myModelConfig = boost::shared_ptr<LogEntryParserModelConfiguration>( new LogEntryParserModelConfiguration("DummyLogger") );
-	m_myModelConfig->setLogEntryFactory( myFactory );
+	m_myModelConfig = boost::shared_ptr<LogEntryParserModelConfiguration>( new LogEntryParserModelConfiguration("DummyLogger",myFactory) );
 	m_myModelConfig->setHierarchySplitString( 4, "\\.");
 
     for( int i = 0; i < myFactory->getNumberOfFields(); ++i )
