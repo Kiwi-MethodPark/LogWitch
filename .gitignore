@@ -2,7 +2,9 @@ build
 CMakeFiles
 Makefile*
 makefile*
+cmake_install.cmake
+CPackConfig.cmake
+CPackSourceConfig.cmake
 *.settings
-*.cmake
 *.a
 CMakeCache.txt
