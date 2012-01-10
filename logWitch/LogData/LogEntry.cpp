@@ -33,20 +33,7 @@ void LogEntry::setAttribute( const QVariant &value, int idx )
 {
     Q_ASSERT( idx >= 0 && idx < myFactory->getNumberOfFields() );
 
-    if( value.canConvert<TSharedConstQString>() )
-    {
-        TSharedConstQString str = value.value<TSharedConstQString>();
-        if( str->length() < str->capacity() )
-        {
-            qDebug() << " Capacity too high, squeezing! Consider optimizing your parser! capacity: " << str->capacity() << " length: " << str->length();
-            TSharedQString sNew( new QString( *str ) );
-            sNew->squeeze();
-            str = sNew;
-        }
-        str = myFactory->getCache(idx).getObject( str );
-        m_attributes[idx] = QVariant::fromValue( str );
-    }
-    else if( value.type() == QVariant::String )
+    if( value.type() == QVariant::String )
     {
         TSharedQString strIn( new QString( value.toString() ) );
         strIn->squeeze();

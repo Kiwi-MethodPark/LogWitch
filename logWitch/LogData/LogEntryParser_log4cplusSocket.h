@@ -61,12 +61,12 @@ private:
 
 	boost::shared_ptr<LogEntryParserModelConfiguration> m_myModelConfig;
 
-	boost::shared_ptr<QString> m_loglevelStringOff;
-	boost::shared_ptr<QString> m_loglevelStringFatal;
-	boost::shared_ptr<QString> m_loglevelStringError;
-	boost::shared_ptr<QString> m_loglevelStringWarn;
-	boost::shared_ptr<QString> m_loglevelStringDebug;
-	boost::shared_ptr<QString> m_loglevelStringTrace;
+	QString m_loglevelStringOff;
+	QString m_loglevelStringFatal;
+	QString m_loglevelStringError;
+	QString m_loglevelStringWarn;
+	QString m_loglevelStringDebug;
+	QString m_loglevelStringTrace;
 
 	QString m_name;
 

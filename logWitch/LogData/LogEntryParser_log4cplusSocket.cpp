@@ -29,6 +29,12 @@
 LogEntryParser_log4cplusSocket::LogEntryParser_log4cplusSocket( int port )
     :m_port(port)
     ,myFactory( new LogEntryFactory )
+    ,m_loglevelStringOff("OFF")
+    ,m_loglevelStringFatal("FATAL")
+    ,m_loglevelStringError("ERROR")
+    ,m_loglevelStringWarn("WARN")
+    ,m_loglevelStringDebug("DEBUG")
+    ,m_loglevelStringTrace("TRACE")
     ,m_name( "Log4cplus Listener Port " + QString::number(port))
     ,m_logEntryNumber( 0 )
     ,m_messageInProgress( false )
@@ -58,13 +64,6 @@ LogEntryParser_log4cplusSocket::LogEntryParser_log4cplusSocket( int port )
 	}
 	m_myModelConfig->setFieldOrderHint(
 	        QVector<int>::fromStdVector( boost::assign::list_of(0)(7)(1)(2)(3)(4)(5)(6) ), true );
-
-	m_loglevelStringOff.reset(new QString("OFF"));
-	m_loglevelStringFatal.reset(new QString("FATAL"));
-	m_loglevelStringError.reset(new QString("ERROR"));
-	m_loglevelStringWarn.reset(new QString("WARN"));
-	m_loglevelStringDebug.reset(new QString("DEBUG"));
-	m_loglevelStringTrace.reset(new QString("TRACE"));
 
 	connect( this, SIGNAL(newConnection()), this, SLOT(newIncomingConnection()));
 }
@@ -256,7 +255,7 @@ TSharedLogEntry LogEntryParser_log4cplusSocket_Receiver::bufferToEntry()
 
 	TSharedLogEntry entry = m_server->myFactory->getNewLogEntry( );
 
-	boost::shared_ptr<QString> logLevel = m_server->m_loglevelStringOff;
+	QString logLevel = m_server->m_loglevelStringOff;
 	if( event.getLogLevel() >= log4cplus::OFF_LOG_LEVEL )
 		logLevel = m_server->m_loglevelStringOff;
 	else if( event.getLogLevel() >= log4cplus::FATAL_LOG_LEVEL )
@@ -274,9 +273,7 @@ TSharedLogEntry LogEntryParser_log4cplusSocket_Receiver::bufferToEntry()
 	entry->setAttribute( QVariant( QString( event.getMessage().c_str() ) ), 2 );
 	entry->setAttribute( QVariant( logLevel ), 3 );
 	entry->setAttribute( QVariant( QString( event.getLoggerName().c_str() ) ), 4 );
-	TSharedQString source = TSharedQString( new QString( event.getFile().c_str() ) );
-	(*source) = (*source) + ":" + QString::number( event.getLine() );
-	entry->setAttribute( QVariant( source ), 5 );
+	entry->setAttribute( QVariant( QString( event.getFile().c_str() ) + ":" + QString::number( event.getLine() ) ), 5 );
 	entry->setAttribute( QVariant( QString( event.getThread().c_str() ) ), 6 );
 	entry->setAttribute( QVariant( QString( event.getNDC().c_str() ) ), 7 );
 	return entry;
