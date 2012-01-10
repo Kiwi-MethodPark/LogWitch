@@ -6,6 +6,7 @@
 #  LOG4CPLUS_LIBRARIES - link these to use log4cplus
 
 find_package(PkgConfig)
+include(FindPackageHandleStandardArgs)
 
 # Use pkg-config to get hints about paths
 #libfind_pkg_check_modules(LOG4CPLUS_PKGCONF LOG4CPLUS)
