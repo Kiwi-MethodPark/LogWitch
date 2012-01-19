@@ -8,6 +8,7 @@
 #include "EntryToTextFormaterDefault.h"
 
 #include <QTextStream>
+#include <QTextDocument>
 
 #include "LogData/LogEntry.h"
 #include "LogData/LogEntryFactory.h"
@@ -29,7 +30,7 @@ QString EntryToTextFormaterDefault::formatEntry( TconstSharedLogEntry entry ) co
     if( entry->getFactory().getNumberOfFields() > messageId)
         tmp = *entry->getAttributeAsString(messageId);
 
-	str << "<b>Message:</b><p> <pre> " << tmp.replace("\n","<br/>") << "</pre></p>";
+	str << "<b>Message:</b><p> <pre> " << Qt::escape( tmp ).replace("\n","<br/>") << "</pre></p>";
 
 	return out;
 }
