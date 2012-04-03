@@ -7,19 +7,27 @@
 
 #ifndef LOGENTRYATTRIBUTENAMES_H_
 #define LOGENTRYATTRIBUTENAMES_H_
+
+#include <boost/function.hpp>
 #include <QtCore/QtCore>
 
 class LogEntryAttributeNames
 {
     Q_DECLARE_TR_FUNCTIONS(LogEntryAttributeNames)
 public:
+    typedef std::pair<QString,QString> TQStringPair;
+    typedef boost::function<QVariant(const QString&)> EntryFactoryFunction;
+
     class EntryConfiguration
     {
     public:
-        EntryConfiguration( bool caching, int defaultCellWidth );
+        EntryConfiguration( bool caching, int defaultCellWidth, TQStringPair names, EntryFactoryFunction factory );
 
         bool caching;
         int defaultCellWidth;
+        TQStringPair names;
+
+        EntryFactoryFunction factory;
     };
 
     LogEntryAttributeNames();
@@ -28,8 +36,6 @@ public:
      * Returns the default configuration for the colum named with name.
      */
     const EntryConfiguration &getDefautlForColumn( const QString &name ) const;
-
-    typedef std::pair<QString,QString> TQStringPair;
 
     const TQStringPair attDescNumber;
     const TQStringPair attDescTimestamp;
