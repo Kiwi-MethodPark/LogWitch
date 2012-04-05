@@ -1,0 +1,14 @@
+find_package(Boost COMPONENTS unit_test_framework REQUIRED)
+
+SET(UNITTESTS_SOURCES
+	TestExample.cpp	
+)
+
+ADD_EXECUTABLE( UnitTests ${UNITTESTS_SOURCES} )
+
+TARGET_LINK_LIBRARIES(UnitTests 
+  ${Boost_UNIT_TEST_FRAMEWORK_LIBRARY}
+)
+
+ADD_TEST(NAME UnitTests COMMAND ${CMAKE_CURRENT_BINARY_DIR}/UnitTests)
+

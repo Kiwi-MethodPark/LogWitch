@@ -21,6 +21,12 @@ SET(HELPDIR "share/${MAIN_DIR_NAME}")
 
 ADD_SUBDIRECTORY(logWitch)
 
+### Testing stuff
+ENABLE_TESTING()
+
+ADD_SUBDIRECTORY(test)
+
+
 ######################## CPack informations if CPack is available.
 IF(EXISTS "${CMAKE_ROOT}/Modules/CPack.cmake")
   	SET(CPACK_PACKAGE_DESCRIPTION_SUMMARY "LogWitch is an analyzer for log files.")
