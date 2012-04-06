@@ -11,48 +11,49 @@
 #include <boost/function.hpp>
 #include <QtCore/QtCore>
 
-class LogEntryAttributeNames
+class AttributeConfiguration
 {
-    Q_DECLARE_TR_FUNCTIONS(LogEntryAttributeNames)
 public:
     typedef std::pair<QString,QString> TQStringPair;
     typedef boost::function<QVariant(const QString&)> EntryFactoryFunction;
 
-    class EntryConfiguration
-    {
-    public:
-        EntryConfiguration( bool caching, int defaultCellWidth, TQStringPair names, EntryFactoryFunction factory );
+    AttributeConfiguration( bool caching, int defaultCellWidth, TQStringPair names, EntryFactoryFunction factory );
 
-        bool caching;
-        int defaultCellWidth;
-        TQStringPair names;
+    bool caching;
+    int defaultCellWidth;
+    TQStringPair names;
 
-        EntryFactoryFunction factory;
-    };
+    EntryFactoryFunction attributeFactory;
+};
+
+class LogEntryAttributeNames
+{
+    Q_DECLARE_TR_FUNCTIONS(LogEntryAttributeNames)
+public:
+
 
     LogEntryAttributeNames();
 
     /**
-     * Returns the default configuration for the colum named with name.
+     * Returns the default configuration for the column named with columnName.
      */
-    const EntryConfiguration &getDefautlForColumn( const QString &name ) const;
-
-    const TQStringPair attDescNumber;
-    const TQStringPair attDescTimestamp;
-    const TQStringPair attDescMessage;
-    const TQStringPair attDescLoglevel;
-    const TQStringPair attDescNDC;
-    const TQStringPair attDescThread;
-    const TQStringPair attDescLogger;
-    const TQStringPair attDescFileSource;
+    const AttributeConfiguration &getConfiguration( const QString &columnName ) const;
 
 private:
+    const AttributeConfiguration::TQStringPair attDescNumber;
+    const AttributeConfiguration::TQStringPair attDescTimestamp;
+    const AttributeConfiguration::TQStringPair attDescMessage;
+    const AttributeConfiguration::TQStringPair attDescLoglevel;
+    const AttributeConfiguration::TQStringPair attDescNDC;
+    const AttributeConfiguration::TQStringPair attDescThread;
+    const AttributeConfiguration::TQStringPair attDescLogger;
+    const AttributeConfiguration::TQStringPair attDescFileSource;
 
-    typedef std::map<QString, EntryConfiguration> StringIntMap;
+    typedef std::map<QString, AttributeConfiguration> StringIntMap;
 
     StringIntMap m_defaultCellIfos;
 
-    EntryConfiguration m_defaultCellIfo;
+    AttributeConfiguration m_defaultCellIfo;
 
 
 };

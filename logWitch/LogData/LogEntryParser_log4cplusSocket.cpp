@@ -42,15 +42,14 @@ LogEntryParser_log4cplusSocket::LogEntryParser_log4cplusSocket( int port )
 {
 	// Preparing attributes in factory
     LogEntryAttributeNames names;
-	myFactory->addField(names.attDescNumber,false);
-	myFactory->addField(names.attDescTimestamp,false);
-	myFactory->addField(names.attDescMessage,false);
-
-	myFactory->addField(names.attDescLoglevel,true);
-	myFactory->addField(names.attDescLogger,true);
-	myFactory->addField(names.attDescFileSource,true);
-	myFactory->addField(names.attDescThread,true);
-	myFactory->addField(names.attDescNDC,true);
+	myFactory->addField(names.getConfiguration("number"));
+	myFactory->addField(names.getConfiguration("timestamp"));
+	myFactory->addField(names.getConfiguration("message"));
+	myFactory->addField(names.getConfiguration("level"));
+	myFactory->addField(names.getConfiguration("logger"));
+	myFactory->addField(names.getConfiguration("fsource"));
+	myFactory->addField(names.getConfiguration("thread"));
+	myFactory->addField(names.getConfiguration("ndc"));
 	myFactory->disallowAddingFields();
 
 	m_myModelConfig = boost::shared_ptr<LogEntryParserModelConfiguration>( new LogEntryParserModelConfiguration("log4cplus",myFactory) );
@@ -59,7 +58,7 @@ LogEntryParser_log4cplusSocket::LogEntryParser_log4cplusSocket( int port )
 
 	for( int i = 0; i < myFactory->getNumberOfFields(); ++i )
 	{
-	    const LogEntryAttributeNames::EntryConfiguration &cfg = names.getDefautlForColumn( myFactory->getDescShort( i ) );
+	    const AttributeConfiguration &cfg = myFactory->getFieldConfiguration( i );
 	    m_myModelConfig->setFieldWidthHint( i, cfg.defaultCellWidth, true  );
 	}
 	m_myModelConfig->setFieldOrderHint(

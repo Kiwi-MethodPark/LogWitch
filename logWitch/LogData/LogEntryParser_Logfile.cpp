@@ -32,13 +32,13 @@ LogEntryParser_Logfile::LogEntryParser_Logfile( const QString &filename)
 
 	// Preparing attributes in factory
     LogEntryAttributeNames names;
-    myFactory->addField(names.attDescNumber,false);
-    myFactory->addField(names.attDescTimestamp,false);
-    myFactory->addField(names.attDescMessage,false);
+    myFactory->addField(names.getConfiguration("number"));
+    myFactory->addField(names.getConfiguration("timestamp"));
+    myFactory->addField(names.getConfiguration("message"));
 
-	myFactory->addField(names.attDescLoglevel, true);
-	myFactory->addField(names.attDescLogger, true);
-	myFactory->addField(names.attDescFileSource, true);
+	myFactory->addField(names.getConfiguration("level"));
+	myFactory->addField(names.getConfiguration("logger"));
+	myFactory->addField(names.getConfiguration("fsource"));
 	myFactory->disallowAddingFields();
 
 	m_myModelConfig = boost::shared_ptr<LogEntryParserModelConfiguration>( new LogEntryParserModelConfiguration("Logfile",myFactory) );
@@ -47,7 +47,7 @@ LogEntryParser_Logfile::LogEntryParser_Logfile( const QString &filename)
     for( int i = 0; i < myFactory->getNumberOfFields(); ++i )
     {
         m_myModelConfig->setFieldWidthHint( i,
-                names.getDefautlForColumn( myFactory->getDescShort( i ) ).defaultCellWidth, true );
+                myFactory->getFieldConfiguration( i ).defaultCellWidth, true );
     }
 
     m_myModelConfig->setFieldOrderHint(

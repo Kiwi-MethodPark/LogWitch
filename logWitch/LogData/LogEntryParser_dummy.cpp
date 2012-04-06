@@ -21,12 +21,12 @@ LogEntryParser_dummy::LogEntryParser_dummy()
 {
 	// Preparing attributes factory
     LogEntryAttributeNames names;
-    myFactory->addField(names.attDescNumber,false);
-    myFactory->addField(names.attDescTimestamp,false);
-    myFactory->addField(names.attDescMessage,false);
+    myFactory->addField(names.getConfiguration("number"));
+    myFactory->addField(names.getConfiguration("timestamp"));
+    myFactory->addField(names.getConfiguration("message"));
 
-	myFactory->addField(names.attDescLoglevel,true);
-	myFactory->addField(names.attDescLogger,true);
+	myFactory->addField(names.getConfiguration("level"));
+	myFactory->addField(names.getConfiguration("logger"));
 	myFactory->disallowAddingFields();
 
 	m_myModelConfig = boost::shared_ptr<LogEntryParserModelConfiguration>( new LogEntryParserModelConfiguration("DummyLogger",myFactory) );
@@ -34,7 +34,7 @@ LogEntryParser_dummy::LogEntryParser_dummy()
 
     for( int i = 0; i < myFactory->getNumberOfFields(); ++i )
     {
-        const LogEntryAttributeNames::EntryConfiguration &cfg = names.getDefautlForColumn( myFactory->getDescShort( i ) );
+        const AttributeConfiguration &cfg = myFactory->getFieldConfiguration( i );
         m_myModelConfig->setFieldWidthHint( i, cfg.defaultCellWidth, true  );
     }
 

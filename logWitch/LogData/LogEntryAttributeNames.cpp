@@ -53,27 +53,27 @@ LogEntryAttributeNames::LogEntryAttributeNames()
 ,attDescThread("thread",tr("Thread"))
 ,attDescLogger("logger",tr("Logger"))
 ,attDescFileSource("fsource",tr("File Source"))
-,m_defaultCellIfo( false, 150, TQStringPair("unknown", tr("Unknown") ), QStringToVariant() )
+,m_defaultCellIfo( false, 150, AttributeConfiguration::TQStringPair("unknown", tr("Unknown") ), QStringToVariant() )
 {
-    m_defaultCellIfos.insert( StringIntMap::value_type( attDescNumber.first       , EntryConfiguration( false, 60 , attDescNumber
+    m_defaultCellIfos.insert( StringIntMap::value_type( attDescNumber.first       , AttributeConfiguration( false, 60 , attDescNumber
             , QStringToNumber() ) ) );
-    m_defaultCellIfos.insert( StringIntMap::value_type( attDescTimestamp.first    , EntryConfiguration( false, 180, attDescTimestamp
+    m_defaultCellIfos.insert( StringIntMap::value_type( attDescTimestamp.first    , AttributeConfiguration( false, 180, attDescTimestamp
             , QStringToDateTime("yyyy-MM-dd HH:mm:ss,zzz") ) ) );
-    m_defaultCellIfos.insert( StringIntMap::value_type( attDescMessage.first      , EntryConfiguration( false, 500, attDescMessage
+    m_defaultCellIfos.insert( StringIntMap::value_type( attDescMessage.first      , AttributeConfiguration( false, 500, attDescMessage
             , QStringToVariant() ) ) );
-    m_defaultCellIfos.insert( StringIntMap::value_type( attDescLoglevel.first     , EntryConfiguration( true,  70 , attDescLoglevel
+    m_defaultCellIfos.insert( StringIntMap::value_type( attDescLoglevel.first     , AttributeConfiguration( true,  70 , attDescLoglevel
             , QStringToVariant() ) ) );
-    m_defaultCellIfos.insert( StringIntMap::value_type( attDescNDC.first          , EntryConfiguration( true,  100, attDescNDC
+    m_defaultCellIfos.insert( StringIntMap::value_type( attDescNDC.first          , AttributeConfiguration( true,  100, attDescNDC
             , QStringToVariant() ) ) );
-    m_defaultCellIfos.insert( StringIntMap::value_type( attDescThread.first       , EntryConfiguration( true,  70 , attDescThread
+    m_defaultCellIfos.insert( StringIntMap::value_type( attDescThread.first       , AttributeConfiguration( true,  70 , attDescThread
             , QStringToVariant() ) ) );
-    m_defaultCellIfos.insert( StringIntMap::value_type( attDescLogger.first       , EntryConfiguration( true,  250, attDescLogger
+    m_defaultCellIfos.insert( StringIntMap::value_type( attDescLogger.first       , AttributeConfiguration( true,  250, attDescLogger
             , QStringToVariant() ) ) );
-    m_defaultCellIfos.insert( StringIntMap::value_type( attDescFileSource.first   , EntryConfiguration( true,  150, attDescFileSource
+    m_defaultCellIfos.insert( StringIntMap::value_type( attDescFileSource.first   , AttributeConfiguration( true,  150, attDescFileSource
             , QStringToVariant() ) ) );
 }
 
-const LogEntryAttributeNames::EntryConfiguration &LogEntryAttributeNames::getDefautlForColumn( const QString &name ) const
+const AttributeConfiguration &LogEntryAttributeNames::getConfiguration( const QString &name ) const
 {
     StringIntMap::const_iterator it = m_defaultCellIfos.find( name );
     if( it != m_defaultCellIfos.end() )
@@ -82,10 +82,10 @@ const LogEntryAttributeNames::EntryConfiguration &LogEntryAttributeNames::getDef
         return m_defaultCellIfo;
 }
 
-LogEntryAttributeNames::EntryConfiguration::EntryConfiguration( bool caching, int defaultCellWidth, TQStringPair namesIn,  EntryFactoryFunction factory )
+AttributeConfiguration::AttributeConfiguration( bool caching, int defaultCellWidth, TQStringPair namesIn,  EntryFactoryFunction factory )
 : caching( caching )
 , defaultCellWidth( defaultCellWidth )
 , names( namesIn )
-, factory( factory )
+, attributeFactory( factory )
 {
 }

@@ -11,6 +11,7 @@
 #include <vector>
 #include <boost/shared_ptr.hpp>
 #include "Types.h"
+#include "LogData/LogEntryAttributeNames.h"
 
 
 class QString;
@@ -34,11 +35,14 @@ public:
 	boost::shared_ptr<LogEntry> getNewLogEntry();
 
 	/**
-	 * Adds a field with a given description to the attributes list.
+	 * Adds a field at the end of the fields and sets the new cfg for this field.
 	 */
-	void addField( const QString &descShort, const QString &descLong, bool cacheField );
+	void addField( const AttributeConfiguration cfg );
 
-	void addField( const std::pair<QString,QString> &desc, bool cacheField );
+	/**
+	 * Retrieve the complete configuration for the field.
+	 */
+	const AttributeConfiguration &getFieldConfiguration( int idx ) const;
 
 	/**
 	 * Returns the total numbers of fields.
@@ -74,9 +78,9 @@ public:
 	void disallowAddingFields();
 
 private:
-	std::vector<std::pair<QString,QString> > fieldDescriptions;
+	std::vector< AttributeConfiguration > m_fieldDescriptions;
 
-	std::vector< boost::shared_ptr<GetObjectIF<ObjectCacheQStringSignaller> > > fieldCaches;
+	std::vector< boost::shared_ptr<GetObjectIF<ObjectCacheQStringSignaller> > > m_fieldCaches;
 
 	std::vector< QVariant > m_defaultLine;
 
