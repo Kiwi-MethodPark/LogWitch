@@ -130,6 +130,18 @@ StringCacheTreeItem::CheckState &StringCacheTreeItem::getCheckState( StringCache
      return state;
  }
 
+Qt::CheckState StringCacheTreeItem::getChecked() const
+{
+    CheckState c = getCheckState();
+
+    if( c.partial )
+        return Qt::PartiallyChecked;
+    else if( c.checked )
+        return Qt::Checked;
+    else
+        return Qt::Unchecked;
+}
+
 void StringCacheTreeItem::nextChecked()
 {
     CheckState state = getCheckState();

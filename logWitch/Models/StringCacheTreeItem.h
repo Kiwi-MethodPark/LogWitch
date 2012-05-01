@@ -13,24 +13,28 @@
 #include "Types.h"
 #include <QtCore/QtCore>
 
+/**
+ * This class is an element within a tree which represents a path like scheme
+ * based on a string representation. For this, the class has two members, the
+ * original one (this is the complete path and a shared_ptr to the string) and
+ * the subpart representing the actual level only.
+ *
+ * Additionally the class supports setting different states, which can be used to
+ * determine the "checked state" for the item based on the complete hierarchy.
+ *
+ */
 class StringCacheTreeItem {
 public:
+    /**
+     * Enum which defines some check states. This will be used to
+     * define the state for this element.
+     */
 	enum Check
 	{
 	    Inherit, // Inherit from parent or checked if top
 		Checked,
 		Unchecked
 	};
-
-//	enum CheckState
-//	{
-//	    ForcedChecked,
-//	    ForcedUnchecked,
-//	    Checked,
-//	    Unchecked,
-//	    PartialCheckedChilds_SelfChecked,
-//	    PartialCheckedChilds_SelfUnchecked
-//	};
 
 	class CheckState
 	{
@@ -43,16 +47,44 @@ public:
 	};
 
 public:
+	/**
+	 * Constructs new object with the parameters.
+	 * @param originalString This is the string with the complete hierarchy as got from logger.
+	 * @param str This is the part to display inside this level.
+	 * @param parent The parent node, if there is one.
+	 */
 	StringCacheTreeItem( TSharedConstQString originalString, TSharedConstQString str, StringCacheTreeItem *parent = NULL );
+
 	virtual ~StringCacheTreeItem();
 
+    /**
+     * Appends a child to the tree and adds it to the end of the list
+     * of all childs.
+     */
     void appendChild(StringCacheTreeItem *child);
 
-    StringCacheTreeItem *child(int row);
+    /**
+     * Returns the child of this element at index n.
+     * @param n Index to return.
+     * @preCondition 0 <= n < childCount()
+     */
+    StringCacheTreeItem *child(int n);
+
+    /**
+     * The numbers of childs owned by this node.
+     */
     int childCount() const;
 
 
+    /**
+     * Returns my position inside the parents nodes list.
+     * If there is no parent node, returns 0.
+     */
     int row() const;
+
+    /**
+     * Returns the parent node.
+     */
     StringCacheTreeItem *parent();
 
     /**
@@ -67,17 +99,10 @@ public:
 
     void setOriginalString( TSharedConstQString str);
 
-    Qt::CheckState getChecked() const
-    {
-        CheckState c = getCheckState();
-
-    	if( c.partial )
-    		return Qt::PartiallyChecked;
-    	else if( c.checked )
-    		return Qt::Checked;
-    	else
-    		return Qt::Unchecked;
-    }
+    /**
+     * Returns the checked state for this node to display for Qt.
+     */
+    Qt::CheckState getChecked() const;
 
     Check getCheckedSelf( ) { return m_checkedSelf; }
     void setCheckedSelf( Check c ) { m_checkedSelf = c; }
@@ -85,22 +110,50 @@ public:
 
     CheckState getCheckState( ) const;
 
-    CheckState &getCheckState( CheckState &state, const StringCacheTreeItem *item ) const;
+    /**
+     * Toggles the state of this element and sets the next
+     * state (works on checkedSelf state).
+     */
     void nextChecked();
 
+    /**
+     * Sets the self state to this element and the child to
+     * all child elements.
+     * @param self State for this element
+     * @param child State to set on all childs
+     */
     void recursiveSetTree( Check self, Check child );
-    void recursiveSetTree( Check self );
 
+    /**
+     * Sets value as state for this element and all child elements.
+     * @param value State for this and all child elements.
+     */
+    void recursiveSetTree( Check value );
+
+    /**
+     * Returns the root element of the tree (or this object if there
+     * is no further root element).
+     * @return Root element of this tree.
+     */
     StringCacheTreeItem *getRootElement();
 
     void checkOnlyThisElement( bool includeTreepath = true, Check child = Checked, Check self=Checked);
+private:
+    CheckState &getCheckState( CheckState &state, const StringCacheTreeItem *item ) const;
 
 private:
     typedef std::vector< StringCacheTreeItem *> TItemVector;
     TItemVector m_childItems;
     StringCacheTreeItem *m_parentItem;
 
+    /**
+     * This represents the check state for this item only.
+     */
     Check m_checkedSelf;
+
+    /**
+     * This represents the check state for all child item only.
+     */
     Check m_checkedChilds;
 
     TSharedConstQString m_string;
