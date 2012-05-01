@@ -19,6 +19,19 @@ SET(MAIN_DIR_NAME "LogWitch")
 
 SET(HELPDIR "share/${MAIN_DIR_NAME}")
 
+### Search dependencies
+FIND_PACKAGE(Qt4 4.7 REQUIRED)
+FIND_PACKAGE(log4cplus REQUIRED)
+
+SET(LFA_RULES_LIB "logfileanalyzer_rules_lib")
+SET(LFA_GUITOOLS_LIB "logfileanalyzer_guitools_lib")
+SET(LFA_HELP_LIB "logfileanalyzer_help_lib")
+SET(LFA_LOGDATA_LIB "logfileanalyzer_logdata_lib")
+SET(LFA_MODELS_LIB "logfileanalyzer_models_lib")
+
+INCLUDE(${QT_USE_FILE})
+ADD_DEFINITIONS(${QT_DEFINITIONS})
+
 ADD_SUBDIRECTORY(logWitch)
 
 ### Testing stuff

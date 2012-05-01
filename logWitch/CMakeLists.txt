@@ -1,6 +1,3 @@
-FIND_PACKAGE(Qt4 4.7 REQUIRED)
-FIND_PACKAGE(log4cplus REQUIRED)
-
 CONFIGURE_FILE(${CMAKE_CURRENT_SOURCE_DIR}/GenerateIfo.h.in ${CMAKE_CURRENT_BINARY_DIR}/BuildIfos.h @ONLY)
 
 
@@ -34,12 +31,6 @@ INCLUDE_DIRECTORIES(
   ${QT_INCLUDES}
   ${CMAKE_CURRENT_BINARY_DIR}  # Neede for moc files in out of source builds.
 )
-
-SET(LFA_RULES_LIB "logfileanalyzer_rules_lib")
-SET(LFA_GUITOOLS_LIB "logfileanalyzer_guitools_lib")
-SET(LFA_HELP_LIB "logfileanalyzer_help_lib")
-SET(LFA_LOGDATA_LIB "logfileanalyzer_logdata_lib")
-SET(LFA_MODELS_LIB "logfileanalyzer_models_lib")
 
 #Add source dirs
 ADD_SUBDIRECTORY(ActionRules)
