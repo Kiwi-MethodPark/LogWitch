@@ -111,53 +111,35 @@ bool StringCacheTreeModel::setData( const QModelIndex &index, const QVariant& va
 
         dataChangedToChildren(index);
 
-        m_myFilter->startChange();
-        updateFilters(item);
-        m_myFilter->endChange();
+        updateFilters();
         return true;
 	}
 
 	return false;
 }
 
-void StringCacheTreeModel::updateFilters( StringCacheTreeItem *item, bool forceSelect /*= false*/, bool forceDeselect /*= false*/ )
+void StringCacheTreeModel::updateFilters()
 {
-	// Write this to Filter ..
-	if( forceDeselect )
-	{
-		if( item->getOriginalString() != m_undefinedString )
-			m_myFilter->addEntry( item->getOriginalString() );
-	}
-	else if( forceSelect )
-	{
-		if( item->getOriginalString() != m_undefinedString )
-			m_myFilter->removeEntry( item->getOriginalString() );
-	}
-	else
-	{
-		if( item->getOriginalString() != m_undefinedString )
-		{
-			if( !item->getCheckState().checked )
-				m_myFilter->addEntry( item->getOriginalString() );
-			else
-				m_myFilter->removeEntry( item->getOriginalString() );
-		}
-
-        StringCacheTreeItem::CheckState c = item->getCheckState();
-
-		if( c.forced && !c.checked )
-			forceDeselect = true;
-		else if( c.forced && c.checked )
-			forceSelect = true;
-	}
-
-	int childCount = item->childCount();
-	for( int i = 0; i < childCount; i++ )
-	{
-		updateFilters( item->child(i), forceSelect, forceDeselect  );
-	}
+    m_myFilter->startChange();
+    updateFilters( m_rootNode.get() );
+    m_myFilter->endChange();
 }
 
+void StringCacheTreeModel::updateFilters( StringCacheTreeItem *node )
+{
+    // Step 1: Update current node
+    if( node->getOriginalString() != m_undefinedString )
+    {
+        if( node->getCheckState().checked )
+            m_myFilter->removeEntry( node->getOriginalString() );
+        else
+            m_myFilter->addEntry( node->getOriginalString() );
+    }
+
+    // Step 2: Traverse all child nodes
+    for( int i = 0; i < node->childCount(); ++i )
+        updateFilters( node->child( i ) );
+}
 
 
 void StringCacheTreeModel::dataChangedToChildren(const QModelIndex &index)
@@ -298,6 +280,6 @@ void StringCacheTreeModel::newStringElement( TSharedConstQString string )
 		endInsertRows();
 	}
 
-	updateFilters(m_rootNode.get());
+	updateFilters();
 }
 

@@ -47,7 +47,15 @@ public:
 private:
     void dataChangedToChildren(const QModelIndex &index );
 
-    void updateFilters( StringCacheTreeItem *item, bool forceSelect = false, bool forceDeselect = false );
+    /**
+     * Updates filters starting from the rootNode.
+     */
+    void updateFilters();
+
+    /**
+     * Updates node and all childs.
+     */
+    void updateFilters( StringCacheTreeItem *node );
 
 public slots:
 	void newStringElement( TSharedConstQString );
