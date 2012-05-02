@@ -7,6 +7,12 @@ SET (VERSION_BUILD "3")
 SET (VERSION ${VERSION_MAJOR}.${VERSION_MINOR}.${VERSION_BUILD})
 MESSAGE(STATUS "LogWitch ${VERSION} built with prefix: ${CMAKE_INSTALL_PREFIX}")
 
+# Set default value for the build type to release, if nothing else was specified
+IF(NOT CMAKE_BUILD_TYPE)
+	MESSAGE(STATUS "No build type selected, default to Release.\n"
+                       "Use cmake -DCMAKE_BUILD_TYPE=debug to build a debug build")
+	SET(CMAKE_BUILD_TYPE "Release")
+endif()
 
 CMAKE_MINIMUM_REQUIRED(VERSION 2.6.0 FATAL_ERROR)
 
