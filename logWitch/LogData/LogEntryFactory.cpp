@@ -9,7 +9,7 @@
 
 #include <QtCore>
 
-#include "Assert.h"
+#include "LFAAssert.h"
 #include "LogData/ObjectCache.hxx"
 #include "LogData/LogEntry.h"
 

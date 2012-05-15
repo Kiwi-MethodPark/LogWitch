@@ -3,6 +3,7 @@ FIND_PACKAGE(Boost COMPONENTS unit_test_framework REQUIRED)
 INCLUDE_DIRECTORIES(
   ${CMAKE_CURRENT_SOURCE_DIR}
   ${QT_INCLUDES}
+  ${BOOST_INCLUDEDIR}  
   ${CMAKE_CURRENT_BINARY_DIR}  # Needed for moc files in out of source builds.
   "../logWitch"
 )

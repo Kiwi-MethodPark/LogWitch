@@ -50,12 +50,12 @@ bool LogEntryFilterChain::filterEntry( TconstSharedLogEntry entry ) const
 	return true;
 }
 
-void LogEntryFilterChain::LogEntryFilterChain::startChange()
+void LogEntryFilterChain::startChange()
 {
 	m_changeCounter++;
 }
 
-void LogEntryFilterChain::LogEntryFilterChain::endChange()
+void LogEntryFilterChain::endChange()
 {
 	m_changeCounter--;
 	if( m_parent == NULL && 0 == m_changeCounter )
