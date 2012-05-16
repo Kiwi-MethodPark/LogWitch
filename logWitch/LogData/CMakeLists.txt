@@ -2,6 +2,7 @@ SET(LFA_GUITOOLS_MOC_CLASSES
 	LogEntryParser_dummy.h
 	LogEntryParser_log4cplusSocket.h
     LogEntryParser_Logfile.h
+    LogEntryParser_LogfileLWI.h
     NewLogEntryMessage.h
     ObjectCache.hxx
 )
@@ -13,6 +14,7 @@ SET(LFA_GUITOOLS_LIB_SOURCES
     LogEntryParser_dummy.cpp
     LogEntryParser_log4cplusSocket.cpp
     LogEntryParser_Logfile.cpp
+    LogEntryParser_LogfileLWI.cpp
     LogEntryParserModelConfiguration.cpp
     NewLogEntryMessage.cpp
 )
