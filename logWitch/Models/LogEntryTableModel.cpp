@@ -18,6 +18,7 @@
 #include "LogData/LogEntryFactory.h"
 #include "LogData/LogEntryParser.h"
 #include "LogData/LogEntryParserModelConfiguration.h"
+#include "LogData/LogEntryAttributeNames.h"
 
 LogEntryTableModel::LogEntryTableModel( boost::shared_ptr<LogEntryParser> parser )
 	: m_table( )
@@ -264,6 +265,28 @@ void LogEntryTableModel::capture( bool active )
     m_captureActive = active;
 }
 
+namespace
+{
+    const QString timestampFormat("yyyy-MM-dd hh:mm:ss.zzz");
+
+    struct ExportFormater
+    {
+        QString operator()(const QVariant &value)
+        {
+            QString formatedString;
+
+            switch( value.type() )
+            {
+            case QVariant::DateTime:
+                return value.value<QDateTime>().toString(timestampFormat);
+            }
+
+            return value.toString();
+        }
+    };
+
+}
+
 void LogEntryTableModel::exportToFile( const QString &target )
 {
     QMutexLocker lo( &m_mutex );
@@ -274,13 +297,27 @@ void LogEntryTableModel::exportToFile( const QString &target )
 
     // Determine sort order, we will put the message to the end.
     const int fields = m_modelConfiguration->getLogEntryFactory()->getNumberOfFields();
+
+    // Try to find message field, we will put this to the end of the file!
+    LogEntryAttributeNames names;
+    int messageID = m_modelConfiguration->getLogEntryFactory()->getNumberOfFields() - 1;
+    for( int i = 0; i < m_modelConfiguration->getLogEntryFactory()->getNumberOfFields(); ++i )
+    {
+        if( m_modelConfiguration->getLogEntryFactory()->getDescShort(i) == "message" )
+        {
+            messageID = i;
+            break;
+        }
+    }
+
+
     std::vector<int> order;
     for ( int i = 0; i < fields; i++ )
     {
-        if( i != 2 )
+        if( i != messageID )
             order.push_back( i );
     }
-    order.push_back( 2 );
+    order.push_back( messageID );
 
     QString desc;
 
@@ -290,9 +327,18 @@ void LogEntryTableModel::exportToFile( const QString &target )
             desc.append(" - ");
 
         desc.append( m_modelConfiguration->getLogEntryFactory()->getDescShort( order[i] ) );
+        desc += "(" + QString::number(order[i]) +")";
+
+        QString imExExtension( m_modelConfiguration->getLogEntryFactory()->getFieldConfiguration(i).attributeFactory->getImportExportDescription() );
+        if( imExExtension.length() > 0 )
+        {
+            desc.append( ':' );
+            desc.append( imExExtension );
+        }
     }
 
     str << "%%LWI_DESC="<< desc << "\n";
+    str << "%%LWI_CFGContext="<< m_modelConfiguration->getConfigurationString() << "\n";
 
     TLogEntryTable::iterator it;
     QRegExp regexLineEnd("(\r\n|\r|\n)");
@@ -304,7 +350,8 @@ void LogEntryTableModel::exportToFile( const QString &target )
             if( line.length() )
                 line.append(" - ");
 
-            QString entry( *(*it)->getAttributeAsString(order[i]) );
+            QString entry( *(*it)->getAttributeAsString(order[i]
+                         , ExportToQStringAdapter( m_modelConfiguration->getLogEntryFactory()->getFieldConfiguration(i).attributeFactory ) ) );
             entry.replace(regexLineEnd,"\n " );
 
             line.append( entry );

@@ -17,7 +17,7 @@
  */
 class LogEntryParser_LogfileLWI
 : public QThread
-, public LogFileParser
+//, public LogFileParser
 , public LogEntryParser
 {
     Q_OBJECT
@@ -60,6 +60,8 @@ private:
     boost::shared_ptr<LogEntryParserModelConfiguration> m_myModelConfig;
 
     int m_logEntryNumber;
+
+    std::vector<int> m_order;
 };
 
 #endif /* LogEntryParser_LogfileLWI_H_ */

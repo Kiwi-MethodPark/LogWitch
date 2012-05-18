@@ -6,11 +6,31 @@
  */
 
 #include "LogData/LogEntryAttributeNames.h"
+#include <boost/make_shared.hpp>
+
+ImportExportDescription::~ImportExportDescription()
+{  }
+
+
+const QString ImportExportDescription::getImportExportDescription()
+{
+    return "";
+}
+
+void ImportExportDescription::setImportExportDescription( const QString&  )
+{
+}
+
+QString ImportExportDescription::operator()(const QVariant &str )
+{
+    return str.toString();
+}
 
 namespace
 {
-    struct QStringToNumber
+    class QStringToNumber: public ImportExportDescription
     {
+    public:
         QVariant operator()(const QString &str )
         {
             bool ok = false;
@@ -20,26 +40,72 @@ namespace
             else
                 return QVariant( value );
         }
+
+        boost::shared_ptr<ImportExportDescription> clone() const
+        {
+            return boost::make_shared<QStringToNumber>( *this );
+        }
     };
 
-    struct QStringToDateTime
+    class QStringToDateTime: public ImportExportDescription
     {
-        QStringToDateTime( const QString &fmt ): timeFormat( fmt ) {}
+    public:
+        QStringToDateTime( const QString &fmt ): m_timeFormat( fmt ) {}
 
         QVariant operator()(const QString &str )
         {
-            QDateTime timestamp = QDateTime::fromString( str, timeFormat );
+            QDateTime timestamp = QDateTime::fromString( str, m_timeFormat );
             return timestamp;
         }
 
-        QString timeFormat;
+        QString operator()(const QVariant &str )
+        {
+            if( str.type() == QVariant::DateTime )
+            {
+                QDateTime date = str.value<QDateTime>();
+                return date.toString(m_timeFormat);
+            }
+            else
+            {
+                return str.toString();
+            }
+        }
+
+        const QString getImportExportDescription()
+        {
+            return QString("DATETIME('"+m_timeFormat+"')");
+        }
+
+        void setImportExportDescription( const QString& str )
+        {
+            QRegExp rx("^DATETIME\\('(.*)'\\)");
+            if (rx.indexIn(str) != -1)
+                 m_timeFormat = rx.cap(1);
+            else
+            {
+                qDebug() << "Format string unparsable: " << str;
+            }
+        }
+
+        boost::shared_ptr<ImportExportDescription> clone() const
+        {
+            return boost::make_shared<QStringToDateTime>( *this );
+        }
+    private:
+        QString m_timeFormat;
     };
 
-    struct QStringToVariant
+    class QStringToVariant: public ImportExportDescription
     {
+    public:
         QVariant operator()(const QString &str )
         {
             return str;
+        }
+
+        boost::shared_ptr<ImportExportDescription> clone() const
+        {
+            return boost::make_shared<QStringToVariant>( *this );
         }
     };
 }
@@ -53,24 +119,24 @@ LogEntryAttributeNames::LogEntryAttributeNames()
 ,attDescThread("thread",tr("Thread"))
 ,attDescLogger("logger",tr("Logger"))
 ,attDescFileSource("fsource",tr("File Source"))
-,m_defaultCellIfo( false, 150, AttributeConfiguration::TQStringPair("unknown", tr("Unknown") ), QStringToVariant() )
+,m_defaultCellIfo( false, 150, AttributeConfiguration::TQStringPair("unknown", tr("Unknown") ), boost::make_shared<QStringToVariant>() )
 {
     m_defaultCellIfos.insert( StringIntMap::value_type( attDescNumber.first       , AttributeConfiguration( false, 60 , attDescNumber
-            , QStringToNumber() ) ) );
+            , boost::make_shared<QStringToNumber>() ) ) );
     m_defaultCellIfos.insert( StringIntMap::value_type( attDescTimestamp.first    , AttributeConfiguration( false, 180, attDescTimestamp
-            , QStringToDateTime("yyyy-MM-dd HH:mm:ss,zzz") ) ) );
+            , boost::make_shared<QStringToDateTime>("yyyy-MM-dd HH:mm:ss.zzz") ) ) );
     m_defaultCellIfos.insert( StringIntMap::value_type( attDescMessage.first      , AttributeConfiguration( false, 500, attDescMessage
-            , QStringToVariant() ) ) );
+            , boost::make_shared<QStringToVariant>() ) ) );
     m_defaultCellIfos.insert( StringIntMap::value_type( attDescLoglevel.first     , AttributeConfiguration( true,  70 , attDescLoglevel
-            , QStringToVariant() ) ) );
+            , boost::make_shared<QStringToVariant>() ) ) );
     m_defaultCellIfos.insert( StringIntMap::value_type( attDescNDC.first          , AttributeConfiguration( true,  100, attDescNDC
-            , QStringToVariant() ) ) );
+            , boost::make_shared<QStringToVariant>() ) ) );
     m_defaultCellIfos.insert( StringIntMap::value_type( attDescThread.first       , AttributeConfiguration( true,  70 , attDescThread
-            , QStringToVariant() ) ) );
+            , boost::make_shared<QStringToVariant>() ) ) );
     m_defaultCellIfos.insert( StringIntMap::value_type( attDescLogger.first       , AttributeConfiguration( true,  250, attDescLogger
-            , QStringToVariant() ) ) );
+            , boost::make_shared<QStringToVariant>() ) ) );
     m_defaultCellIfos.insert( StringIntMap::value_type( attDescFileSource.first   , AttributeConfiguration( true,  150, attDescFileSource
-            , QStringToVariant() ) ) );
+            , boost::make_shared<QStringToVariant>() ) ) );
 }
 
 const AttributeConfiguration &LogEntryAttributeNames::getConfiguration( const QString &name ) const
@@ -82,10 +148,32 @@ const AttributeConfiguration &LogEntryAttributeNames::getConfiguration( const QS
         return m_defaultCellIfo;
 }
 
-AttributeConfiguration::AttributeConfiguration( bool caching, int defaultCellWidth, TQStringPair namesIn,  EntryFactoryFunction factory )
+AttributeConfiguration::AttributeConfiguration( bool caching, int defaultCellWidth, TQStringPair namesIn,  boost::shared_ptr<ImportExportDescription> factory )
 : caching( caching )
 , defaultCellWidth( defaultCellWidth )
 , names( namesIn )
 , attributeFactory( factory )
 {
+}
+
+AttributeConfiguration::AttributeConfiguration( const AttributeConfiguration& cfg )
+: caching( cfg.caching )
+, defaultCellWidth( cfg.defaultCellWidth )
+, names( cfg.names )
+, attributeFactory( cfg.attributeFactory->clone() )
+{ }
+
+AttributeConfiguration &AttributeConfiguration::operator=( const AttributeConfiguration &other )
+{
+    if( this == &other)
+        return *this;
+
+    // This may fail and throw, so do this first, everything else does never throw.
+    attributeFactory = other.attributeFactory->clone();
+
+    caching = other.caching;
+    defaultCellWidth = other.defaultCellWidth;
+    names = other.names;
+
+    return *this;
 }

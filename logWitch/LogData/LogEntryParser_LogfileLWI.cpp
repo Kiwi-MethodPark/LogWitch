@@ -54,19 +54,115 @@ bool LogEntryParser_LogfileLWI::initParser()
 
     QString firstLine = m_logfileStream.readLine();
     if ( !firstLine.startsWith( LWIIdString ) )
+    {
+        m_initError = tr("Unable to detect LogWitchs magic code in line: '%1'").arg(firstLine);
         return false;
+    }
 
     firstLine.remove( 0, LWIIdString.length() );
     QStringList descriptions = firstLine.split(" - ");
 
+    qDebug() << " File identification string is: " << firstLine;
+
     m_factory.reset( new LogEntryFactory );
 
+    m_order.resize( descriptions.size() );
+
     LogEntryAttributeNames names;
-    for( QStringList::iterator it = descriptions.begin(); it != descriptions.end(); ++it )
-        m_factory->addField( names.getConfiguration( *it ) );
+    {
+        // This section parses the description and replays the correct ordering and format strings.
+        std::vector<AttributeConfiguration> configs;
+        configs.reserve(descriptions.size());
+
+        QRegExp expr("^([^:]*):(.*)$");
+        QRegExp exprNumber("^(.*)\\(([0-9]*)\\)$");
+        bool invalidOrdering = false;
+        int i = 0;
+
+        for( QStringList::iterator it = descriptions.begin(); it != descriptions.end(); ++it, ++i )
+        {
+            QString name, extension;
+            int orderId = -1;
+
+            if( expr.exactMatch( *it ) )
+            {
+                qDebug() << " Field string matched extended: name " << expr.cap(1) << " extension: " << expr.cap(2);
+                name = expr.cap(1);
+                extension = expr.cap(2);
+            }
+            else
+            {
+                qDebug() << " Field string: name " <<*it;
+                name = *it;
+            }
+
+            if( exprNumber.exactMatch( name ) )
+            {
+                qDebug() << " Ordering match: name:" << name << " number: " << exprNumber.cap(2);
+                name = exprNumber.cap(1);
+
+                bool ok = false;
+                orderId = exprNumber.cap(2).toInt(&ok);
+                if( !ok )
+                    orderId = -1;
+            }
+
+            AttributeConfiguration cfg( names.getConfiguration( name ) );
+            if( !extension.isEmpty() )
+                cfg.attributeFactory->setImportExportDescription( extension  );
+            configs.push_back( cfg );
+
+            if( orderId < 0 )
+            {
+                qDebug() << " Invalid ordering detected!";
+                invalidOrdering = true;
+            }
+            else
+                m_order[i] = orderId;
+        }
+
+        do
+        {
+            if( invalidOrdering )
+            {
+                for( i = 0; i < m_order.size(); ++i )
+                    m_order[i] = i;
+                invalidOrdering = false;
+            }
+
+            for( i = 0; i < m_order.size(); ++i )
+            {
+                std::vector<int>::iterator it;
+                it = find( m_order.begin(), m_order.end(), i );
+                if( it == m_order.end() )
+                {
+                    qDebug() << " Invalid ordering detected (Step2)!";
+                    invalidOrdering = true;
+                    break;
+                }
+
+                m_factory->addField( configs[ it - m_order.begin() ] );
+            }
+        } while( invalidOrdering );
+    }
+
+    const QString LWIContextID( "%%LWI_CFGContext=" );
+    QString modelContext("LogfileLWI");
+    QString line = m_logfileStream.readLine();
+    if( line.startsWith(LWIContextID) )
+    {
+        line.remove( 0, LWIContextID.length() );
+        modelContext = line;
+    }
+    else
+    {
+        m_stashedLine = line;
+    }
+
 
     m_factory->disallowAddingFields();
-    m_myModelConfig = boost::shared_ptr<LogEntryParserModelConfiguration>( new LogEntryParserModelConfiguration("LogfileLWI",m_factory) );
+    qDebug() << "Using Model context: " << modelContext;
+    m_myModelConfig = boost::shared_ptr<LogEntryParserModelConfiguration>( new LogEntryParserModelConfiguration(modelContext,m_factory) );
     // TODO: Splitstrings?
     //m_myModelConfig->setHierarchySplitString( 4, "\\.");
 
@@ -81,28 +177,21 @@ bool LogEntryParser_LogfileLWI::initParser()
 
 void LogEntryParser_LogfileLWI::run()
 {
-    int i = 0;
-
     TSharedNewLogEntryMessage newEntryMessage( new NewLogEntryMessage );
+    qDebug() << "Start parsing logfile with run()";
 
-    forever
+    while( !m_abort )
     {
-        if ( m_abort)
-            return;
-
         TSharedLogEntry entry( getNextLogEntry() );
 
         if( entry )
             newEntryMessage->entries.push_back( entry );
         else
             m_abort = true;
-
-        i++;
     }
 
+    qDebug() << "We got " << newEntryMessage->entries.size() << " entries from logfile.";
     emit newEntry( newEntryMessage );
-
-    qDebug() << "We got " << i << " entries from logfile.";
 }
 
 TSharedLogEntry LogEntryParser_LogfileLWI::logEntryFromString( const QString &str)
@@ -118,9 +207,12 @@ TSharedLogEntry LogEntryParser_LogfileLWI::getNextLogEntry()
 {
     TSharedLogEntry entryReturn;
 
-    while( m_logfileStreamReady && !entryReturn )
+    while( m_logfileStreamReady
+            && ( !m_logfileStream.atEnd() || !m_stashedLine.isEmpty() )
+            && !entryReturn )
     {
-        QString logEntryString;
+        QString logEntryString( m_stashedLine );
+        m_stashedLine.clear();
 
         // Step 1
         // Read one entry. One entry is at the end if on the next line is no
@@ -129,13 +221,13 @@ TSharedLogEntry LogEntryParser_LogfileLWI::getNextLogEntry()
             bool lineComplete = false;
             while( !m_logfileStream.atEnd() && !lineComplete )
             {
-                if( m_stashedLine.isNull() )
+                if( m_stashedLine.isEmpty() )
                     m_stashedLine = m_logfileStream.readLine();
 
                 if( logEntryString.isEmpty() )
                 {
                     logEntryString = m_stashedLine;
-                    m_stashedLine = QString();
+                    m_stashedLine.clear();
                 }
                 else
                 {
@@ -144,10 +236,12 @@ TSharedLogEntry LogEntryParser_LogfileLWI::getNextLogEntry()
                     else
                     {
                         logEntryString.append( m_stashedLine );
-                        m_stashedLine = QString();
+                        m_stashedLine.clear();
                     }
                 }
             }
+
+            // qDebug() << "Working on line: " << logEntryString;
         }
 
         // Step 2
@@ -172,14 +266,19 @@ TSharedLogEntry LogEntryParser_LogfileLWI::getNextLogEntry()
                 for( int i = 0; i < m_factory->getNumberOfFields(); ++i )
                 {
                     entry->setAttribute(
-                              m_factory->getFieldConfiguration( i ).attributeFactory( parts.at(i) )
-                            , i );
+                              (*m_factory->getFieldConfiguration( m_order[i] ).attributeFactory)( parts.at(i) )
+                            , m_order[i] );
                 }
 
                 entryReturn = entry;
             }
+            else
+            {
+                qDebug() << " >> Unable to parse LogEntry: We found only: " << parts.size() << " entries, but we need: " << m_factory->getNumberOfFields();
+            }
         }
     }
 
+    // qDebug() << " >> LogEntry parsed and returns: "<< entryReturn.get()<<"  << ";
     return entryReturn;
 }
