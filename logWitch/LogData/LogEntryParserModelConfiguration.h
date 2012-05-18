@@ -113,6 +113,8 @@ public:
 
     void restoreHintsFromSettings();
 
+    const QString &getConfigurationString() const;
+
 private:
 	QVector<QString> m_hierarchySplitstrings;
 

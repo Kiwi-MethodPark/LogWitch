@@ -209,3 +209,8 @@ void LogEntryParserModelConfiguration::saveHintsToSettings() const
     settings.endGroup();
     settings.endGroup();
 }
+
+const QString &LogEntryParserModelConfiguration::getConfigurationString() const
+{
+    return m_configurationString;
+}
