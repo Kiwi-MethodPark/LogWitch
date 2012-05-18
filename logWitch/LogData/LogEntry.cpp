@@ -60,6 +60,22 @@ boost::shared_ptr<const QString> LogEntry::getAttributeAsString( int idx ) const
     if( value.canConvert<TSharedConstQString>() )
         return value.value<TSharedConstQString>();
     else
+    {
         return boost::shared_ptr<const QString>( new QString( value.toString() ) );
+    }
+}
+
+boost::shared_ptr<const QString> LogEntry::getAttributeAsString( int idx
+        , boost::function<QString(const QVariant &)> customFormater  ) const
+{
+    Q_ASSERT( idx >= 0 && idx < myFactory->getNumberOfFields() );
+
+    const QVariant &value = m_attributes[idx];
+    if( value.canConvert<TSharedConstQString>() )
+        return value.value<TSharedConstQString>();
+    else
+    {
+        return boost::shared_ptr<const QString>( new QString( customFormater( value ) ) );
+    }
 }
 

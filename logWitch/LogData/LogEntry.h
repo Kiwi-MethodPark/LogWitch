@@ -7,8 +7,12 @@
 
 #ifndef LOGENTRYATTRIBUTES_H_
 #define LOGENTRYATTRIBUTES_H_
+
+#include <boost/function.hpp>
 #include <boost/shared_ptr.hpp>
+
 #include <vector>
+
 #include "Types.h"
 
 class LogEntryFactory;
@@ -42,7 +46,8 @@ public:
 	 * Returns the attribute as a string. If the attribute is not a string
 	 * it will be converted to. (internally we user a cache)
 	 */
-	TSharedConstQString getAttributeAsString( int idx ) const;
+    TSharedConstQString getAttributeAsString( int idx ) const;
+	TSharedConstQString getAttributeAsString( int idx, boost::function<QString(const QVariant &)> customFormater ) const;
 
 private:
 	/**
