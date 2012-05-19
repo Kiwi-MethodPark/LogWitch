@@ -19,6 +19,7 @@ LogEntryTableFilter::LogEntryTableFilter( QObject *parent)
 	: QSortFilterProxyModel( parent )
 	, m_model( NULL )
     , m_ruleTable( new RuleTable )
+    , m_resetFilterNeeded( false )
 {
     QObject::connect(&m_filterChain, SIGNAL(filterUpdateFinished()),
                      this, SLOT(invalidate()));
@@ -44,22 +45,36 @@ QVariant LogEntryTableFilter::data(const QModelIndex &index, int role) const
 {
     QVariant var = QSortFilterProxyModel::data( index, role );
 
-    TconstSharedLogEntry entry = m_model->getEntryByIndex( mapToSource( index ) );
+    const QModelIndex sourceIdx = mapToSource( index );
+    if( !sourceIdx.isValid() )
+    {
+        qWarning() << "We had an error during mapping to source!";
+        return QVariant();
+    }
+
+    TconstSharedLogEntry entry = m_model->getEntryByIndex( sourceIdx );
     std::list<  TconstSharedActionDataRewriter > actions;
     if( m_ruleTable->getMatchedActionsForType( actions, entry ) )
     {
-        QModelIndex srcIdx = mapToSource( index );
-
         std::list<  TconstSharedActionDataRewriter >::iterator it;
         for( it = actions.begin(); it != actions.end(); ++it  )
-            (*it)->modifyData( var, srcIdx.column(), role);
+            (*it)->modifyData( var, sourceIdx.column(), role);
     }
 
-    if( role == Qt::BackgroundColorRole
-        && index.row() >= m_surroundingRowStart
-        && index.row() <= m_surroundingRowEnd )
+    if(  sourceIdx.row() >= m_surroundingRowStart
+        && sourceIdx.row() <= m_surroundingRowEnd
+        && !filterAcceptInt( entry ))
     {
-        var = QColor(200,255,255);
+        if( role == Qt::FontRole )
+        {
+            QFont font;
+            font.setItalic(true);
+            var = font;
+        }
+        else if( role == Qt::ForegroundRole )
+        {
+            var = QColor(128,128,128);
+        }
     }
 
     return var;
@@ -77,6 +92,15 @@ void LogEntryTableFilter::setSourceModel( QAbstractItemModel *model )
 	m_model = dynamic_cast<LogEntryTableModel *>( sourceModel() );
 	hideSurroundingLogEntries();
 	LFA_ASSERT( m_model, "Invalid model given!" );
+
+    QObject::connect( model, SIGNAL(rowsAboutToBeRemoved(const QModelIndex &,int,int)),
+            this, SLOT(slotRowsAboutToBeRemoved(const QModelIndex &,int,int)));
+    QObject::connect( model, SIGNAL(rowsRemoved(const QModelIndex &,int,int)),
+            this, SLOT(slotInvalidateIfNeeded()));
+    QObject::connect( model, SIGNAL(modelAboutToBeReset()),
+        this, SLOT(slotModelAboutToBeReset()));
+    QObject::connect( model, SIGNAL(modelReset()),
+        this, SLOT(slotInvalidateIfNeeded()));
 }
 
 bool LogEntryTableFilter::filterAcceptsRow( int sourceRow, const QModelIndex & ) const
@@ -89,6 +113,11 @@ bool LogEntryTableFilter::filterAcceptsRow( int sourceRow, const QModelIndex & )
         return true;
     }
 
+    return filterAcceptInt( entry );
+}
+
+bool LogEntryTableFilter::filterAcceptInt ( TconstSharedLogEntry entry ) const
+{
     if( ! m_filterChain.filterEntry( entry ) )
         return false;
 
@@ -102,16 +131,97 @@ bool LogEntryTableFilter::filterAcceptsRow( int sourceRow, const QModelIndex & )
 
 void LogEntryTableFilter::showSurroundingLogEntries( const QModelIndex &index, uint valuesToShow )
 {
+    qDebug() << "showSurroundingLogEntries with row: " << index.row();
     int center =  mapToSource( index ).row();
+    if( center == -1 )
+    {
+        hideSurroundingLogEntries();
+        return;
+    }
     m_surroundingRowStart = std::max<int>( 0, center - valuesToShow );
-    m_surroundingRowEnd = std::min<int>( m_model->rowCount(), center + valuesToShow );
+    m_surroundingRowEnd = center + valuesToShow;
+
+    qDebug() << "m_surroundingRowStart: " << m_surroundingRowStart << " m_surroundingRowEnd: " << m_surroundingRowEnd;
+    invalidateFilter();
 }
 
 void LogEntryTableFilter::hideSurroundingLogEntries()
 {
     m_surroundingRowStart = -1;
     m_surroundingRowEnd = -1;
+    invalidateFilter();
 }
+
+void LogEntryTableFilter::slotRowsAboutToBeRemoved ( const QModelIndex & parent, int start, int end )
+{
+    qDebug() << " start: " << start << " end: " << end << " m_surroundingRowStart: " << m_surroundingRowStart
+            << " m_surroundingRowEnd: " << m_surroundingRowEnd;
+    if( m_surroundingRowStart == -1 && m_surroundingRowEnd == -1 )
+        return;
+
+    if( start < m_surroundingRowStart )
+    {
+        int diff = end - start + 1;
+        if( end < m_surroundingRowStart )
+        {
+            m_surroundingRowStart -= diff;
+            m_surroundingRowEnd -= diff;
+        }
+        else if( end < m_surroundingRowEnd )
+        {
+            m_surroundingRowStart = start;
+            m_surroundingRowEnd -= diff;
+        }
+    }
+    else if( start >= m_surroundingRowStart )
+    {
+        if( end <= m_surroundingRowEnd )
+        {
+            int diff = end - start + 1;
+            m_surroundingRowEnd -= diff;
+        }
+        else
+        {
+            m_surroundingRowEnd = start - 1;
+        }
+    }
+    else
+    {
+        m_surroundingRowStart = -1;
+        m_surroundingRowEnd = -1;
+    }
+
+    if( m_surroundingRowEnd < m_surroundingRowStart )
+    {
+        m_surroundingRowStart = -1;
+        m_surroundingRowEnd = -1;
+    }
+
+    qDebug() << " after:  m_surroundingRowStart: " << m_surroundingRowStart
+            << " m_surroundingRowEnd: " << m_surroundingRowEnd;
+
+    m_resetFilterNeeded = true;
+}
+
+void LogEntryTableFilter::slotModelAboutToBeReset()
+{
+    qDebug()<<"LogEntryTableFilter::slotModelAboutToBeReset()";
+    if( m_surroundingRowStart == -1 && m_surroundingRowEnd == -1 )
+        return;
+
+    m_surroundingRowStart = -1;
+    m_surroundingRowEnd = -1;
+    m_resetFilterNeeded = true;
+}
+
+void LogEntryTableFilter::slotInvalidateIfNeeded()
+{
+    qDebug() << "LogEntryTableFilter::slotInvalidateIfNeeded()";
+    if( m_resetFilterNeeded )
+        invalidateFilter();
+    m_resetFilterNeeded = false;
+}
+
 
 void LogEntryTableFilter::updateChanges()
 {

@@ -465,6 +465,7 @@ void LogEntryTableWindow::contextMenu( const QPoint & pt )
     bool found = false;
 
     QModelIndex idxClick = mapToSource( m_tableView->indexAt( pt ) );
+    QModelIndex idxClickProxyModel = m_timeFormatModel->mapToSource( m_tableView->indexAt( pt ) );
 
     for( int i = 0; i < m_model->columnCount(); ++i )
     {
@@ -489,6 +490,7 @@ void LogEntryTableWindow::contextMenu( const QPoint & pt )
     QAction *timeStampsRelative = menu->addAction( tr("Set row as reference") );
     QAction *showTimestamps = menu->addAction( tr("Show absolute times") );
     QAction *showDiffTimes = menu->addAction( tr("Show difference times") );
+    QAction *peekFilteredEntries = menu->addAction( tr("Peek filtered") );
 
     m_model->beginBlockItems();
     QAction *pressed = menu->exec( m_tableView->mapToGlobal(pt) );
@@ -505,6 +507,10 @@ void LogEntryTableWindow::contextMenu( const QPoint & pt )
     else if( pressed == showDiffTimes )
     {
         m_timeFormatModel->setTimeDiffModeEnabled( true, true );
+    }
+    else if( pressed == peekFilteredEntries )
+    {
+        m_proxyModel->showSurroundingLogEntries( idxClickProxyModel, 10 );
     }
 
     m_model->endBlockItems();

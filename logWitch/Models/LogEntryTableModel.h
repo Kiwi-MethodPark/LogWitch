@@ -60,6 +60,7 @@ public:
 
     TSharedConstLogEntryParserModelConfiguration getParserModelConfiguration() const;
 
+    bool removeRows ( int row, int count, const QModelIndex & parent = QModelIndex() );
 
     /**
      * This starts block of inserting new items to model. If we are

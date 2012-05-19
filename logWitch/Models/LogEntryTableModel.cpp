@@ -30,7 +30,8 @@ LogEntryTableModel::LogEntryTableModel( boost::shared_ptr<LogEntryParser> parser
     , m_maxNumberOfEntries( 0 )
 {
     QObject::connect(dynamic_cast<QObject*>(parser.get()), SIGNAL(newEntry( TconstSharedNewLogEntryMessage )),
-                     this, SLOT(insertEntry( TconstSharedNewLogEntryMessage )) );
+                     this, SLOT(insertEntry( TconstSharedNewLogEntryMessage ))
+                     , Qt::QueuedConnection );
     QObject::connect(dynamic_cast<QObject*>(parser.get()), SIGNAL(signalError( QString )),
                      this, SLOT(signalErrorFromParser( QString )) );
 
@@ -247,9 +248,7 @@ void LogEntryTableModel::insertEntry( TconstSharedNewLogEntryMessage mess )
             }
             else
             {
-                beginRemoveRows( QModelIndex(), 0, toRemove - 1 );
-                m_table.erase( m_table.begin(), m_table.begin() + toRemove );
-                endRemoveRows();
+                removeRows( 0, toRemove );
             }
         }
     }
@@ -274,6 +273,17 @@ void LogEntryTableModel::endBlockItems()
         insertEntry( m_blockedInsertedMessages.front() );
         m_blockedInsertedMessages.pop_front();
     }
+}
+
+bool LogEntryTableModel::removeRows ( int row, int count, const QModelIndex & parent )
+{
+    if( row + count > m_table.size() || count == 0 )
+        return false;
+
+    beginRemoveRows( parent, row, row + count - 1 );
+    m_table.erase( m_table.begin(), m_table.begin() + count );
+    endRemoveRows();
+    return true;
 }
 
 void LogEntryTableModel::setMaxEntries( int max )

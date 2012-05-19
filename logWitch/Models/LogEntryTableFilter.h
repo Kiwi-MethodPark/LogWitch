@@ -36,6 +36,13 @@ public:
 public slots:
 	void updateChanges();
 
+	void slotRowsAboutToBeRemoved ( const QModelIndex & parent, int start, int end );
+
+	void slotInvalidateIfNeeded();
+
+	void slotModelAboutToBeReset();
+
+public:
 	/**
 	 * This enables the show surrounding entries around index and woith +/-
 	 * valuesToShow.
@@ -51,6 +58,12 @@ public slots:
 protected:
 	bool filterAcceptsRow ( int source_row, const QModelIndex & source_parent ) const;
 
+	/**
+	 * This method implements filtering only, it returns the filtering from the
+	 * filterCahin and the ruleTable. It does not handle surrounding.
+	 */
+	bool filterAcceptInt ( TconstSharedLogEntry entry ) const;
+
 private:
 	LogEntryTableModel *m_model;
 
@@ -65,6 +78,8 @@ private:
 	int m_surroundingRowStart;
 
     int m_surroundingRowEnd;
+
+    bool m_resetFilterNeeded;
 };
 
 #endif /* LOGENTRYTABLEFILTER_H_ */
