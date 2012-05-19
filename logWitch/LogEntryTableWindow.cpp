@@ -490,6 +490,7 @@ void LogEntryTableWindow::contextMenu( const QPoint & pt )
     QAction *showTimestamps = menu->addAction( tr("Show absolute times") );
     QAction *showDiffTimes = menu->addAction( tr("Show difference times") );
 
+    m_model->beginBlockItems();
     QAction *pressed = menu->exec( m_tableView->mapToGlobal(pt) );
 
     if( pressed == timeStampsRelative )
@@ -506,5 +507,6 @@ void LogEntryTableWindow::contextMenu( const QPoint & pt )
         m_timeFormatModel->setTimeDiffModeEnabled( true, true );
     }
 
+    m_model->endBlockItems();
     delete menu;
 }

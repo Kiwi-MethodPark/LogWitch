@@ -212,6 +212,11 @@ void LogEntryTableModel::insertEntry( TconstSharedNewLogEntryMessage mess )
 
     QMutexLocker lo( &m_mutex );
 
+    if( m_blockInsertingMessages )
+    {
+        m_blockedInsertedMessages.push_back( mess );
+        return;
+    }
     size_t entryCount = mess->entries.size();
 
     if( m_maxNumberOfEntries > 0 )
@@ -253,6 +258,22 @@ void LogEntryTableModel::insertEntry( TconstSharedNewLogEntryMessage mess )
     beginInsertRows( QModelIndex(), newPos, newPos + entryCount - 1 );
     m_table.insert( m_table.end(), mess->entries.begin(), mess->entries.end() );
     endInsertRows();
+}
+
+void LogEntryTableModel::beginBlockItems()
+{
+    m_blockInsertingMessages = true;
+}
+
+void LogEntryTableModel::endBlockItems()
+{
+    m_blockInsertingMessages = false;
+
+    while( !m_blockedInsertedMessages.empty() )
+    {
+        insertEntry( m_blockedInsertedMessages.front() );
+        m_blockedInsertedMessages.pop_front();
+    }
 }
 
 void LogEntryTableModel::setMaxEntries( int max )

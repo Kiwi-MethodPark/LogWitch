@@ -60,6 +60,17 @@ public:
 
     TSharedConstLogEntryParserModelConfiguration getParserModelConfiguration() const;
 
+
+    /**
+     * This starts block of inserting new items to model. If we are
+     * in blocked mode, we will refuse to add new items and we will store the incoming items
+     * for later processing. This is usefull, if we want to stop scrolling or adding / deleting
+     * of items.
+     */
+    void beginBlockItems();
+
+    void endBlockItems();
+
 public slots:
     /**
      * This slot inserts a new entry to the model. The position for this
@@ -125,6 +136,10 @@ private:
     bool m_captureActive;
 
     int m_maxNumberOfEntries;
+
+    bool m_blockInsertingMessages;
+
+    std::list<TconstSharedNewLogEntryMessage> m_blockedInsertedMessages;
 };
 
 #endif /* LOGENTRYTABLEMODEL_H_ */
