@@ -36,6 +36,17 @@ public:
 public slots:
 	void updateChanges();
 
+	/**
+	 * This enables the show surrounding entries around index and woith +/-
+	 * valuesToShow.
+	 */
+	void showSurroundingLogEntries( const QModelIndex &index, uint valuesToShow );
+
+	/**
+	 * Disables surrounding entries.
+	 */
+	void hideSurroundingLogEntries();
+
 
 protected:
 	bool filterAcceptsRow ( int source_row, const QModelIndex & source_parent ) const;
@@ -50,6 +61,10 @@ private:
 	typedef std::vector<TconstSharedExpression> TExpressionVector;
 
 	TExpressionVector m_discardExpressions;
+
+	int m_surroundingRowStart;
+
+    int m_surroundingRowEnd;
 };
 
 #endif /* LOGENTRYTABLEFILTER_H_ */

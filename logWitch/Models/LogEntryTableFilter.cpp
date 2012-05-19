@@ -6,6 +6,9 @@
  */
 
 #include "LogEntryTableFilter.h"
+
+#include <QtGui>
+
 #include "Models/LogEntryTableModel.h"
 #include "LogData/LogEntry.h"
 #include "LFAAssert.h"
@@ -52,6 +55,13 @@ QVariant LogEntryTableFilter::data(const QModelIndex &index, int role) const
             (*it)->modifyData( var, srcIdx.column(), role);
     }
 
+    if( role == Qt::BackgroundColorRole
+        && index.row() >= m_surroundingRowStart
+        && index.row() <= m_surroundingRowEnd )
+    {
+        var = QColor(200,255,255);
+    }
+
     return var;
 }
 
@@ -65,12 +75,19 @@ void LogEntryTableFilter::setSourceModel( QAbstractItemModel *model )
 	QSortFilterProxyModel::setSourceModel( model );
 
 	m_model = dynamic_cast<LogEntryTableModel *>( sourceModel() );
+	hideSurroundingLogEntries();
 	LFA_ASSERT( m_model, "Invalid model given!" );
 }
 
 bool LogEntryTableFilter::filterAcceptsRow( int sourceRow, const QModelIndex & ) const
 {
     TconstSharedLogEntry entry = m_model->getEntryByRow( sourceRow );
+
+    if(    sourceRow >= m_surroundingRowStart
+        && sourceRow <= m_surroundingRowEnd )
+    {
+        return true;
+    }
 
     if( ! m_filterChain.filterEntry( entry ) )
         return false;
@@ -83,6 +100,19 @@ bool LogEntryTableFilter::filterAcceptsRow( int sourceRow, const QModelIndex & )
     return true;
 }
 
+void LogEntryTableFilter::showSurroundingLogEntries( const QModelIndex &index, uint valuesToShow )
+{
+    int center =  mapToSource( index ).row();
+    m_surroundingRowStart = std::max<int>( 0, center - valuesToShow );
+    m_surroundingRowEnd = std::min<int>( m_model->rowCount(), center + valuesToShow );
+}
+
+void LogEntryTableFilter::hideSurroundingLogEntries()
+{
+    m_surroundingRowStart = -1;
+    m_surroundingRowEnd = -1;
+}
+
 void LogEntryTableFilter::updateChanges()
 {
     TExpressionVector newExpressions = m_ruleTable->getExpressionsWithAction<TconstSharedActionDiscardRow>();
@@ -91,6 +121,7 @@ void LogEntryTableFilter::updateChanges()
         // We have to invalidate the complete model here, because the discard filter has changed.
         // This takes more time, than only invalidating data.
         m_discardExpressions = newExpressions;
+        hideSurroundingLogEntries();
         invalidate();
     }
     else
