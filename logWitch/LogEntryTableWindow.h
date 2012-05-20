@@ -84,6 +84,8 @@ private slots:
 
     void updateHeaderPositionToModel( int section, int, int  );
 
+    void onDoubleClick ( const QModelIndex & index );
+
 private:
     enum SearchModes { Regex, Text, Expression};
 

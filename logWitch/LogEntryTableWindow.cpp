@@ -83,6 +83,9 @@ LogEntryTableWindow::LogEntryTableWindow( boost::shared_ptr<LogEntryTableModel> 
     QObject::connect(m_tableView, SIGNAL(customContextMenuRequested ( const QPoint &) ),
                      this, SLOT(contextMenu(const QPoint & )));
 
+    QObject::connect(m_tableView, SIGNAL(doubleClicked ( const QModelIndex &) ),
+                     this, SLOT(onDoubleClick(const QModelIndex & )));
+
     // Context menu for the HorizontalHeaderView
     m_tableView->horizontalHeader()->setMovable( true );
     m_tableView->horizontalHeader()->setContextMenuPolicy( Qt::CustomContextMenu );
@@ -515,4 +518,10 @@ void LogEntryTableWindow::contextMenu( const QPoint & pt )
 
     m_model->endBlockItems();
     delete menu;
+}
+
+void LogEntryTableWindow::onDoubleClick ( const QModelIndex & index )
+{
+    QModelIndex idxClickProxyModel = m_timeFormatModel->mapToSource( index );
+    m_proxyModel->showSurroundingLogEntries( idxClickProxyModel, 10 );
 }
