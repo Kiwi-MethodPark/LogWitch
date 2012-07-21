@@ -28,6 +28,7 @@ LogEntryTableModel::LogEntryTableModel( boost::shared_ptr<LogEntryParser> parser
     , m_mutex( QMutex::Recursive )
     , m_captureActive( true )
     , m_maxNumberOfEntries( 0 )
+    , m_blockInsertingMessages( false )
 {
     QObject::connect(dynamic_cast<QObject*>(parser.get()), SIGNAL(newEntry( TconstSharedNewLogEntryMessage )),
                      this, SLOT(insertEntry( TconstSharedNewLogEntryMessage ))
