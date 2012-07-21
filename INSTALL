@@ -20,7 +20,7 @@ Out of source is recommended if one is not developing.
 
 1) In Source build:
 
-  Go to base directory and execute (this builds DEBUG!):
+  Go to base directory and execute (this builds RELEASE!):
    cmake .
    make 
    make install
@@ -32,7 +32,7 @@ Out of source is recommended if one is not developing.
   
   Build it (DEBUG!):
     cd build
-    cmake ..
+    cmake .. -DCMAKE_BUILD_TYPE=debug
     make
 
   Build it (RELEASE!):
@@ -56,4 +56,9 @@ finished, use cpack to create a package:
   A deb package:
     cpack -G DEB
 
+Building for distributions
+--------------------------
+
+There is a chance to have a ready to run .sh script in the root folder which is called buildHelper_*.sh
+By using this, the correct settings for a given configuration will be used to build the project.
 
