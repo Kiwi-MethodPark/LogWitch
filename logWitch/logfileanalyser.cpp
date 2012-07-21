@@ -13,6 +13,7 @@
 
 #include "Models/StringCacheTreeModel.h"
 #include "LogData/LogEntryParser_Logfile.h"
+#include "LogData/LogEntryParser_LogfileLWI.h"
 #include "LogData/LogEntryParser_log4cplusSocket.h"
 #include "GUITools/WidgetStateSaver.h"
 #include "GUITools/GetSetStateSaver.hxx"
@@ -115,7 +116,8 @@ void LogfileAnalyser::openLogfile()
     if(dialog.exec())
     {
     	QStringList fileNames = dialog.selectedFiles();
-    	createWindowsFromParser( boost::shared_ptr<LogEntryParser>(new LogEntryParser_Logfile( fileNames.first() ) ) );
+//     	createWindowsFromParser( boost::shared_ptr<LogEntryParser>(new LogEntryParser_Logfile( fileNames.first() ) ) );
+        createWindowsFromParser( boost::shared_ptr<LogEntryParser>(new LogEntryParser_LogfileLWI( fileNames.first() ) ) );
     }
 }
 
