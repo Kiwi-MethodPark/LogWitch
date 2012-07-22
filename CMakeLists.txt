@@ -28,6 +28,7 @@ SET(HELPDIR "share/${MAIN_DIR_NAME}")
 ### Search dependencies
 FIND_PACKAGE(Qt4 4.7 REQUIRED)
 FIND_PACKAGE(log4cplus REQUIRED)
+FIND_PACKAGE(Boost REQUIRED)
 
 SET(LFA_RULES_LIB "logfileanalyzer_rules_lib")
 SET(LFA_GUITOOLS_LIB "logfileanalyzer_guitools_lib")
