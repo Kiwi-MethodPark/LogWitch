@@ -1,0 +1,45 @@
+Building LogWitch for Windows
+=============================
+
+GIT on windows pitfalls
+-----------------------
+
+To use git on windows, we need a setup for our pagent.exe to work with us:
+
+start pagent.exe from putty package and add your personal key.
+
+Open the command prompt and set the paths for git correctly:
+
+> set PATH=%PATH;C:\Program Files (x86)\PuTTY
+> set GIT_SSH=plink.exe
+
+Now the remote side can be fetched.
+
+> git gui
+
+
+Build solution or nmake files
+-----------------------------
+
+For building using Windows 7 with MS Visual Studio 2010 do the following steps:
+
+- Download log4cplus > 1.1 and build it
+- Download and install qt sdk
+- Download and build boost
+
+Now prepare the build directory:
+
+mkdir build
+cd build
+
+set QTDIR=C:\QtSDK\Desktop\Qt\4.8.1\msvc2010
+set BOOSTROOT=C:\Users\sven\workspace\boost_1_49_0
+
+set CMAKE_LIBRARY_PATH=C:\Users\sven\workspace\log4cplus-1.1.0-rc4\include
+set CMAKE_LIBRARY_PATH=C:\Users\sven\workspace\log4cplus-1.1.0-rc4\msvc10\Win32\bin.Release
+
+cmake ..
+
+Now the generated sulution can be used to build it.
+
+For shipping we have to add the svg icon plugin and other things. This needs to be determined and written here!
