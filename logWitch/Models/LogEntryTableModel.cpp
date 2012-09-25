@@ -374,6 +374,7 @@ void LogEntryTableModel::exportToFile( const QString &target )
 
     TLogEntryTable::iterator it;
     QRegExp regexLineEnd("(\r\n|\r|\n)");
+    QRegExp regexSplitter("( - )");
     for( it = m_table.begin(); it != m_table.end(); ++it)
     {
         QString line;
@@ -385,6 +386,9 @@ void LogEntryTableModel::exportToFile( const QString &target )
             QString entry( *(*it)->getAttributeAsString(order[i]
                          , ExportToQStringAdapter( m_modelConfiguration->getLogEntryFactory()->getFieldConfiguration(i).attributeFactory ) ) );
             entry.replace(regexLineEnd,"\n " );
+
+            if( i != int( order.size()-1 ) )
+              entry.replace(regexSplitter," -- " );
 
             line.append( entry );
         }
