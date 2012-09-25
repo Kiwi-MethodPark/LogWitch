@@ -86,7 +86,7 @@ void LogEntryParser_log4cplusSocket::logEntryMessageDestroyed()
 
         // Unlock and send message now.
         lo.unlock();
-        emit newEntry( m_nextMessage );
+        emit newEntry( messageToSend );
     }
     else
     {
