@@ -247,15 +247,16 @@ TSharedLogEntry LogEntryParser_LogfileLWI::getNextLogEntry()
         // Step 2
         // Analyze and split string to fields.
         {
-            QStringList parts = logEntryString.split(" - ");
+            QString splitSting(" - ");
+            QStringList parts = logEntryString.split( splitSting );
             if( parts.size() > m_factory->getNumberOfFields() )
             {
-                QStringList::iterator it = parts.begin() + m_factory->getNumberOfFields();
+                QStringList::iterator itBegin = parts.begin() + m_factory->getNumberOfFields() - 1;
                 QStringList message;
-                for( ; it != parts.end(); ++it )
+                for( QStringList::iterator it = itBegin; it != parts.end(); ++it )
                     message.push_back( *it );
-                parts.erase( it, parts.end() );
-                parts.push_back( message.join(" - ") );
+                parts.erase( itBegin, parts.end() );
+                parts.push_back( message.join(splitSting) );
             }
 
             // Check if entry is broken, we will skip it!
