@@ -35,7 +35,7 @@ cd build
 set QTDIR=C:\QtSDK\Desktop\Qt\4.8.1\msvc2010
 set BOOSTROOT=C:\Users\sven\workspace\boost_1_49_0
 
-set CMAKE_LIBRARY_PATH=C:\Users\sven\workspace\log4cplus-1.1.0-rc4\include
+set CMAKE_INCLUDE_PATH=C:\Users\sven\workspace\log4cplus-1.1.0-rc4\include
 set CMAKE_LIBRARY_PATH=C:\Users\sven\workspace\log4cplus-1.1.0-rc4\msvc10\Win32\bin.Release
 
 cmake ..
