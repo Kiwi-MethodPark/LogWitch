@@ -47,9 +47,11 @@ ADD_DEFINITIONS(${QT_DEFINITIONS})
 ADD_SUBDIRECTORY(logWitch)
 
 ### Testing stuff
-ENABLE_TESTING()
+IF(NOT WITHOUT_TEST)
+	ENABLE_TESTING()
 
-ADD_SUBDIRECTORY(test)
+	ADD_SUBDIRECTORY(test)
+ENDIF()
 
 
 ######################## CPack informations if CPack is available.
