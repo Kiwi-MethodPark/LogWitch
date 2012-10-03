@@ -21,6 +21,14 @@ find_library(LOG4CPLUS_LIBRARY
   NAMES log4cplus
 )
 
+IF( NOT UNIX)
+	GET_FILENAME_COMPONENT(LOG4CPLUS_DLL_PATH ${LOG4CPLUS_LIBRARY} PATH)
+	find_file(LOG4CPLUS_DLL
+ 	 NAMES log4cplus.dll
+ 	 PATHS ${LOG4CPLUS_DLL_PATH}
+	)
+ENDIF()
+
 # Set the include dir variables and the libraries and let libfind_process do the rest.
 # NOTE: Singular variables for this library, plural for libraries this this lib depends on.
 set(LOG4CPLUS_LIBRARIES ${LOG4CPLUS_LIBRARY} )
