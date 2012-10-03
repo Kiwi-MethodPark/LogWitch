@@ -78,4 +78,15 @@ TARGET_LINK_LIBRARIES( LogWitch
 install (TARGETS LogWitch
          RUNTIME DESTINATION bin )
          
-
+IF(NOT UNIX)
+	INSTALL( FILES ${QT_LIBRARY_DIR}/QtCore4.dll
+		${QT_LIBRARY_DIR}/QtGUI4.dll
+		${QT_LIBRARY_DIR}/QtNetwork4.dll
+		${QT_LIBRARY_DIR}/QtSvg4.dll
+		${QT_LIBRARY_DIR}/QtXml4.dll
+		${PACKAGING_ADDDIR}/qt.conf
+		${LOG4CPLUS_DLL}
+		DESTINATION bin )
+	INSTALL( FILES ${QT_PLUGINS_DIR}/imageformats/qsvg4.dll
+		DESTINATION bin/plugins/imageformats )
+ENDIF()

@@ -25,6 +25,11 @@ SET(MAIN_DIR_NAME "LogWitch")
 
 SET(HELPDIR "share/${MAIN_DIR_NAME}")
 
+IF(UNIX)
+ELSE()
+	SET(PACKAGING_ADDDIR ${CMAKE_SOURCE_DIR}/packaging/windows)
+ENDIF()
+
 ### Search dependencies
 FIND_PACKAGE(Qt4 4.7 REQUIRED)
 FIND_PACKAGE(log4cplus REQUIRED)
