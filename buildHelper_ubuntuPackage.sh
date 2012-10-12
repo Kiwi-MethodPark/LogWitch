@@ -12,7 +12,7 @@ read dummy_var
 mkdir buildUbuntuPackage
 cd buildUbuntuPackage
 cmake .. -DCMAKE_BUILD_TYPE=release -DCMAKE_INSTALL_PREFIX:PATH=/usr -DTARGET_SYSTEM="Ubuntu_12.04"
-make -j4
+make $1
 cpack -G DEB
 
 cp *.deb ..
