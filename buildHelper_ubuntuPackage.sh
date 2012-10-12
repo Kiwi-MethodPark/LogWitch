@@ -9,6 +9,10 @@ echo ""
 echo "Hit return to continue ..."
 read dummy_var
 
+if [ -d "buildUbuntuPackage" ]; then
+	rm -r buildUbuntuPackage
+fi
+
 mkdir buildUbuntuPackage
 cd buildUbuntuPackage
 cmake .. -DCMAKE_BUILD_TYPE=release -DCMAKE_INSTALL_PREFIX:PATH=/usr -DTARGET_SYSTEM="Ubuntu_12.04"
