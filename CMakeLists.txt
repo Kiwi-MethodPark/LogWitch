@@ -66,6 +66,7 @@ IF(EXISTS "${CMAKE_ROOT}/Modules/CPack.cmake")
   	SET(CPACK_PACKAGE_EXECUTABLES "LogWitch")
   	SET(CPACK_GENERATOR "TGZ")
   
+ 	SET(CPACK_DEBIAN_PACKAGE_SECTION "Development")
 	IF(TARGET_SYSTEM STREQUAL "Ubuntu_12.04")
 		MESSAGE(STATUS "Using library versions for Ubuntu 12.04 LTS")
 		SET(CPACK_DEBIAN_PACKAGE_DEPENDS "liblog4cplus-1.0-4 (>= 1.0.4), libqtcore4 (>=4:4.7), libqtgui4 (>=4:4.7), libqt4-network (>=4:4.7), libqt4-help (>=4:4.7)")
