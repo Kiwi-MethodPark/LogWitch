@@ -1,14 +1,26 @@
 PROJECT(LogWitch)
 
-SET (VERSION_MAJOR "0")
-SET (VERSION_MINOR "1")
-SET (VERSION_BUILD "4")
+FIND_PACKAGE(Git)
+ADD_CUSTOM_TARGET(getversion ALL
+	DEPENDS VersionFile )
+
+ADD_CUSTOM_COMMAND(OUTPUT VersionFile ${CMAKE_CURRENT_BINARY_DIR}/Version.cmake
+ 	COMMAND ${CMAKE_COMMAND} -DSOURCE_DIR=${CMAKE_CURRENT_SOURCE_DIR}
+                    		-P ${CMAKE_CURRENT_SOURCE_DIR}/getgitversion.cmake)
+
+IF( NOT EXISTS  ${CMAKE_CURRENT_BINARY_DIR}/version.cmake )
+   	SET( VERSION "NONE")
+	INCLUDE( getgitversion.cmake )
+	# EXECUTE_PROCESS( COMMAND touch ${CMAKE_CURRENT_BINARY_DIR}/version.cmake )	
+ENDIF()
+
+INCLUDE( ${CMAKE_CURRENT_BINARY_DIR}/version.cmake )
 
 SET (VERSION ${VERSION_MAJOR}.${VERSION_MINOR}.${VERSION_BUILD})
 MESSAGE(STATUS "LogWitch ${VERSION} built with prefix: ${CMAKE_INSTALL_PREFIX}")
 
 # Set default value for the build type to release, if nothing else was specified
-IF(NOT CMAKE_BUILD_TYPE)
+IF(NOT MAKE_BUILD_TYPE)
 	MESSAGE(STATUS "No build type selected, default to Release.\n"
                        "Use cmake -DCMAKE_BUILD_TYPE=debug to build a debug build")
 	SET(CMAKE_BUILD_TYPE "Release")
