@@ -19,6 +19,8 @@ cmake .. -DCMAKE_BUILD_TYPE=release -DCMAKE_INSTALL_PREFIX:PATH=/usr -DTARGET_SY
 make $1
 cpack -G DEB
 
+../debCleaner.sh *.deb 
+
 cp *.deb ..
 
 echo "Cleaning up!"

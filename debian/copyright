@@ -1,0 +1,11 @@
+Format: http://www.debian.org/doc/packaging-manuals/copyright-format/1.0/
+Upstream-Name: LogWitch
+Upstream-Contact: Sven Steckmanne <logwitch@steckmann.de>
+Source: http://www.steckmann.de
+Files: *
+Copyright: 2013 Sven Steckmann 
+License: proprietary
+ This program is distributed in the hope that it will be
+ useful, but WITHOUT ANY WARRANTY; without even the implied
+ warranty of MERCHANTABILITY or FITNESS FOR A PARTICULAR
+ PURPOSE.
