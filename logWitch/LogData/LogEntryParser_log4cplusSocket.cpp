@@ -175,6 +175,10 @@ LogEntryParser_log4cplusSocket_Receiver::LogEntryParser_log4cplusSocket_Receiver
 	m_socket->setParent( this );
 	connect( m_socket, SIGNAL(readyRead()), this, SLOT(newDataAvailable()));
 	connect( m_socket, SIGNAL(disconnected()), this, SLOT(shutdown()));
+
+	// Send a byte back to give a response
+	std::string data("XXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXX");
+	m_socket->write(data.c_str(),data.length());
 }
 
 LogEntryParser_log4cplusSocket_Receiver::~LogEntryParser_log4cplusSocket_Receiver()
@@ -207,10 +211,12 @@ void LogEntryParser_log4cplusSocket_Receiver::newDataAvailable()
 			{
 				sizeToReadNext = m_buffer->readInt();
 				// Ignore message packets with 0 byte length. This is used for tunnel probing.
-				if( sizeToReadNext != 0 )
-					m_stateReadSize = false;
-				else
+				if( sizeToReadNext == 0 )
+				{
 					sizeToReadNext = sizeof(unsigned int);
+				}
+				else
+					m_stateReadSize = false;
 			}
 			else
 			{
