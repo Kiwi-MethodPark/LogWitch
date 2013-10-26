@@ -13,6 +13,7 @@ SET(LFA_MODELS_LIB_SOURCES
     LogEntryRemoveFilter.cpp
     LogEntryTableFilter.cpp
     LogEntryTableModel.cpp
+    LogEntryTableModelFileExporter.cpp
     StringCacheTreeItem.cpp
     StringCacheTreeModel.cpp
 )

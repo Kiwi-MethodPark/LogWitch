@@ -77,17 +77,9 @@ int LogEntryTableModel::columnCount(const QModelIndex &parent) const
     return value;
 }
 
-TconstSharedLogEntry LogEntryTableModel::getEntryByRow( const int &row ) const
+TconstSharedLogEntry LogEntryTableModel::getEntryByRow( const int row ) const
 {
     QMutexLocker lo( &m_mutex );
-
-    if (row < 0 || row >= int(m_table.size() ) )
-    {
-        qDebug() << "Returning empty item from model: index.row():" << row
-        << " table size:" << int( m_table.size() );
-        return TconstSharedLogEntry();
-    }
-
     return m_table[row];
 }
 
@@ -303,101 +295,7 @@ void LogEntryTableModel::capture( bool active )
     m_captureActive = active;
 }
 
-namespace
+boost::any LogEntryTableModel::getLock()
 {
-    const QString timestampFormat("yyyy-MM-dd hh:mm:ss.zzz");
-
-    struct ExportFormater
-    {
-        QString operator()(const QVariant &value)
-        {
-            QString formatedString;
-
-            switch( value.type() )
-            {
-            case QVariant::DateTime:
-                return value.value<QDateTime>().toString(timestampFormat);
-            }
-
-            return value.toString();
-        }
-    };
-
-}
-
-void LogEntryTableModel::exportToFile( const QString &target )
-{
-    QMutexLocker lo( &m_mutex );
-
-    QFile file( target );
-    file.open(QIODevice::WriteOnly);
-    QTextStream str( &file );
-
-    // Determine sort order, we will put the message to the end.
-    const int fields = m_modelConfiguration->getLogEntryFactory()->getNumberOfFields();
-
-    // Try to find message field, we will put this to the end of the file!
-    LogEntryAttributeNames names;
-    int messageID = m_modelConfiguration->getLogEntryFactory()->getNumberOfFields() - 1;
-    for( int i = 0; i < m_modelConfiguration->getLogEntryFactory()->getNumberOfFields(); ++i )
-    {
-        if( m_modelConfiguration->getLogEntryFactory()->getDescShort(i) == "message" )
-        {
-            messageID = i;
-            break;
-        }
-    }
-
-
-    std::vector<int> order;
-    for ( int i = 0; i < fields; i++ )
-    {
-        if( i != messageID )
-            order.push_back( i );
-    }
-    order.push_back( messageID );
-
-    QString desc;
-
-    for ( int i = 0; i < int( order.size() ); i++ )
-    {
-        if( desc.length() )
-            desc.append(" - ");
-
-        desc.append( m_modelConfiguration->getLogEntryFactory()->getDescShort( order[i] ) );
-        desc += "(" + QString::number(order[i]) +")";
-
-        QString imExExtension( m_modelConfiguration->getLogEntryFactory()->getFieldConfiguration(i).attributeFactory->getImportExportDescription() );
-        if( imExExtension.length() > 0 )
-        {
-            desc.append( ':' );
-            desc.append( imExExtension );
-        }
-    }
-
-    str << "%%LWI_DESC="<< desc << "\n";
-    str << "%%LWI_CFGContext="<< m_modelConfiguration->getConfigurationString() << "\n";
-
-    TLogEntryTable::iterator it;
-    QRegExp regexLineEnd("(\r\n|\r|\n)");
-    QRegExp regexSplitter("( - )");
-    for( it = m_table.begin(); it != m_table.end(); ++it)
-    {
-        QString line;
-        for ( int i = 0; i < int( order.size() ); i++ )
-        {
-            if( line.length() )
-                line.append(" - ");
-
-            QString entry( *(*it)->getAttributeAsString(order[i]
-                         , ExportToQStringAdapter( m_modelConfiguration->getLogEntryFactory()->getFieldConfiguration(i).attributeFactory ) ) );
-            entry.replace(regexLineEnd,"\n " );
-
-            if( i != int( order.size()-1 ) )
-              entry.replace(regexSplitter," -- " );
-
-            line.append( entry );
-        }
-        str << line << "\n";
-    }
+    return boost::shared_ptr<QMutexLocker>( new QMutexLocker(&m_mutex) );
 }

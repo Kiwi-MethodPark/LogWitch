@@ -26,6 +26,7 @@
 #include "LogData/ObjectCache.hxx"
 
 #include "Models/LogEntryTableModel.h"
+#include "Models/LogEntryTableModelFileExporter.h"
 #include "Models/LogEntryTableFilter.h"
 #include "Models/EntryFormatingModel.h"
 
@@ -227,7 +228,8 @@ LogEntryTableWindow::LogEntryTableWindow( boost::shared_ptr<LogEntryTableModel> 
 
 void LogEntryTableWindow::exportLogfile( const QString &filename )
 {
-    m_model->exportToFile( filename );
+    LogEntryTableModelFileExporter exporter( *m_model );
+    exporter.exportTo( filename );
 }
 
 void LogEntryTableWindow::switchSearchMode()

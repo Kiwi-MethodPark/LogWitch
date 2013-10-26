@@ -9,6 +9,7 @@
 #define LOGENTRYTABLEMODEL_H_
 
 #include <boost/shared_ptr.hpp>
+#include <boost/any.hpp>
 
 #include <QAbstractTableModel>
 #include <QtCore/QtCore>
@@ -54,7 +55,7 @@ public:
 
     bool setHeaderData ( int section, Qt::Orientation orientation, const QVariant & value, int role );
 
-    TconstSharedLogEntry getEntryByRow( const int &row ) const;
+    TconstSharedLogEntry getEntryByRow( const int row ) const;
 
     TconstSharedLogEntry getEntryByIndex( const QModelIndex &index ) const;
 
@@ -65,12 +66,22 @@ public:
     /**
      * This starts block of inserting new items to model. If we are
      * in blocked mode, we will refuse to add new items and we will store the incoming items
-     * for later processing. This is usefull, if we want to stop scrolling or adding / deleting
+     * for later processing. This is useful, if we want to stop scrolling or adding / deleting
      * of items.
      */
     void beginBlockItems();
 
     void endBlockItems();
+
+    /**
+     * Retrieve the locked mutex to ensure we have exclusive access to the model till
+     * our action ha been finished. During this time the Model will be used only by
+     * the caller and is therefore not being altered by any parser.
+     *
+     * As long as the returned any contains its value (or is copied to another any)
+     * the lock is being held. To release the lock, destroy the content of the any.
+     */
+    boost::any getLock();
 
 public slots:
     /**
@@ -104,13 +115,6 @@ public slots:
 	 * the view or something elese.
 	 */
     void signalErrorFromParser( QString error );
-
-    /**
-     * This slot exports the model to the file named with target.
-     *
-     * @param target Filename to the file the data should be written to.
-     */
-    void exportToFile( const QString &target );
 
 signals:
     /**
