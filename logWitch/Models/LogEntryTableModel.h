@@ -122,6 +122,14 @@ signals:
     void signalError( QString error );
 
 private:
+    /**
+     * Implementation of removeReows.
+     *
+     * This method does not do any locking, this has to be ensured by
+     * the caller.
+     */
+    bool removeRows_unlocked ( int row, int count, const QModelIndex & parent = QModelIndex() );
+
     typedef std::vector<TconstSharedLogEntry> TLogEntryTable;
 
     TLogEntryTable m_table;

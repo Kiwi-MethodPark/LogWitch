@@ -249,7 +249,7 @@ void LogEntryTableModel::insertEntry( TconstSharedNewLogEntryMessage mess )
             }
             else
             {
-                removeRows( 0, toRemove );
+                removeRows_unlocked( 0, toRemove );
             }
         }
     }
@@ -277,6 +277,12 @@ void LogEntryTableModel::endBlockItems()
 }
 
 bool LogEntryTableModel::removeRows ( int row, int count, const QModelIndex & parent )
+{
+    QMutexLocker lo( &m_mutex );
+    return removeRows_unlocked ( row, count, parent );
+}
+
+bool LogEntryTableModel::removeRows_unlocked ( int row, int count, const QModelIndex & parent )
 {
     if( row + count > m_table.size() || count == 0 )
         return false;
