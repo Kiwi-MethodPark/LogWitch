@@ -77,9 +77,10 @@ private:
 
 	int m_surroundingRowStart;
 
-    int m_surroundingRowEnd;
+  int m_surroundingRowEnd;
 
-    bool m_resetFilterNeeded;
+  bool m_resetFilterNeeded;
+
 };
 
 #endif /* LOGENTRYTABLEFILTER_H_ */
