@@ -8,6 +8,8 @@
 #include "LogEntryTableFilter.h"
 
 #include <QtGui>
+#include <algorithm>
+#include <boost/foreach.hpp>
 
 #include "Models/LogEntryTableModel.h"
 #include "LogData/LogEntry.h"
@@ -18,8 +20,11 @@
 LogEntryTableFilter::LogEntryTableFilter( QObject *parent)
 	: QSortFilterProxyModel( parent )
 	, m_model( NULL )
-    , m_ruleTable( new RuleTable )
-    , m_resetFilterNeeded( false )
+  , m_ruleTable( new RuleTable )
+  , m_resetFilterNeeded( false )
+  , m_surroundingRowStart(-1)
+  , m_surroundingRowEnd(-1)
+  , m_exportOfSourceModel( NULL )
 {
     QObject::connect(&m_filterChain, SIGNAL(filterUpdateFinished()),
                      this, SLOT(invalidate()));
@@ -29,6 +34,31 @@ LogEntryTableFilter::LogEntryTableFilter( QObject *parent)
 
 LogEntryTableFilter::~LogEntryTableFilter()
 {
+}
+
+void LogEntryTableFilter::generateExportList( std::vector<TconstSharedLogEntry>& ls
+    , QModelIndex first, QModelIndex last
+    , const ExportParameters& param ) const
+{
+  // Since we have not implemented sorting, we can use a range to fetch
+  // the entries for now.
+  QModelIndex srcFirst = mapToSource( first );
+  QModelIndex srcLast = mapToSource( last );
+  if ( param.withoutFilter )
+  {
+    m_exportOfSourceModel->generateExportList( ls, srcFirst, srcLast, param );
+  }
+  else
+  {
+    std::vector<TconstSharedLogEntry> tmpVec;
+    m_exportOfSourceModel->generateExportList( tmpVec, srcFirst, srcLast, param );
+
+    BOOST_FOREACH( TconstSharedLogEntry e, tmpVec )
+    {
+      if (filterAcceptInt(e))
+        ls.push_back(e);
+    }
+  }
 }
 
 void LogEntryTableFilter::addFilter( boost::shared_ptr<LogEntryFilter> flt )
@@ -88,6 +118,9 @@ LogEntryTableModel *LogEntryTableFilter::getSourceModel() const
 void LogEntryTableFilter::setSourceModel( QAbstractItemModel *model )
 {
 	QSortFilterProxyModel::setSourceModel( model );
+
+  m_exportOfSourceModel = dynamic_cast<ExportableIfc *>(model);
+  Q_CHECK_PTR(m_exportOfSourceModel);
 
 	m_model = dynamic_cast<LogEntryTableModel *>( sourceModel() );
 	hideSurroundingLogEntries();

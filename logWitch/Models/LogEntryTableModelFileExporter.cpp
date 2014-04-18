@@ -40,9 +40,35 @@ namespace
             return value.toString();
         }
     };
+
+    struct DumpAllEntries
+    {
+        DumpAllEntries( LogEntryTableModel& model )
+        : m_model( model)
+        , m_entriesInModel(m_model.rowCount())
+        , m_entryId(0)
+        {}
+
+        TconstSharedLogEntry operator()()
+        {
+            if (m_entryId<m_entriesInModel)
+                return m_model.getEntryByRow(m_entryId++);
+            else
+                return TconstSharedLogEntry();
+        }
+
+        LogEntryTableModel& m_model;
+        const int m_entriesInModel;
+        int m_entryId;
+    };
 }
 
 void LogEntryTableModelFileExporter::exportTo( const QString& filename )
+{
+    exportTo( filename, DumpAllEntries(m_model) );
+}
+
+void LogEntryTableModelFileExporter::exportTo( const QString& filename, boost::function<TconstSharedLogEntry()> funcNextExportItem )
 {
     boost::any lock = m_model.getLock();
 
@@ -100,11 +126,8 @@ void LogEntryTableModelFileExporter::exportTo( const QString& filename )
     QRegExp regexLineEnd("(\r\n|\r|\n)");
     QRegExp regexSplitter("( - )");
 
-    const int entriesInModel = m_model.rowCount();
-    for( int entryId = 0; entryId < entriesInModel; ++entryId)
+    for( TconstSharedLogEntry logEntry = funcNextExportItem(); logEntry; logEntry = funcNextExportItem() )
     {
-        TconstSharedLogEntry logEntry = m_model.getEntryByRow(entryId);
-
         QString line;
         for ( int i = 0; i < int( order.size() ); i++ )
         {

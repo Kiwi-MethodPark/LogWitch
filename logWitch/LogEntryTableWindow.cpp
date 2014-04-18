@@ -7,6 +7,7 @@
 
 #include "LogEntryTableWindow.h"
 
+#include <boost/scoped_ptr.hpp>
 #include <limits>
 
 #include "ActionRules/ActionDataRewriter.h"
@@ -18,6 +19,8 @@
 #include "ActionRules/RuleTable.h"
 #include "ActionRules/ValueGetterConstQString.h"
 #include "ActionRules/ValueGetterLogEntry.h"
+
+#include "GUI/DialogExportOptions.h"
 
 #include "GUITools/QScrollDownTableView.h"
 
@@ -78,7 +81,7 @@ LogEntryTableWindow::LogEntryTableWindow( boost::shared_ptr<LogEntryTableModel> 
     m_tableView->verticalHeader()->hide();
     m_tableView->setAlternatingRowColors(true);
     m_tableView->setSelectionBehavior(QAbstractItemView::SelectRows);
-    m_tableView->setSelectionMode( QAbstractItemView::SingleSelection );
+    m_tableView->setSelectionMode( QAbstractItemView::ContiguousSelection );
 
     m_tableView->setContextMenuPolicy( Qt::CustomContextMenu );
     QObject::connect(m_tableView, SIGNAL(customContextMenuRequested ( const QPoint &) ),
@@ -226,10 +229,74 @@ LogEntryTableWindow::LogEntryTableWindow( boost::shared_ptr<LogEntryTableModel> 
     QMdiSubWindow::setAttribute(Qt::WA_DeleteOnClose,true);
 }
 
+namespace
+{
+  /**
+   * This iterator passes only the selected entries to the caller.
+   */
+  struct DumpSelectedEntries
+  {
+    DumpSelectedEntries(const std::vector<TconstSharedLogEntry>& entries)
+    : entries(entries)
+    , it(entries.begin())
+    {
+    }
+
+    TconstSharedLogEntry operator()()
+    {
+      if (it != entries.end())
+      {
+        return *(it++);
+      }
+      else
+        return TconstSharedLogEntry();
+    }
+
+    const std::vector<TconstSharedLogEntry> &entries;
+    std::vector<TconstSharedLogEntry>::const_iterator it;
+  };
+}
+
 void LogEntryTableWindow::exportLogfile( const QString &filename )
 {
-    LogEntryTableModelFileExporter exporter( *m_model );
-    exporter.exportTo( filename );
+  // Check if we have a selection first.
+  const QItemSelection selection = m_tableView->selectionModel()->selection();
+
+
+  if (!selection.empty())
+  {
+    const QItemSelectionRange& range = selection.front();
+    if (!range.isEmpty())
+    {
+      boost::scoped_ptr<DialogExportOptions> dlg( new DialogExportOptions );
+      dlg->setExportOption(DialogExportOptions::All);
+
+      if (dlg->exec())
+      {
+        const DialogExportOptions::ExportOption option = dlg->getExportOption();
+        if (DialogExportOptions::All == option)
+        {
+          LogEntryTableModelFileExporter exporter( *m_model );
+          exporter.exportTo( filename );
+        }
+        else if (DialogExportOptions::SelectionWithoutFilter == option
+            || DialogExportOptions::Selection == option)
+        {
+          ExportableIfc::ExportParameters params;
+          params.withoutFilter = DialogExportOptions::SelectionWithoutFilter == option;
+          std::vector<TconstSharedLogEntry> entries;
+
+          boost::any lock = m_model->getLock();
+
+          m_timeFormatModel->generateExportList( entries
+              , range.topLeft(), range.bottomRight(), params );
+
+          LogEntryTableModelFileExporter exporter( *m_model );
+          exporter.exportTo( filename, DumpSelectedEntries(entries) );
+       }
+      }
+    }
+  }
 }
 
 void LogEntryTableWindow::switchSearchMode()
@@ -459,8 +526,15 @@ TSharedCompiledRulesStateSaver LogEntryTableWindow::getCompiledRules()
 
 void LogEntryTableWindow::newSelection ( const QItemSelection & selected, const QItemSelection & )
 {
-    TconstSharedLogEntry entry = m_model->getEntryByIndex( mapToSource( selected.front().topLeft() ) );
-    m_text->setHtml( m_model->getParserModelConfiguration()->getEntryToTextFormater()->formatEntry( entry ) );
+    if (!selected.empty())
+    {
+        const QItemSelectionRange& range = selected.front();
+        if (!range.isEmpty())
+        {
+            TconstSharedLogEntry entry = m_model->getEntryByIndex( mapToSource( range.topLeft() ) );
+            m_text->setHtml( m_model->getParserModelConfiguration()->getEntryToTextFormater()->formatEntry( entry ) );
+        }
+    }
 }
 
 void LogEntryTableWindow::contextMenu( const QPoint & pt )

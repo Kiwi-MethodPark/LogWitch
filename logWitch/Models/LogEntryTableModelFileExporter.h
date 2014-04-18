@@ -9,7 +9,12 @@
 #define LOGENTRYTABLEMODELFILEEXPORTER_H_
 #include <QtCore>
 
+#include <boost/function.hpp>
+
+#include "LogData/LogEntry.h"
+
 class LogEntryTableModel;
+
 
 /**
  * This is a exporter class which can be used to export the stuff of a LogEntryTableModel
@@ -23,6 +28,8 @@ public:
     virtual ~LogEntryTableModelFileExporter();
 
     void exportTo( const QString& filename );
+
+    void exportTo( const QString& filename, boost::function<TconstSharedLogEntry()> funcNextExportItem );
 private:
     LogEntryTableModel& m_model;
 };

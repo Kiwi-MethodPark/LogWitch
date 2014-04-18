@@ -3,6 +3,7 @@ CONFIGURE_FILE(${CMAKE_CURRENT_SOURCE_DIR}/GenerateIfo.h.in ${CMAKE_CURRENT_BINA
 
 SET(LFA_FORMS
   logfileanalyser.ui
+  GUI/DialogExportOptions.ui
 )
 
 SET(LFA_MOC_CLASSES
@@ -10,6 +11,8 @@ SET(LFA_MOC_CLASSES
 	FilterListView.h
 	LogEntryTableWindow.h
 	logfileanalyser.h
+	
+	GUI/DialogExportOptions.h
 )
 
 SET(LFA_SOURCES
@@ -20,6 +23,8 @@ SET(LFA_SOURCES
 	LogEntryTableWindow.cpp
 	logfileanalyser.cpp
 	main.cpp	
+	
+	GUI/DialogExportOptions.cpp
 )
 
 SET(LFA_RESOURCES 

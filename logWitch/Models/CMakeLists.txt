@@ -3,19 +3,20 @@ SET(LFA_MODELS_MOC_CLASSES
 	LogEntryFilterChain.h
 	LogEntryTableFilter.h
 	LogEntryTableModel.h
-    StringCacheTreeModel.h
+  StringCacheTreeModel.h
 )
 
 SET(LFA_MODELS_LIB_SOURCES
 	EntryFormatingModel.cpp
-    LogEntryFilter.cpp
-    LogEntryFilterChain.cpp
-    LogEntryRemoveFilter.cpp
-    LogEntryTableFilter.cpp
-    LogEntryTableModel.cpp
-    LogEntryTableModelFileExporter.cpp
-    StringCacheTreeItem.cpp
-    StringCacheTreeModel.cpp
+	ExportableIfc.cpp
+  LogEntryFilter.cpp
+  LogEntryFilterChain.cpp
+  LogEntryRemoveFilter.cpp
+  LogEntryTableFilter.cpp
+  LogEntryTableModel.cpp
+  LogEntryTableModelFileExporter.cpp
+  StringCacheTreeItem.cpp
+  StringCacheTreeModel.cpp
 )
 
 QT4_WRAP_CPP(LFA_MODELS_MOC_SOURCES ${LFA_MODELS_MOC_CLASSES})

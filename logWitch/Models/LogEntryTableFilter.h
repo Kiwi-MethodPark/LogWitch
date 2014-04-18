@@ -9,13 +9,17 @@
 #define LOGENTRYTABLEFILTER_H_
 
 #include <QSortFilterProxyModel>
+
+#include "ExportableIfc.h"
 #include "LogEntryFilterChain.h"
+
 #include "ActionRules/RuleTable.h"
 
 class LogEntryTableModel;
 
 class LogEntryTableFilter
 	: public QSortFilterProxyModel
+	, public ExportableIfc
 {
 	Q_OBJECT
 public:
@@ -32,6 +36,10 @@ public:
 	TSharedRuleTable getRuleTable();
 
 	virtual ~LogEntryTableFilter();
+
+	void generateExportList( std::vector<TconstSharedLogEntry>& ls
+	    , QModelIndex first, QModelIndex last
+	    , const ExportParameters& param ) const;
 
 public slots:
 	void updateChanges();
@@ -81,6 +89,7 @@ private:
 
   bool m_resetFilterNeeded;
 
+  ExportableIfc *m_exportOfSourceModel;
 };
 
 #endif /* LOGENTRYTABLEFILTER_H_ */

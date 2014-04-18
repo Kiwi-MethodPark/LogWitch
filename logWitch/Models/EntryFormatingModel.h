@@ -8,15 +8,19 @@
 #ifndef ENTRYFORMATINGMODEL_H_
 #define ENTRYFORMATINGMODEL_H_
 #include <QtGui>
+#include "ExportableIfc.h"
 
 class EntryFormatingModel
 : public QSortFilterProxyModel // This should be moved to the identity model in QT4.8 ....
+, public ExportableIfc
 {
     Q_OBJECT
 public:
     EntryFormatingModel( QObject *parent );
 
     QVariant data(const QModelIndex &index, int role) const;
+
+    void setSourceModel( QAbstractItemModel *model );
 
     /**
      * Enables or disables the TimeDiff mode.
@@ -28,6 +32,10 @@ public:
      */
     void setTimeDiffReference( QDateTime time );
 
+
+    void generateExportList( std::vector<TconstSharedLogEntry>& entries
+        , QModelIndex first, QModelIndex last
+        , const ExportParameters& param ) const;
 private:
     QString m_formatString;
 
@@ -44,6 +52,7 @@ private:
 
     bool m_timeDiffRowMode;
 
+    ExportableIfc *m_exportOfSourceModel;
 };
 
 #endif /* TIMEFORMATINGMODEL_H_ */

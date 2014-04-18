@@ -13,6 +13,9 @@
 
 #include <QAbstractTableModel>
 #include <QtCore/QtCore>
+
+#include "ExportableIfc.h"
+
 #include "LogData/LogEntry.h"
 #include "LogData/LogEntryParserModelConfiguration.h"
 #include "LogData/NewLogEntryMessage.h"
@@ -23,11 +26,12 @@ class LogEntryParserModelConfiguration;
 /**
  * This is the central model for LogEntries.
  */
-class LogEntryTableModel: public QAbstractTableModel
+class LogEntryTableModel: public QAbstractTableModel, public ExportableIfc
 {
   Q_OBJECT
 
 public:
+  static const int RawDataRole = Qt::UserRole;
 
   LogEntryTableModel(boost::shared_ptr<LogEntryParser> parser);
   virtual ~LogEntryTableModel();
@@ -41,7 +45,6 @@ public:
   {
     return m_ModelName;
   }
-  ;
 
   /**
    * This starts the model. If the startup was finished, using
@@ -89,6 +92,10 @@ public:
    * the lock is being held. To release the lock, destroy the content of the any.
    */
   boost::any getLock();
+
+  void generateExportList( std::vector<TconstSharedLogEntry>& entries
+      , QModelIndex first, QModelIndex last
+      , const ExportParameters& param ) const;
 
 public slots:
   /**

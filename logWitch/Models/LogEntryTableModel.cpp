@@ -49,6 +49,18 @@ void LogEntryTableModel::startModel()
 	m_entryLoader->startEmiting();
 }
 
+void LogEntryTableModel::generateExportList( std::vector<TconstSharedLogEntry>& entries
+    , QModelIndex first, QModelIndex last
+    , const ExportParameters& ) const
+{
+  QMutexLocker lo( &m_mutex );
+  int rowFirst = std::max( first.row(), 0  );
+  int rowLast = std::min( last.row(), int( m_table.size() ) );
+
+  for( int row = rowFirst; row <= rowLast; ++row )
+    entries.push_back( m_table[row] );
+}
+
 void LogEntryTableModel::signalErrorFromParser( QString error )
 {
     qDebug() << "error from parser received: " << error;
@@ -126,6 +138,12 @@ QVariant LogEntryTableModel::data(const QModelIndex &index, int role) const
 
     	return var;
     }
+    else if (role == RawDataRole)
+    {
+    	TconstSharedLogEntry entry = m_table[index.row()];
+      return QVariant( entry );
+    }
+
     return QVariant();
 }
 

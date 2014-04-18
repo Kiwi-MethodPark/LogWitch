@@ -11,7 +11,17 @@ EntryFormatingModel::EntryFormatingModel( QObject *parent )
 : QSortFilterProxyModel( parent )
 , m_formatString("dd.MM.yyyy hh:mm:ss.zzz")
 , m_timeDiffMode( false )
+, m_exportOfSourceModel( NULL )
 {
+}
+
+void EntryFormatingModel::setSourceModel( QAbstractItemModel *model )
+{
+  // check requirements on model.
+  m_exportOfSourceModel = dynamic_cast<ExportableIfc *>(model);
+  Q_CHECK_PTR(m_exportOfSourceModel);
+
+  QSortFilterProxyModel::setSourceModel( model );
 }
 
 void EntryFormatingModel::setTimeDiffModeEnabled( bool value, bool rowMode )
@@ -23,6 +33,16 @@ void EntryFormatingModel::setTimeDiffModeEnabled( bool value, bool rowMode )
 void EntryFormatingModel::setTimeDiffReference( QDateTime time )
 {
     m_referenceForTimeDiffs = time;
+}
+
+void EntryFormatingModel::generateExportList( std::vector<TconstSharedLogEntry>& ls
+    , QModelIndex first, QModelIndex last
+    , const ExportParameters& param ) const
+{
+  QModelIndex srcFirst = mapToSource( first );
+  QModelIndex srcLast = mapToSource( last );
+
+  m_exportOfSourceModel->generateExportList( ls, srcFirst, srcLast, param );
 }
 
 QVariant EntryFormatingModel::data(const QModelIndex &index, int role) const
