@@ -21,6 +21,10 @@ cpack -G DEB
 
 ../debCleaner.sh *.deb 
 
+if [ -n "${BUILD_LW_POSTFIX}" ]; then
+	for i in *.deb; do mv -v $i `basename $i .deb`.${BUILD_LW_POSTFIX}.deb; done
+fi
+
 cp *.deb ..
 
 echo "Cleaning up!"
