@@ -87,28 +87,28 @@ bool LogEntryParser_Logfile::initParser()
 
 void LogEntryParser_Logfile::run()
 {
-	int i = 0;
+  int i = 0;
 
-	TSharedNewLogEntryMessage newEntryMessage( new NewLogEntryMessage );
+  TSharedNewLogEntryMessage newEntryMessage(new NewLogEntryMessage);
 
-	forever
-	{
-		if ( m_abort)
-			return;
+  forever
+  {
+    if (m_abort)
+      return;
 
-		TSharedLogEntry entry( getNextLogEntry() );
+    TSharedLogEntry entry(getNextLogEntry());
 
-        if( entry )
-            newEntryMessage->entries.push_back( entry );
-        else
-        	m_abort = true;
+    if (entry)
+      newEntryMessage->entries.push_back(entry);
+    else
+    {
+      m_abort = true;
+      emit newEntry(newEntryMessage);
+      qDebug() << "We got " << i << " entries from logfile.";
+    }
 
-        i++;
-	}
-
-    emit newEntry( newEntryMessage );
-
-	qDebug() << "We got " << i << " entries from logfile.";
+    i++;
+  }
 }
 
 TSharedLogEntry LogEntryParser_Logfile::getNextLogEntry()

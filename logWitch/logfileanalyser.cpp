@@ -110,9 +110,29 @@ void LogfileAnalyser::openLogfile()
   if (dialog.exec())
   {
     QStringList fileNames = dialog.selectedFiles();
-//     	createWindowsFromParser( boost::shared_ptr<LogEntryParser>(new LogEntryParser_Logfile( fileNames.first() ) ) );
-    createWindowsFromParser(
-      boost::shared_ptr<LogEntryParser>(new LogEntryParser_LogfileLWI(fileNames.first())));
+
+    boost::shared_ptr<LogEntryParser> parser( new LogEntryParser_LogfileLWI(fileNames.first()) );
+    if (!parser->initParser())
+    {
+      qDebug() << " LWI-Parser failed: " << parser->getInitError();
+      parser.reset( new LogEntryParser_Logfile( fileNames.first() ) );
+      if (parser->initParser())
+        createWindowsFromParser( parser, true);
+      else
+      {
+        QMessageBox msgBox;
+        QString errorText;
+        errorText += tr("Error while initializing parser: \n") + parser->getInitError();
+        msgBox.setText(errorText);
+        msgBox.setStandardButtons(QMessageBox::Ok);
+        msgBox.setDefaultButton(QMessageBox::Ok);
+        msgBox.exec();
+      }
+    }
+    else
+    {
+      createWindowsFromParser( parser, true);
+    }
   }
 }
 
@@ -125,9 +145,9 @@ void LogfileAnalyser::openPort()
   createWindowsFromParser(socketParser);
 }
 
-void LogfileAnalyser::createWindowsFromParser(boost::shared_ptr<LogEntryParser> parser)
+void LogfileAnalyser::createWindowsFromParser(boost::shared_ptr<LogEntryParser> parser, bool alreadyInitialized)
 {
-  if (!parser->initParser())
+  if (!alreadyInitialized && !parser->initParser())
   {
     // Parser has an error while init, so view message box to inform user and do
     // not create a new window.

@@ -30,7 +30,7 @@ public:
 
   bool initParser();
 
-  void createWindowsFromParser(boost::shared_ptr<LogEntryParser> parser);
+  void createWindowsFromParser(boost::shared_ptr<LogEntryParser> parser, bool alreadyInitialized = false);
 
 public slots:
   void subWindowActivated(QMdiSubWindow *);
