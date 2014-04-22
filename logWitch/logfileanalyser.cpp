@@ -22,86 +22,80 @@
 #include "Help/HelpAssistant.h"
 
 LogfileAnalyser::LogfileAnalyser(QWidget *parent)
-    : QMainWindow(parent)
-	, m_myFilterDock( NULL )
-    , m_stateSaver( NULL )
-    , m_helpAssistant( new HelpAssistant )
+  : QMainWindow(parent),
+    m_myFilterDock( NULL),
+    m_stateSaver( NULL),
+    m_helpAssistant(new HelpAssistant)
 {
-	ui.setupUi(this);
+  ui.setupUi(this);
 
-	QString tooltipLog4CPlusPort("Port to listen for log4cplus socket appender");
+  QString tooltipLog4CPlusPort("Port to listen for log4cplus socket appender");
 
-	QLabel *portLabel = new QLabel("Port: ");
-	m_uiLog4cplusPort = new QSpinBox( this );
-	m_uiLog4cplusPort->setToolTip(tooltipLog4CPlusPort);
-	m_uiLog4cplusPort->setMinimum( 1 );
-	m_uiLog4cplusPort->setMaximum(65535);
-	m_uiLog4cplusPort->setValue( 9998 );
-	ui.ToolbarLog4cplus->addWidget( portLabel);
-	m_uiLog4cplusPort_Action = ui.ToolbarLog4cplus->addWidget( m_uiLog4cplusPort );
+  QLabel *portLabel = new QLabel("Port: ");
+  m_uiLog4cplusPort = new QSpinBox(this);
+  m_uiLog4cplusPort->setToolTip(tooltipLog4CPlusPort);
+  m_uiLog4cplusPort->setMinimum(1);
+  m_uiLog4cplusPort->setMaximum(65535);
+  m_uiLog4cplusPort->setValue(9998);
+  ui.ToolbarLog4cplus->addWidget(portLabel);
+  m_uiLog4cplusPort_Action = ui.ToolbarLog4cplus->addWidget(m_uiLog4cplusPort);
 
-	m_stateSaver = new WidgetStateSaver(this);
-    m_stateSaver->addElementToWatch( &m_signalMultiplexer
-            , SignalMultiplexerStateApplier::generate(&m_signalMultiplexer) );
+  m_stateSaver = new WidgetStateSaver(this);
+  m_stateSaver->addElementToWatch(&m_signalMultiplexer,
+                                  SignalMultiplexerStateApplier::generate(&m_signalMultiplexer));
 
-    QObject::connect(ui.actionHelp, SIGNAL(triggered()),
-                     this, SLOT(showDocumentation()));
-    QObject::connect(ui.actionOpenDummyLogger, SIGNAL(triggered()),
-                     this, SLOT(openDummyLogfile()));
-    QObject::connect(ui.actionAddEntries, SIGNAL(triggered()),
-                     this, SLOT(moreDummyLogfile()));
-    QObject::connect(ui.actionOpen, SIGNAL(triggered()),
-                     this, SLOT(openLogfile()));
-    QObject::connect(ui.actionExportLogfile, SIGNAL(triggered()),
-                     this, SLOT(exportLogfile()));
-    QObject::connect(ui.actionOpenLog4cplusServer, SIGNAL(triggered()),
-                     this, SLOT(openPort()));
-    QObject::connect( ui.mdiArea, SIGNAL( subWindowActivated ( QMdiSubWindow *) )
-                    , this, SLOT( subWindowActivated( QMdiSubWindow * ) ) );
+  QObject::connect(ui.actionHelp, SIGNAL(triggered()), this, SLOT(showDocumentation()));
+  QObject::connect(ui.actionOpenDummyLogger, SIGNAL(triggered()), this, SLOT(openDummyLogfile()));
+  QObject::connect(ui.actionAddEntries, SIGNAL(triggered()), this, SLOT(moreDummyLogfile()));
+  QObject::connect(ui.actionOpen, SIGNAL(triggered()), this, SLOT(openLogfile()));
+  QObject::connect(ui.actionExportLogfile, SIGNAL(triggered()), this, SLOT(exportLogfile()));
+  QObject::connect(ui.actionOpenLog4cplusServer, SIGNAL(triggered()), this, SLOT(openPort()));
+  QObject::connect(ui.mdiArea, SIGNAL(subWindowActivated ( QMdiSubWindow *)), this,
+                   SLOT(subWindowActivated( QMdiSubWindow * )));
 
-    m_myFilterRulesDock = new QDockWidget(tr("Filter Rules"), this);
-    m_myFilterRulesDock->setAllowedAreas(Qt::AllDockWidgetAreas);
-    m_myfilterRuleSelectionWidget = new FilterRuleSelectionWindow( m_myFilterRulesDock );
-    m_myFilterRulesDock->setWidget( m_myfilterRuleSelectionWidget );
-    addDockWidget(Qt::RightDockWidgetArea, m_myFilterRulesDock);
+  m_myFilterRulesDock = new QDockWidget(tr("Filter Rules"), this);
+  m_myFilterRulesDock->setAllowedAreas(Qt::AllDockWidgetAreas);
+  m_myfilterRuleSelectionWidget = new FilterRuleSelectionWindow(m_myFilterRulesDock);
+  m_myFilterRulesDock->setWidget(m_myfilterRuleSelectionWidget);
+  addDockWidget(Qt::RightDockWidgetArea, m_myFilterRulesDock);
 
-    m_stateSaver->addElementToWatch( m_myfilterRuleSelectionWidget
-            , GetSetStateSaver<FilterRuleSelWndStateSaverTypes>::generate() );
-    m_stateSaver->addElementToWatch( ui.actionCapture
-            , GetSetStateSaver<QQctionCheckedSaverTypes>::generate() );
+  m_stateSaver->addElementToWatch(m_myfilterRuleSelectionWidget,
+                                  GetSetStateSaver<FilterRuleSelWndStateSaverTypes>::generate());
+  m_stateSaver->addElementToWatch(ui.actionCapture,
+                                  GetSetStateSaver<QQctionCheckedSaverTypes>::generate());
 
 }
 
-void LogfileAnalyser::subWindowDestroyed( QObject *obj )
+void LogfileAnalyser::subWindowDestroyed(QObject *obj)
 {
-    qDebug() << "subWindowDestroyed";
-    // Window closed, remove docks
-    if( ui.mdiArea->subWindowList().size() == 0 )
-        m_stateSaver->switchState( NULL );
+  qDebug() << "subWindowDestroyed";
+  // Window closed, remove docks
+  if (ui.mdiArea->subWindowList().size() == 0)
+    m_stateSaver->switchState( NULL);
+  else
+  {
+    QMdiSubWindow *wnd = ui.mdiArea->activeSubWindow();
+    if (wnd)
+      m_stateSaver->switchState(wnd);
     else
-    {
-        QMdiSubWindow *wnd = ui.mdiArea->activeSubWindow();
-        if( wnd )
-            m_stateSaver->switchState( wnd );
-        else
-            m_stateSaver->switchState( ui.mdiArea->subWindowList().front() );
-    }
+      m_stateSaver->switchState(ui.mdiArea->subWindowList().front());
+  }
 
-    m_stateSaver->deregisterFocusObject( obj, false );
+  m_stateSaver->deregisterFocusObject(obj, false);
 }
 
-void LogfileAnalyser::subWindowActivated( QMdiSubWindow *obj )
+void LogfileAnalyser::subWindowActivated(QMdiSubWindow *obj)
 {
-    qDebug() << "subWindowActivated";
-    if( obj != NULL )
-        m_stateSaver->switchState( obj );
+  qDebug() << "subWindowActivated";
+  if (obj != NULL)
+    m_stateSaver->switchState(obj);
 }
 
 void LogfileAnalyser::showDocumentation()
 {
-    qDebug() << "ShuwDocumentation";
+  qDebug() << "ShuwDocumentation";
 
-    m_helpAssistant->showDocumentation("index.html");
+  m_helpAssistant->showDocumentation("index.html");
 }
 
 LogfileAnalyser::~LogfileAnalyser()
@@ -111,122 +105,116 @@ LogfileAnalyser::~LogfileAnalyser()
 
 void LogfileAnalyser::openLogfile()
 {
-    QFileDialog dialog;
-    dialog.setFileMode(QFileDialog::ExistingFile);
-    if(dialog.exec())
-    {
-    	QStringList fileNames = dialog.selectedFiles();
+  QFileDialog dialog;
+  dialog.setFileMode(QFileDialog::ExistingFile);
+  if (dialog.exec())
+  {
+    QStringList fileNames = dialog.selectedFiles();
 //     	createWindowsFromParser( boost::shared_ptr<LogEntryParser>(new LogEntryParser_Logfile( fileNames.first() ) ) );
-        createWindowsFromParser( boost::shared_ptr<LogEntryParser>(new LogEntryParser_LogfileLWI( fileNames.first() ) ) );
-    }
+    createWindowsFromParser(
+      boost::shared_ptr<LogEntryParser>(new LogEntryParser_LogfileLWI(fileNames.first())));
+  }
 }
 
 void LogfileAnalyser::openPort()
 {
-	int port = m_uiLog4cplusPort->value();
-	boost::shared_ptr<LogEntryParser_log4cplusSocket> socketParser( new LogEntryParser_log4cplusSocket( port ) );
+  int port = m_uiLog4cplusPort->value();
+  boost::shared_ptr<LogEntryParser_log4cplusSocket> socketParser(
+    new LogEntryParser_log4cplusSocket(port));
 
-	createWindowsFromParser( socketParser );
+  createWindowsFromParser(socketParser);
 }
-
 
 void LogfileAnalyser::createWindowsFromParser(boost::shared_ptr<LogEntryParser> parser)
 {
-    if( !parser->initParser() )
-    {
-        // Parser has an error while init, so view message box to inform user and do
-        // not create a new window.
-        QMessageBox msgBox;
-        QString errorText;
-        errorText += tr("Error while initializing parser: \n") + parser->getInitError();
-        msgBox.setText(errorText);
-        msgBox.setStandardButtons(QMessageBox::Ok);
-        msgBox.setDefaultButton(QMessageBox::Ok);
-        msgBox.exec();
-        return;
-    }
+  if (!parser->initParser())
+  {
+    // Parser has an error while init, so view message box to inform user and do
+    // not create a new window.
+    QMessageBox msgBox;
+    QString errorText;
+    errorText += tr("Error while initializing parser: \n") + parser->getInitError();
+    msgBox.setText(errorText);
+    msgBox.setStandardButtons(QMessageBox::Ok);
+    msgBox.setDefaultButton(QMessageBox::Ok);
+    msgBox.exec();
+    return;
+  }
 
-	boost::shared_ptr<LogEntryTableModel> model( new LogEntryTableModel( parser ) );
+  boost::shared_ptr<LogEntryTableModel> model(new LogEntryTableModel(parser));
 
-	LogEntryTableWindow *wnd = new LogEntryTableWindow( model, ui.mdiArea );
-    m_signalMultiplexer.setObject( wnd );
-    m_signalMultiplexer.connect( ui.actionClearLogTable, SIGNAL(triggered())
-            , wnd, SLOT(clearTable() ) );
-    m_signalMultiplexer.connect( ui.actionCapture, SIGNAL(toggled(bool))
-            , wnd, SLOT(capture(bool) ) );
+  LogEntryTableWindow *wnd = new LogEntryTableWindow(model, ui.mdiArea);
+  m_signalMultiplexer.setObject(wnd);
+  m_signalMultiplexer.connect(ui.actionClearLogTable, SIGNAL(triggered()), wnd, SLOT(clearTable()));
+  m_signalMultiplexer.connect(ui.actionCapture, SIGNAL(toggled(bool)), wnd, SLOT(capture(bool)));
 
+  wnd->setWindowState(Qt::WindowMaximized);
+  wnd->setAttribute(Qt::WA_DeleteOnClose);
+  wnd->setWindowTitle(parser->getName());
+  wnd->show();
 
-    wnd->setWindowState(Qt::WindowMaximized );
-    wnd->setAttribute(Qt::WA_DeleteOnClose);
-    wnd->setWindowTitle( parser->getName() );
-	wnd->show();
+  ui.actionCapture->setChecked(true);
 
-    ui.actionCapture->setChecked( true );
+  /*
+   * We want to open the Dock the first time we create a window.
+   * The advantage of doing so is the correct size for the inner
+   * filter tab widget which is set to the dock widget.
+   */
+  if (!m_myFilterDock)
+  {
+    m_myFilterDock = new QDockWidget(tr("FilterSettings"), this);
+    m_myFilterDock->setAllowedAreas(Qt::LeftDockWidgetArea | Qt::RightDockWidgetArea);
+    m_stateSaver->addElementToWatch(m_myFilterDock, DockWidgetStateSaver::generate());
 
-	/*
-	 * We want to open the Dock the first time we create a window.
-	 * The advantage of doing so is the correct size for the inner
-	 * filter tab widget which is set to the dock widget.
-	 */
-	if( !m_myFilterDock )
-	{
-        m_myFilterDock = new QDockWidget(tr("FilterSettings"), this);
-        m_myFilterDock->setAllowedAreas(Qt::LeftDockWidgetArea | Qt::RightDockWidgetArea);
-        m_stateSaver->addElementToWatch( m_myFilterDock
-                , DockWidgetStateSaver::generate() );
+    wnd->setDockForFilter(m_myFilterDock);
+    addDockWidget(Qt::RightDockWidgetArea, m_myFilterDock);
+  }
+  else
+  {
+    wnd->setDockForFilter(m_myFilterDock);
+  }
 
-		wnd->setDockForFilter(m_myFilterDock);
-		addDockWidget(Qt::RightDockWidgetArea, m_myFilterDock);
-	}
-	else
-	{
-		wnd->setDockForFilter(m_myFilterDock);
-	}
+  QObject::connect(wnd, SIGNAL(destroyed ( QObject *)), this,
+                   SLOT(subWindowDestroyed( QObject * )));
 
-    QObject::connect( wnd, SIGNAL( destroyed ( QObject *) )
-                    , this, SLOT( subWindowDestroyed( QObject * ) ) );
+  model->startModel();
 
-	model->startModel();
-
-	TSharedCompiledRulesStateSaver state = wnd->getCompiledRules();
-	m_myfilterRuleSelectionWidget->setWindow( state );
+  TSharedCompiledRulesStateSaver state = wnd->getCompiledRules();
+  m_myfilterRuleSelectionWidget->setWindow(state);
 
 }
 
 void LogfileAnalyser::openDummyLogfile()
 {
-	// Create table with log entries and a new model for this
-	boost::shared_ptr<LogEntryParser_dummy> parser( new LogEntryParser_dummy );
-	m_parser = parser;
+  // Create table with log entries and a new model for this
+  boost::shared_ptr<LogEntryParser_dummy> parser(new LogEntryParser_dummy);
+  m_parser = parser;
 
-	createWindowsFromParser( parser );
+  createWindowsFromParser(parser);
 }
 
 void LogfileAnalyser::moreDummyLogfile()
 {
-	if( !m_parser )
-		return;
+  if (!m_parser)
+    return;
 
-	m_parser->addEntries( 100 );
+  m_parser->addEntries(100);
 }
 
 void LogfileAnalyser::exportLogfile()
 {
-    LogEntryTableWindow *wnd = NULL;
-    wnd = dynamic_cast<LogEntryTableWindow *>( ui.mdiArea->activeSubWindow() );
+  LogEntryTableWindow *wnd = NULL;
+  wnd = dynamic_cast<LogEntryTableWindow *>(ui.mdiArea->activeSubWindow());
 
-    if( wnd )
-    {
-        QString fname;
-        fname += "exportedLogfile "
-               + QDateTime::currentDateTime().toString("yyyyMMdd hhmm")
-               + ".log";
+  if (wnd)
+  {
+    QString fname;
+    fname += "exportedLogfile " + QDateTime::currentDateTime().toString("yyyyMMdd hhmm") + ".log";
 
-        QString fileName = QFileDialog::getSaveFileName(this, tr("Export Logfile"),
-                               fname,
-                               tr("Logfile (*.log *.txt)"));
+    QString fileName = QFileDialog::getSaveFileName(this, tr("Export Logfile"), fname,
+                                                    tr("Logfile (*.log *.txt)"));
 
-        if( fileName.length() )
-            wnd->exportLogfile( fileName );
-    }
+    if (fileName.length())
+      wnd->exportLogfile(fileName);
+  }
 }

@@ -22,49 +22,49 @@ class FilterRuleSelectionWindow;
 
 class LogfileAnalyser : public QMainWindow
 {
-    Q_OBJECT
+  Q_OBJECT
 
 public:
-    LogfileAnalyser(QWidget *parent = 0);
-    ~LogfileAnalyser();
+  LogfileAnalyser(QWidget *parent = 0);
+  ~LogfileAnalyser();
 
-    bool initParser();
+  bool initParser();
 
-    void createWindowsFromParser(boost::shared_ptr<LogEntryParser> parser);
+  void createWindowsFromParser(boost::shared_ptr<LogEntryParser> parser);
 
 public slots:
-    void subWindowActivated( QMdiSubWindow * );
-    void subWindowDestroyed( QObject *obj );
-    void showDocumentation();
+  void subWindowActivated(QMdiSubWindow *);
+  void subWindowDestroyed(QObject *obj);
+  void showDocumentation();
 
 private:
-    Ui::LogfileAnalyserClass ui;
+  Ui::LogfileAnalyserClass ui;
 
-    boost::shared_ptr<LogEntryParser_dummy> m_parser;
+  boost::shared_ptr<LogEntryParser_dummy> m_parser;
 
-    QDockWidget *m_myFilterDock;
-    QDockWidget *m_myFilterRulesDock;
+  QDockWidget *m_myFilterDock;
+  QDockWidget *m_myFilterRulesDock;
 
-    FilterRuleSelectionWindow *m_myfilterRuleSelectionWidget;
+  FilterRuleSelectionWindow *m_myfilterRuleSelectionWidget;
 
-    QSpinBox *m_uiLog4cplusPort;
-    QAction * m_uiLog4cplusPort_Action;
+  QSpinBox *m_uiLog4cplusPort;
+  QAction * m_uiLog4cplusPort_Action;
 
-    WidgetStateSaver *m_stateSaver;
-    SignalMultiplexer m_signalMultiplexer;
+  WidgetStateSaver *m_stateSaver;
+  SignalMultiplexer m_signalMultiplexer;
 
-    boost::shared_ptr<HelpAssistant> m_helpAssistant;
+  boost::shared_ptr<HelpAssistant> m_helpAssistant;
 
 private slots:
-  	void openDummyLogfile();
+  void openDummyLogfile();
 
-  	void moreDummyLogfile();
+  void moreDummyLogfile();
 
-  	void openLogfile();
+  void openLogfile();
 
-  	void openPort();
+  void openPort();
 
-  	void exportLogfile();
+  void exportLogfile();
 };
 
 #endif // LOGFILEANALYSER_H
