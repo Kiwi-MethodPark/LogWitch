@@ -21,7 +21,7 @@ LogEntryParser_Logfile::LogEntryParser_Logfile( const QString &filename)
 	: m_abort(false )
 	, logfile( filename )
 	, logfileStreamReady( false )
-	, lineMessageRegex( new QRegExp("^([\\d-]+\\s+[\\d\\,\\:]+)\\s+-\\s+(.*)\\s+-\\s+\\[(.*)\\]\\s+-\\s+(.*)$") )
+	, lineMessageRegex( new QRegExp("^([\\d-]+\\s+[\\d\\,\\:]+)\\s+-\\s+((?:(?!\\s+-\\s+).)*)\\s+-\\s+((?:(?!\\s+-\\s+).)*)\\s+-\\s+(\\[(.*)\\]|((?!\\s+-\\s+).)*)\\s+-\\s+(.*)$") )
 	, cellRegex( "\\s+-\\s+" )
 	, timeFormat( "yyyy-MM-dd HH:mm:ss,zzz" )
     , myFactory( new LogEntryFactory )
@@ -150,18 +150,17 @@ TSharedLogEntry LogEntryParser_Logfile::getNextLogEntry()
 					entry->setAttribute( QVariant(
 					        QDateTime::fromString ( lineMessageRegex->cap(1), timeFormat ) ), 1 );
 					// File Source
-					entry->setAttribute( QVariant( lineMessageRegex->cap(3) ), 5 );
-					message = lineMessageRegex->cap(4);
+					if (lineMessageRegex->cap(5).isEmpty())
+					  entry->setAttribute( QVariant( lineMessageRegex->cap(4) ), 5 );
+					else
+					  entry->setAttribute( QVariant( lineMessageRegex->cap(5) ), 5 );
 
-					QStringList lst = lineMessageRegex->cap(2).split( cellRegex );
-					if( lst.size() >= 2 )
-					{
-						// Severity
-						entry->setAttribute( QVariant( lst[0] ), 3 );
-						// Component
-						entry->setAttribute( QVariant( lst[1] ), 4 );
-					}
+					message = lineMessageRegex->cap(7);
 
+          // Severity
+          entry->setAttribute( QVariant( lineMessageRegex->cap(2) ), 3 );
+          // Component
+          entry->setAttribute( QVariant( lineMessageRegex->cap(3) ), 4 );
 					/*
 					qDebug() << "Entry detected: timestamp = "<< timestamp
 							<< " 0 " << lineMessageRegex->cap(0)
