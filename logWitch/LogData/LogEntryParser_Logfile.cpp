@@ -136,6 +136,10 @@ TSharedLogEntry LogEntryParser_Logfile::getNextLogEntry()
       {
         // End of logfile
         entryComplete = true;
+        if (m_entry) {
+          entryReturn = m_entry;
+          m_entry.reset();
+        }
       }
       else
       {
