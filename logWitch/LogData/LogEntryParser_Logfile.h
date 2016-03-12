@@ -21,6 +21,7 @@
 class QRegExp;
 class LogEntryOld;
 class LogEntryParserModelConfiguration;
+class ParserStreamGetter;
 
 class LogEntryParser_Logfile
 	: public QThread
@@ -28,7 +29,7 @@ class LogEntryParser_Logfile
 {
 	Q_OBJECT
 public:
-	LogEntryParser_Logfile( const QString &filename );
+	LogEntryParser_Logfile( boost::shared_ptr<ParserStreamGetter> getter );
 
 	~LogEntryParser_Logfile();
 
@@ -40,7 +41,7 @@ public:
 
 	virtual boost::shared_ptr<LogEntryParserModelConfiguration> getParserModelConfiguration() const;
 
-	QString getName() const{ return m_Name; }
+	QString getName() const;
 signals:
 	void newEntry( TconstSharedNewLogEntryMessage );
 
@@ -51,11 +52,9 @@ private:
 
 	bool m_abort;
 
-	QFile logfile;
+	boost::shared_ptr<ParserStreamGetter> m_getter;
 
-	QTextStream logfileStream;
-
-	bool logfileStreamReady;
+	boost::shared_ptr<QTextStream> m_logfileStream;
 
 	TSharedLogEntry entry;
 
@@ -72,8 +71,6 @@ private:
 	boost::shared_ptr<LogEntryFactory> myFactory;
 
 	boost::shared_ptr<LogEntryParserModelConfiguration> m_myModelConfig;
-
-	QString m_Name;
 
 	int m_logEntryNumber;
 

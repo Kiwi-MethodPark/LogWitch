@@ -12,20 +12,19 @@
 #include <QRegExp>
 
 #include "LogEntryFactory.h"
-#include "LogData/LogEntryFactory.h"
-#include "LogData/LogEntry.h"
-#include "LogData/LogEntryParserModelConfiguration.h"
 #include "LogEntryAttributeNames.h"
+#include "LogData/LogEntry.h"
+#include "LogData/LogEntryFactory.h"
+#include "LogData/LogEntryParserModelConfiguration.h"
+#include "LogData/ParserStreamGetter.h"
 
-LogEntryParser_Logfile::LogEntryParser_Logfile( const QString &filename)
+LogEntryParser_Logfile::LogEntryParser_Logfile(  boost::shared_ptr<ParserStreamGetter> getter  )
 	: m_abort(false )
-	, logfile( filename )
-	, logfileStreamReady( false )
+  , m_getter(getter)
 	, lineMessageRegex( new QRegExp("^([\\d-]+\\s+[\\d\\,\\:]+)\\s+-\\s+((?:(?!\\s+-\\s+).)*)\\s+-\\s+((?:(?!\\s+-\\s+).)*)\\s+-\\s+(\\[(.*)\\]|((?!\\s+-\\s+).)*)\\s+-\\s+(.*)$") )
 	, cellRegex( "\\s+-\\s+" )
 	, timeFormat( "yyyy-MM-dd HH:mm:ss,zzz" )
     , myFactory( new LogEntryFactory )
-	, m_Name( QFileInfo( filename ).fileName() )
     , m_logEntryNumber( 0 )
 {
 	lineMessageRegex->setMinimal(true);
@@ -60,6 +59,11 @@ LogEntryParser_Logfile::~LogEntryParser_Logfile()
 	wait();
 }
 
+QString LogEntryParser_Logfile::getName() const
+{
+  return m_getter->getName();
+}
+
 void LogEntryParser_Logfile::startEmiting()
 {
     if (!isRunning() && !m_abort )
@@ -73,16 +77,15 @@ boost::shared_ptr<LogEntryParserModelConfiguration> LogEntryParser_Logfile::getP
 
 bool LogEntryParser_Logfile::initParser()
 {
-    if (!logfile.open(QIODevice::ReadOnly | QIODevice::Text))
-    {
-        m_initError = tr("Unable to open file for reading.");
-        return false;
-    }
+  m_logfileStream = m_getter->getStream();
 
-    logfileStream.setDevice( &logfile );
-    logfileStreamReady = true;
+  if (!m_logfileStream)
+  {
+    m_initError = m_getter->getError();
+    return false;
+  }
 
-    return true;
+  return true;
 }
 
 void LogEntryParser_Logfile::run()
@@ -115,16 +118,16 @@ TSharedLogEntry LogEntryParser_Logfile::getNextLogEntry()
 {
 	TSharedLogEntry entryReturn;
 
-	if( logfileStreamReady )
+	if( m_logfileStream )
 	{
 		bool entryComplete = false;
 
 		while( !entryComplete  )
 		{
-			if( stashedLine.isEmpty() && !logfileStream.atEnd() )
-				stashedLine = logfileStream.readLine();
+			if( stashedLine.isEmpty() && !m_logfileStream->atEnd() )
+				stashedLine = m_logfileStream->readLine();
 
-			if( logfileStream.atEnd() && stashedLine.isEmpty()  )
+			if( m_logfileStream->atEnd() && stashedLine.isEmpty()  )
 			{
 				// End of logfile
 				entryComplete = true;

@@ -4,9 +4,11 @@
 #include <QtCore/QtCore>
 
 #include <boost/shared_ptr.hpp>
+#include <boost/smart_ptr/make_shared.hpp>
 
 #include "LogData/LogEntryParser_dummy.h"
 #include "LogData/LogEntryFactory.h"
+#include "LogData/ParserStreamGetterFile.h"
 
 #include "Models/LogEntryTableModel.h"
 #include "LogEntryTableWindow.h"
@@ -115,7 +117,7 @@ void LogfileAnalyser::openLogfile()
     if (!parser->initParser())
     {
       qDebug() << " LWI-Parser failed: " << parser->getInitError();
-      parser.reset( new LogEntryParser_Logfile( fileNames.first() ) );
+      parser.reset( new LogEntryParser_Logfile( boost::make_shared<ParserStreamGetterFile>( fileNames.first() ) ) );
       if (parser->initParser())
         createWindowsFromParser( parser, true);
       else
