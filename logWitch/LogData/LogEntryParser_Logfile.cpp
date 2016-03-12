@@ -8,6 +8,7 @@
 #include "LogEntryParser_Logfile.h"
 
 #include <boost/assign/list_of.hpp>
+#include <boost/foreach.hpp>
 #include <QtCore/QtCore>
 #include <QRegExp>
 
@@ -92,111 +93,255 @@ bool LogEntryParser_Logfile::initParser()
 
 void LogEntryParser_Logfile::run()
 {
-  int i = 0;
+  TSharedNewLogEntryMessage newEntryMessage;
+  qDebug() << "Start parsing logfile with run()";
 
-  TSharedNewLogEntryMessage newEntryMessage(new NewLogEntryMessage);
+  QTime myTimer;
+  myTimer.start();
+  newEntryMessage = getEntries();
+  int nMilliseconds = myTimer.elapsed();
 
-  forever
-  {
-    if (m_abort)
-      return;
-
-    TSharedLogEntry entry(getNextLogEntry());
-
-    if (entry)
-      newEntryMessage->entries.push_back(entry);
-    else
-    {
-      m_abort = true;
-      emit newEntry(newEntryMessage);
-      qDebug() << "We got " << i << " entries from logfile.";
-
-      emit finished();
-      return;
-    }
-
-    i++;
-  }
+  qDebug() << "We got " << newEntryMessage->entries.size()
+      << " entries from logfile within " << double(nMilliseconds)/1000 << " seconds";
+  emit newEntry(newEntryMessage);
+  emit finished();
 }
 
-TSharedLogEntry LogEntryParser_Logfile::getNextLogEntry()
+class LogEntryParser_Logfile::LogfileLine
 {
-  TSharedLogEntry entryReturn;
+public:
+  void setLine( QString line ){
+    m_line = line;
+  }
 
-  if (m_logfileStream)
-  {
-    bool entryComplete = false;
+  bool match() {
+    return (m_matched->indexIn(m_line) != -1);
+  }
 
-    while (!entryComplete)
+  QString m_line;
+  boost::shared_ptr<QRegExp> m_matched;
+};
+
+class LogEntryParser_Logfile::PreLogEntry
+{
+public:
+  PreLogEntry(boost::shared_ptr<LogfileLine> line): m_firstLine(line) {};
+  /**
+   * Contains the first line, which must have a valid match
+   */
+  boost::shared_ptr<LogfileLine> m_firstLine;
+
+  /**
+   * Lines which have no match and are parts of this entry.
+   */
+  QStringList m_nextLines;
+};
+
+class LogEntryParser_Logfile::WorkPackage
+{
+public:
+  typedef std::list< boost::shared_ptr<LogfileLine> > LogLineList;
+  void convert(){
+    // Here we have to store the line we have the first match. If there is no
+    // match, we can not use the line or it is a message from the previous block.
+    LogLineList::iterator itLastNonProcessedLine = m_lines.begin();
+
+    LogLineList::iterator it = m_lines.begin();
+
+    boost::shared_ptr<PreLogEntry> preEntry;
+    if (!m_preLogEntries.empty()) {
+      preEntry = m_preLogEntries.back();
+      m_preLogEntries.pop_back();
+    }
+
+    for (; it != m_lines.end(); ++it)
     {
-      if (stashedLine.isEmpty() && !m_logfileStream->atEnd())
-        stashedLine = m_logfileStream->readLine();
-
-      if (m_logfileStream->atEnd() && stashedLine.isEmpty())
+      if ((*it)->match())
       {
-        // End of logfile
-        entryComplete = true;
-        if (m_entry) {
-          entryReturn = m_entry;
-          m_entry.reset();
+        if (preEntry) {
+          m_preLogEntries.push_back( preEntry );
         }
+
+        preEntry.reset(new PreLogEntry(*it) );
       }
       else
       {
-        //qDebug() << "StashedLine = " << stashedLine;
-        if (lineMessageRegex->indexIn(stashedLine) != -1)
-        {
-          if (m_entry) // first entry
-          {
-            //qDebug() << "Appending Message to last entry = " << message;
-
-            m_entry->setAttribute(QVariant(++m_logEntryNumber), 0);
-            m_entry->setAttribute(QVariant(QString(message)), 2);
-            entryComplete = true;
-            entryReturn = m_entry;
-          }
-
-          m_entry = myFactory->getNewLogEntry();
-
-          m_entry->setAttribute(
-              QVariant(
-                  QDateTime::fromString(lineMessageRegex->cap(1), timeFormat)),
-              1);
-          // File Source
-          if (lineMessageRegex->cap(5).isEmpty())
-            m_entry->setAttribute(QVariant(lineMessageRegex->cap(4)), 5);
-          else
-            m_entry->setAttribute(QVariant(lineMessageRegex->cap(5)), 5);
-
-          message = lineMessageRegex->cap(7);
-
-          // Severity
-          m_entry->setAttribute(QVariant(lineMessageRegex->cap(2)), 3);
-          // Component
-          m_entry->setAttribute(QVariant(lineMessageRegex->cap(3)), 4);
-          /*
-           qDebug() << "Entry detected: timestamp = "<< timestamp
-           << " 0 " << lineMessageRegex->cap(0)
-           << " 1 " << lineMessageRegex->cap(1)
-           << " 2 " << lineMessageRegex->cap(2)
-           << " 3 " << lineMessageRegex->cap(3)
-           << " 4 " << lineMessageRegex->cap(4)
-           << " 5 " << lineMessageRegex->cap(5)
-           << " 6 " << lineMessageRegex->cap(6)
-           << " IDX: " << idx;
-           */
-
+        if (preEntry) {
+          preEntry->m_nextLines << (*it)->m_line;
         }
-        else
-        {
-          //qDebug() << " appending stashed line to message";
-          message += "\n" + stashedLine;
+        else {
+          itLastNonProcessedLine = it;
+          itLastNonProcessedLine++;
         }
-
-        stashedLine = "";
       }
     }
+
+    if (preEntry) {
+      m_preLogEntries.push_back( preEntry );
+      m_lines.erase( itLastNonProcessedLine, m_lines.end() );
+    }
+
+    // qDebug() << " Convertions done: " << id;
   }
 
+  /**
+   * Adds all stuff from the nextWorkPackage to this package. The nextWorkPackage
+   * can be discarded afterwards.
+   */
+  void join( WorkPackage& nextWorkPackage )
+  {
+    Q_ASSERT(m_lines.empty());
+
+    m_lines = nextWorkPackage.m_lines;
+    convert();
+
+    m_preLogEntries.insert( m_preLogEntries.end()
+        , nextWorkPackage.m_preLogEntries.begin()
+        , nextWorkPackage.m_preLogEntries.end() );
+  }
+
+  void runConvert()
+  {
+    m_future = QtConcurrent::run(this, &LogEntryParser_Logfile::WorkPackage::convert);
+  }
+
+  void waitForFinish()
+  {
+    m_future.waitForFinished();
+  }
+
+  int id;
+
+  QFuture<void> m_future;
+
+  LogLineList m_lines;
+
+  std::list< boost::shared_ptr<PreLogEntry> > m_preLogEntries;
+};
+
+
+TSharedLogEntry LogEntryParser_Logfile::createLogEntry( PreLogEntry& pre )
+{
+  QRegExp& lineMessageRegex = *pre.m_firstLine->m_matched;
+  TSharedLogEntry entry = myFactory->getNewLogEntry();
+
+  entry->setAttribute(QVariant(++m_logEntryNumber), 0);
+
+  entry->setAttribute(
+      QVariant(QDateTime::fromString(lineMessageRegex.cap(1), timeFormat)), 1);
+  // File Source
+  if (lineMessageRegex.cap(5).isEmpty())
+    entry->setAttribute(QVariant(lineMessageRegex.cap(4)), 5);
+  else
+    entry->setAttribute(QVariant(lineMessageRegex.cap(5)), 5);
+
+  QString message = lineMessageRegex.cap(7);
+  if (!pre.m_nextLines.isEmpty())
+    message += "\n" + pre.m_nextLines.join("\n");
+  entry->setAttribute(QVariant(QString(message)), 2);
+
+  // Severity
+  entry->setAttribute(QVariant(lineMessageRegex.cap(2)), 3);
+  // Component
+  entry->setAttribute(QVariant(lineMessageRegex.cap(3)), 4);
+
+  return entry;
+}
+
+TSharedNewLogEntryMessage LogEntryParser_Logfile::getEntries()
+{
+  TSharedNewLogEntryMessage entryReturn(new NewLogEntryMessage);
+
+  if (m_logfileStream)
+  {
+    std::list< boost::shared_ptr<LogfileLine> > lineProcessors;
+    QTime myTimer;
+    myTimer.start();
+
+    std::list< boost::shared_ptr<WorkPackage> > workPackages;
+
+    int currentWork = 0;
+    int maxWork = 1000;
+    while( !m_logfileStream->atEnd())
+    {
+      boost::shared_ptr<LogfileLine> lineProcessor( new LogfileLine );
+      lineProcessor->m_matched = boost::shared_ptr<QRegExp>(new QRegExp(*lineMessageRegex) );
+      lineProcessor->setLine( m_logfileStream->readLine() );
+      lineProcessors.push_back(lineProcessor);
+      currentWork++;
+
+      if (m_logfileStream->atEnd() || currentWork >= maxWork )
+      {
+        boost::shared_ptr<WorkPackage> work( new WorkPackage );
+        work->m_lines.swap(lineProcessors);
+        work->id = workPackages.size();
+        workPackages.push_back( work );
+        work->runConvert();
+        currentWork = 0;
+        // qDebug() << " Submitting package #" << workPackages.size();
+      }
+    }
+
+//    {
+//      int nMilliseconds = myTimer.elapsed();
+//      qDebug() << "After reading completed: " << double(nMilliseconds)/1000 << " seconds";
+//    }
+
+    if (workPackages.empty())
+      return entryReturn;
+
+    boost::shared_ptr<WorkPackage> firstWorkPackage = workPackages.front();
+    workPackages.pop_front();
+    firstWorkPackage->waitForFinish();
+
+    if (!firstWorkPackage->m_lines.empty()) {
+      qDebug() << " We have pending lines we are unable to parse, dropping";
+      firstWorkPackage->m_lines.clear();
+    }
+
+    while( !workPackages.empty() )
+    {
+      boost::shared_ptr<WorkPackage> currentWork = workPackages.front();
+      workPackages.pop_front();
+      currentWork->waitForFinish();
+//      {
+//        int nMilliseconds = myTimer.elapsed();
+//        qDebug() << " Next package ("<<currentWork->id<<") arrived after: " << double(nMilliseconds)/1000 << " seconds";
+//      }
+
+      firstWorkPackage->join( *currentWork );
+
+      // The last enry is not finished, so we will take it for later usage ...
+      if (!firstWorkPackage->m_preLogEntries.empty()){
+        boost::shared_ptr<PreLogEntry> unfinishedPreEntry = firstWorkPackage->m_preLogEntries.back();
+        firstWorkPackage->m_preLogEntries.pop_back();
+
+        while (!firstWorkPackage->m_preLogEntries.empty()){
+          boost::shared_ptr<PreLogEntry> preEntry = firstWorkPackage->m_preLogEntries.front();
+          firstWorkPackage->m_preLogEntries.pop_front();
+
+          entryReturn->entries.push_back( createLogEntry(*preEntry) );
+        }
+
+        firstWorkPackage->m_preLogEntries.push_back(unfinishedPreEntry);
+      }
+    }
+
+//    {
+//      int nMilliseconds = myTimer.elapsed();
+//      qDebug() << "After matching: " << double(nMilliseconds)/1000 << " seconds";
+//    }
+
+    BOOST_FOREACH( boost::shared_ptr<PreLogEntry> preEntry, firstWorkPackage->m_preLogEntries )
+    {
+      entryReturn->entries.push_back( createLogEntry(*preEntry) );
+    }
+
+//    {
+//      int nMilliseconds = myTimer.elapsed();
+//      qDebug() << "After processing: " << double(nMilliseconds)/1000 << " seconds";
+//    }
+  }
   return entryReturn;
 }
+

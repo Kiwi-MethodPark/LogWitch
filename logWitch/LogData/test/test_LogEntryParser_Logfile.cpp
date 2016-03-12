@@ -13,8 +13,10 @@
 #include <boost/test/unit_test.hpp>
 #include <boost/bind.hpp>
 #include <boost/function.hpp>
+#include <boost/foreach.hpp>
 
 #include "LogEntryStorerForTesting.h"
+#include "LogData/LogEntry.h"
 
 void fillStream(QTextStream& ts, bool withEndl=false, bool withMultilineMessage=false)
 {
@@ -49,7 +51,7 @@ boost::shared_ptr<LogEntryStorerForTesting> performTest(
 {
   QString s;
   boost::shared_ptr<QTextStream> textStream( new QTextStream(&s) );
-  fillStream(*textStream);
+  prepare(*textStream);
 
   boost::shared_ptr<ParserStreamGetter> getter( new ParserStreamGetter("name", textStream) );
   boost::shared_ptr<LogEntryParser> parser( new LogEntryParser_Logfile( getter ) );
@@ -92,6 +94,75 @@ BOOST_AUTO_TEST_CASE( bugLastLogLineWithEndlMultiLine )
   BOOST_CHECK( tester->m_finished );
 
   BOOST_CHECK_EQUAL( tester->m_entries.size(), 4 );
+  BOOST_CHECK_EQUAL( tester->m_errors.size(), 0 );
+}
+
+void filStreamWithIncrementingMessage( QTextStream& ts, int count, bool multiline )
+{
+  for (int i = 0; i < count; ++i ) {
+    ts << "2016-03-08 15:23:23,904 - INFO - Mix.Dist.Command - [/Test.cpp:143:executeCommand] - " << i << "XX"<< endl;
+    if (multiline) {
+      for( int j = 0; j < 3; ++j)
+        ts << " sdfg sdf asdf asdf asdf asdf asdf asd fas df asdf asdf asdf asdf asdf asdf asdf asdf asd fasd fasd f" << endl;
+    }
+  }
+}
+
+BOOST_AUTO_TEST_CASE( multiThreadedParsing )
+{
+  boost::shared_ptr<LogEntryStorerForTesting> tester = performTest( boost::bind(&filStreamWithIncrementingMessage, _1, 20000, false) );
+  BOOST_CHECK( tester->m_finished );
+
+  int i = 0;
+  BOOST_FOREACH( TSharedLogEntry entry, tester->m_entries)
+  {
+    QString s;
+    QTextStream ts(&s);
+    ts << i << "XX";
+    ts.flush();
+
+    BOOST_CHECK_EQUAL( entry->getAttribute(0).value<int>(), i+1 );
+    BOOST_CHECK( entry->getAttribute(2).value<TSharedConstQString>()->startsWith(s) );
+
+    // qDebug() << entry->getAttribute(0) << "MSG" << (* entry->getAttribute(2).value<TSharedConstQString>());
+    ++i;
+  }
+
+  BOOST_CHECK_EQUAL( tester->m_entries.size(), 20000 );
+  BOOST_CHECK_EQUAL( tester->m_errors.size(), 0 );
+}
+
+BOOST_AUTO_TEST_CASE( multiThreadedParsingMultiline )
+{
+  boost::shared_ptr<LogEntryStorerForTesting> tester = performTest( boost::bind(&filStreamWithIncrementingMessage, _1, 30000, true) );
+  BOOST_CHECK( tester->m_finished );
+
+  int i = 0;
+  BOOST_FOREACH( TSharedLogEntry entry, tester->m_entries)
+  {
+    QString s;
+    QTextStream ts(&s);
+    ts << i << "XX";
+    ts.flush();
+
+    BOOST_CHECK_EQUAL( entry->getAttribute(0).value<int>(), i+1 );
+    BOOST_CHECK( entry->getAttribute(2).value<TSharedConstQString>()->startsWith(s) );
+
+    int linecount = 0;
+    QString sCnt(*entry->getAttribute(2).value<TSharedConstQString>());
+    QTextStream in( &sCnt );
+    while( !in.atEnd()) {
+        in.readLine();
+        linecount++;
+    }
+
+    BOOST_CHECK_EQUAL( linecount, 4 );
+
+    // qDebug() << entry->getAttribute(0) << "MSG" << (* entry->getAttribute(2).value<TSharedConstQString>());
+    ++i;
+  }
+
+  BOOST_CHECK_EQUAL( tester->m_entries.size(), 30000 );
   BOOST_CHECK_EQUAL( tester->m_errors.size(), 0 );
 }
 

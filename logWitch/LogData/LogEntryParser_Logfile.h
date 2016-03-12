@@ -50,7 +50,7 @@ signals:
   void finished();
 
 private:
-	virtual TSharedLogEntry getNextLogEntry();
+  TSharedNewLogEntryMessage getEntries();
 
 	bool m_abort;
 
@@ -58,13 +58,7 @@ private:
 
 	boost::shared_ptr<QTextStream> m_logfileStream;
 
-	TSharedLogEntry m_entry;
-
-	QString stashedLine;
-
-	QString message;
-
-	boost::scoped_ptr<QRegExp> lineMessageRegex;
+	boost::shared_ptr<QRegExp> lineMessageRegex;
 
 	QRegExp cellRegex;
 
@@ -76,6 +70,12 @@ private:
 
 	int m_logEntryNumber;
 
+	class LogfileLine;
+	class PreLogEntry;
+	class WorkPackage;
+
+	boost::shared_ptr<LogfileLine> analyzeLine() const;
+	TSharedLogEntry createLogEntry( PreLogEntry& pre );
 
 };
 

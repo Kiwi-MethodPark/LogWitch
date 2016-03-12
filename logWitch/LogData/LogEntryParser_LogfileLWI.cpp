@@ -182,7 +182,7 @@ bool LogEntryParser_LogfileLWI::initParser()
 void LogEntryParser_LogfileLWI::run()
 {
   TSharedNewLogEntryMessage newEntryMessage(new NewLogEntryMessage);
-  qDebug() << "Start parsing logfile with run()";
+  qDebug() << "Start parsing logfile (LWI) with run()";
 
   while (!m_abort)
   {
