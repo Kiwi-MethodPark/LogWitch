@@ -16,15 +16,27 @@
 
 #include "LogEntryStorerForTesting.h"
 
-void fillStream(QTextStream& ts, bool withEndl=false)
+void fillStream(QTextStream& ts, bool withEndl=false, bool withMultilineMessage=false)
 {
-  ts << "2016-03-08 15:23:23,904 - INFO - Mix.Dist.Command - [/Test.cpp:143:executeCommand] - Received command";
-  ts << endl;
-  ts << "2016-03-08 15:23:23,904 - INFO - Mix.Dist.Mode - [/Mode.cpp:313:exit] - Exiting Mode ";
-  ts << endl;
-  ts << "2016-03-08 15:23:23,908 - INFO - Mix.Dist.Control - [/Control.cpp:113:handleExit] - handleExit";
-  ts << endl;
+  ts << "2016-03-08 15:23:23,904 - INFO - Mix.Dist.Command - [/Test.cpp:143:executeCommand] - Received command" << endl;
+  if (withMultilineMessage) {
+    ts << " More message data 1" << endl;
+  }
+  ////////
+  ts << "2016-03-08 15:23:23,904 - INFO - Mix.Dist.Mode - [/Mode.cpp:313:exit] - Exiting Mode " << endl;
+
+  ////////
+  ts << "2016-03-08 15:23:23,908 - INFO - Mix.Dist.Control - [/Control.cpp:113:handleExit] - handleExit" << endl;
+  if (withMultilineMessage) {
+    ts << " More message data 2" << endl;
+  }
+
+  ////////
   ts << "2016-03-08 15:23:23,909 - INFO - Mix.Dist.Control - [/Control.cpp:65:shutdown] - Control shutdown";
+  if (withMultilineMessage) {
+    ts << endl << " More message data 3" ;
+  }
+
   if (withEndl)
     ts << endl;
 }
@@ -49,7 +61,7 @@ boost::shared_ptr<LogEntryStorerForTesting> performTest(
 
 BOOST_AUTO_TEST_CASE( bugLastLogLineWithoutEndl )
 {
-  boost::shared_ptr<LogEntryStorerForTesting> tester = performTest( boost::bind(&fillStream, _1, false) );
+  boost::shared_ptr<LogEntryStorerForTesting> tester = performTest( boost::bind(&fillStream, _1, false, false) );
   BOOST_CHECK( tester->m_finished );
 
   BOOST_CHECK_EQUAL( tester->m_entries.size(), 4 );
@@ -58,11 +70,28 @@ BOOST_AUTO_TEST_CASE( bugLastLogLineWithoutEndl )
 
 BOOST_AUTO_TEST_CASE( bugLastLogLineWithEndl )
 {
-  boost::shared_ptr<LogEntryStorerForTesting> tester = performTest( boost::bind(&fillStream, _1, true) );
+  boost::shared_ptr<LogEntryStorerForTesting> tester = performTest( boost::bind(&fillStream, _1, true, false) );
   BOOST_CHECK( tester->m_finished );
 
   BOOST_CHECK_EQUAL( tester->m_entries.size(), 4 );
   BOOST_CHECK_EQUAL( tester->m_errors.size(), 0 );
 }
 
+BOOST_AUTO_TEST_CASE( bugLastLogLineWithoutEndlMultiLine )
+{
+  boost::shared_ptr<LogEntryStorerForTesting> tester = performTest( boost::bind(&fillStream, _1, false, true) );
+  BOOST_CHECK( tester->m_finished );
+
+  BOOST_CHECK_EQUAL( tester->m_entries.size(), 4 );
+  BOOST_CHECK_EQUAL( tester->m_errors.size(), 0 );
+}
+
+BOOST_AUTO_TEST_CASE( bugLastLogLineWithEndlMultiLine )
+{
+  boost::shared_ptr<LogEntryStorerForTesting> tester = performTest( boost::bind(&fillStream, _1, true, true) );
+  BOOST_CHECK( tester->m_finished );
+
+  BOOST_CHECK_EQUAL( tester->m_entries.size(), 4 );
+  BOOST_CHECK_EQUAL( tester->m_errors.size(), 0 );
+}
 
