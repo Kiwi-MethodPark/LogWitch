@@ -144,8 +144,7 @@ TSharedLogEntry LogEntryParser_Logfile::getNextLogEntry()
       else
       {
         //qDebug() << "StashedLine = " << stashedLine;
-        int idx = -1;
-        if ((idx = lineMessageRegex->indexIn(stashedLine)) != -1)
+        if (lineMessageRegex->indexIn(stashedLine) != -1)
         {
           if (m_entry) // first entry
           {
