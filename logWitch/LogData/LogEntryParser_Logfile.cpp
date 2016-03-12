@@ -19,44 +19,46 @@
 #include "LogData/ParserStreamGetter.h"
 
 LogEntryParser_Logfile::LogEntryParser_Logfile(  boost::shared_ptr<ParserStreamGetter> getter  )
-	: m_abort(false )
+  : m_abort(false )
   , m_getter(getter)
-	, lineMessageRegex( new QRegExp("^([\\d-]+\\s+[\\d\\,\\:]+)\\s+-\\s+((?:(?!\\s+-\\s+).)*)\\s+-\\s+((?:(?!\\s+-\\s+).)*)\\s+-\\s+(\\[(.*)\\]|((?!\\s+-\\s+).)*)\\s+-\\s+(.*)$") )
-	, cellRegex( "\\s+-\\s+" )
-	, timeFormat( "yyyy-MM-dd HH:mm:ss,zzz" )
-    , myFactory( new LogEntryFactory )
-    , m_logEntryNumber( 0 )
+  , lineMessageRegex( new QRegExp("^([\\d-]+\\s+[\\d\\,\\:]+)\\s+-\\s+((?:(?!\\s+-\\s+).)*)\\s+-\\s+((?:(?!\\s+-\\s+).)*)\\s+-\\s+(\\[(.*)\\]|((?!\\s+-\\s+).)*)\\s+-\\s+(.*)$") )
+  , cellRegex( "\\s+-\\s+" )
+  , timeFormat( "yyyy-MM-dd HH:mm:ss,zzz" )
+  , myFactory( new LogEntryFactory )
+  , m_logEntryNumber( 0 )
 {
-	lineMessageRegex->setMinimal(true);
+  lineMessageRegex->setMinimal(true);
 
-	// Preparing attributes in factory
-    LogEntryAttributeNames names;
-    myFactory->addField(names.getConfiguration("number"));
-    myFactory->addField(names.getConfiguration("timestamp"));
-    myFactory->addField(names.getConfiguration("message"));
+  // Preparing attributes in factory
+  LogEntryAttributeNames names;
+  myFactory->addField(names.getConfiguration("number"));
+  myFactory->addField(names.getConfiguration("timestamp"));
+  myFactory->addField(names.getConfiguration("message"));
 
-	myFactory->addField(names.getConfiguration("level"));
-	myFactory->addField(names.getConfiguration("logger"));
-	myFactory->addField(names.getConfiguration("fsource"));
-	myFactory->disallowAddingFields();
+  myFactory->addField(names.getConfiguration("level"));
+  myFactory->addField(names.getConfiguration("logger"));
+  myFactory->addField(names.getConfiguration("fsource"));
+  myFactory->disallowAddingFields();
 
-	m_myModelConfig = boost::shared_ptr<LogEntryParserModelConfiguration>( new LogEntryParserModelConfiguration("Logfile",myFactory) );
-	m_myModelConfig->setHierarchySplitString( 4, "\\.");
+  m_myModelConfig = boost::shared_ptr<LogEntryParserModelConfiguration>(
+      new LogEntryParserModelConfiguration("Logfile", myFactory));
+  m_myModelConfig->setHierarchySplitString(4, "\\.");
 
-    for( int i = 0; i < myFactory->getNumberOfFields(); ++i )
-    {
-        m_myModelConfig->setFieldWidthHint( i,
-                myFactory->getFieldConfiguration( i ).defaultCellWidth, true );
-    }
+  for (int i = 0; i < myFactory->getNumberOfFields(); ++i)
+  {
+    m_myModelConfig->setFieldWidthHint(i,
+        myFactory->getFieldConfiguration(i).defaultCellWidth, true);
+  }
 
-    m_myModelConfig->setFieldOrderHint(
-            QVector<int>::fromStdVector( boost::assign::list_of(0)(5)(1)(2)(3)(4) ), true );
+  m_myModelConfig->setFieldOrderHint(
+      QVector<int>::fromStdVector(boost::assign::list_of(0)(5)(1)(2)(3)(4)),
+      true);
 }
 
 LogEntryParser_Logfile::~LogEntryParser_Logfile()
 {
-	m_abort = true;
-	wait();
+  m_abort = true;
+  wait();
 }
 
 QString LogEntryParser_Logfile::getName() const
@@ -66,13 +68,13 @@ QString LogEntryParser_Logfile::getName() const
 
 void LogEntryParser_Logfile::startEmiting()
 {
-    if (!isRunning() && !m_abort )
-        start(LowPriority);
+  if (!isRunning() && !m_abort)
+    start(LowPriority);
 }
 
 boost::shared_ptr<LogEntryParserModelConfiguration> LogEntryParser_Logfile::getParserModelConfiguration() const
 {
-	return m_myModelConfig;
+  return m_myModelConfig;
 }
 
 bool LogEntryParser_Logfile::initParser()
@@ -119,77 +121,79 @@ void LogEntryParser_Logfile::run()
 
 TSharedLogEntry LogEntryParser_Logfile::getNextLogEntry()
 {
-	TSharedLogEntry entryReturn;
+  TSharedLogEntry entryReturn;
 
-	if( m_logfileStream )
-	{
-		bool entryComplete = false;
+  if (m_logfileStream)
+  {
+    bool entryComplete = false;
 
-		while( !entryComplete  )
-		{
-			if( stashedLine.isEmpty() && !m_logfileStream->atEnd() )
-				stashedLine = m_logfileStream->readLine();
+    while (!entryComplete)
+    {
+      if (stashedLine.isEmpty() && !m_logfileStream->atEnd())
+        stashedLine = m_logfileStream->readLine();
 
-			if( m_logfileStream->atEnd() && stashedLine.isEmpty()  )
-			{
-				// End of logfile
-				entryComplete = true;
-			}
-			else
-			{
-				//qDebug() << "StashedLine = " << stashedLine;
-				int idx = -1;
-				if( (idx = lineMessageRegex->indexIn( stashedLine )) != -1 )
-				{
-					if( entry ) // first entry
-					{
-						//qDebug() << "Appending Message to last entry = " << message;
+      if (m_logfileStream->atEnd() && stashedLine.isEmpty())
+      {
+        // End of logfile
+        entryComplete = true;
+      }
+      else
+      {
+        //qDebug() << "StashedLine = " << stashedLine;
+        int idx = -1;
+        if ((idx = lineMessageRegex->indexIn(stashedLine)) != -1)
+        {
+          if (m_entry) // first entry
+          {
+            //qDebug() << "Appending Message to last entry = " << message;
 
-						entry->setAttribute( QVariant( ++m_logEntryNumber ), 0 );
-						entry->setAttribute( QVariant( QString(message) ), 2 );
-						entryComplete = true;
-						entryReturn = entry;
-					}
+            m_entry->setAttribute(QVariant(++m_logEntryNumber), 0);
+            m_entry->setAttribute(QVariant(QString(message)), 2);
+            entryComplete = true;
+            entryReturn = m_entry;
+          }
 
-					entry = myFactory->getNewLogEntry( );
+          m_entry = myFactory->getNewLogEntry();
 
-					entry->setAttribute( QVariant(
-					        QDateTime::fromString ( lineMessageRegex->cap(1), timeFormat ) ), 1 );
-					// File Source
-					if (lineMessageRegex->cap(5).isEmpty())
-					  entry->setAttribute( QVariant( lineMessageRegex->cap(4) ), 5 );
-					else
-					  entry->setAttribute( QVariant( lineMessageRegex->cap(5) ), 5 );
+          m_entry->setAttribute(
+              QVariant(
+                  QDateTime::fromString(lineMessageRegex->cap(1), timeFormat)),
+              1);
+          // File Source
+          if (lineMessageRegex->cap(5).isEmpty())
+            m_entry->setAttribute(QVariant(lineMessageRegex->cap(4)), 5);
+          else
+            m_entry->setAttribute(QVariant(lineMessageRegex->cap(5)), 5);
 
-					message = lineMessageRegex->cap(7);
+          message = lineMessageRegex->cap(7);
 
           // Severity
-          entry->setAttribute( QVariant( lineMessageRegex->cap(2) ), 3 );
+          m_entry->setAttribute(QVariant(lineMessageRegex->cap(2)), 3);
           // Component
-          entry->setAttribute( QVariant( lineMessageRegex->cap(3) ), 4 );
-					/*
-					qDebug() << "Entry detected: timestamp = "<< timestamp
-							<< " 0 " << lineMessageRegex->cap(0)
-							<< " 1 " << lineMessageRegex->cap(1)
-							<< " 2 " << lineMessageRegex->cap(2)
-							<< " 3 " << lineMessageRegex->cap(3)
-							<< " 4 " << lineMessageRegex->cap(4)
-							<< " 5 " << lineMessageRegex->cap(5)
-							<< " 6 " << lineMessageRegex->cap(6)
-							<< " IDX: " << idx;
-							*/
+          m_entry->setAttribute(QVariant(lineMessageRegex->cap(3)), 4);
+          /*
+           qDebug() << "Entry detected: timestamp = "<< timestamp
+           << " 0 " << lineMessageRegex->cap(0)
+           << " 1 " << lineMessageRegex->cap(1)
+           << " 2 " << lineMessageRegex->cap(2)
+           << " 3 " << lineMessageRegex->cap(3)
+           << " 4 " << lineMessageRegex->cap(4)
+           << " 5 " << lineMessageRegex->cap(5)
+           << " 6 " << lineMessageRegex->cap(6)
+           << " IDX: " << idx;
+           */
 
-				}
-				else
-				{
-					//qDebug() << " appending stashed line to message";
-					message += "\n" + stashedLine;
-				}
+        }
+        else
+        {
+          //qDebug() << " appending stashed line to message";
+          message += "\n" + stashedLine;
+        }
 
-				stashedLine = "";
-			}
-		}
+        stashedLine = "";
+      }
     }
+  }
 
-    return entryReturn;
+  return entryReturn;
 }

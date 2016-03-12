@@ -58,7 +58,7 @@ private:
 
 	boost::shared_ptr<QTextStream> m_logfileStream;
 
-	TSharedLogEntry entry;
+	TSharedLogEntry m_entry;
 
 	QString stashedLine;
 
