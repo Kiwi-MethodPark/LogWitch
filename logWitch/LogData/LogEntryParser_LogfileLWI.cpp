@@ -197,6 +197,7 @@ void LogEntryParser_LogfileLWI::run()
   qDebug() << "We got " << newEntryMessage->entries.size()
       << " entries from logfile.";
   emit newEntry(newEntryMessage);
+  emit finished();
 }
 
 TSharedLogEntry LogEntryParser_LogfileLWI::logEntryFromString(

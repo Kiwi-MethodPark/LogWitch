@@ -99,6 +99,8 @@ void LogEntryParser_dummy::run()
         else
         	m_abort = true;
 	}
+
+  emit finished();
 }
 
 bool LogEntryParser_dummy::initParser()

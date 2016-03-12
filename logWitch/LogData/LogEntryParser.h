@@ -64,6 +64,8 @@ protected:
 
 	virtual void signalError( QString error ) = 0;
 
+	virtual void finished() = 0;
+
 	QString m_initError;
 };
 

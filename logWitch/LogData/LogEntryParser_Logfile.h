@@ -47,6 +47,8 @@ signals:
 
     void signalError( QString error );
 
+  void finished();
+
 private:
 	virtual TSharedLogEntry getNextLogEntry();
 

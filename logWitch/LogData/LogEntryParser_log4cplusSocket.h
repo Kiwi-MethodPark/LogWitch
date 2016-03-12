@@ -54,6 +54,8 @@ signals:
 
 	void signalError( QString error );
 
+  void finished();
+
 private:
 	int m_port;
 

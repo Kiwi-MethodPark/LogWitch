@@ -44,6 +44,8 @@ signals:
 
     void signalError( QString error );
 
+  void finished();
+
 protected:
     void run();
 

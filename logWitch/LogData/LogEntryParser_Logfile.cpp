@@ -108,6 +108,9 @@ void LogEntryParser_Logfile::run()
       m_abort = true;
       emit newEntry(newEntryMessage);
       qDebug() << "We got " << i << " entries from logfile.";
+
+      emit finished();
+      return;
     }
 
     i++;

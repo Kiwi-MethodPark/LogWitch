@@ -39,6 +39,8 @@ signals:
 
     void signalError( QString error );
 
+    void finished();
+
 private:
 
     TSharedLogEntry logEntryFromString( const QString &str);
