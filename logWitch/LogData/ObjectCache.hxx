@@ -110,7 +110,7 @@ typename ObjectCache<SIGNALLER>::StType ObjectCache<SIGNALLER>::getObject( typen
 {
     std::pair<typename TMyCache::iterator,bool> rv = cache.insert( str );
     if( rv.second ) // str new to container, so invoke update request
-        emit newElement( *(rv.first) );
+        emit this->newElement( *(rv.first) );
 
     return *(rv.first);
 }
