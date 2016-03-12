@@ -11,6 +11,7 @@ SET(LFA_LOGDATA_MOC_CLASSES
 SET(LFA_LOGDATA_LIB_SOURCES
   EntryToTextFormaterDefault.cpp
   EntryToTextFormaterLog4cplus.cpp
+  LogDataTypeRegistration.cpp
   LogEntry.cpp
   LogEntryAttributeNames.cpp
   LogEntryFactory.cpp
@@ -37,14 +38,25 @@ TARGET_LINK_LIBRARIES(${LFA_LOGDATA_LIB}
 IF(NOT WITHOUT_TEST)
   FIND_PACKAGE(Boost COMPONENTS unit_test_framework REQUIRED)
   
-  SET(TEST_LFA_LOGDATA_LIB_SOURCES
-    test/test_init.cpp
+  SET(TEST_LFA_LOGDATA_MOC_CLASSES
+    test/LogEntryStorerForTesting.h
   )
   
-  ADD_EXECUTABLE( testLogData ${TEST_LFA_LOGDATA_LIB_SOURCES} )
+  SET(TEST_LFA_LOGDATA_LIB_SOURCES
+    test/test_init.cpp
+    test/LogEntryStorerForTesting.cpp
+    
+    test/test_LogEntryParser_Logfile.cpp
+  )
+  
+  QT4_WRAP_CPP(TEST_LFA_LOGDATA_MOC_SOURCES ${TEST_LFA_LOGDATA_MOC_CLASSES})
+  
+  ADD_EXECUTABLE( testLogData ${TEST_LFA_LOGDATA_LIB_SOURCES} ${TEST_LFA_LOGDATA_MOC_SOURCES} )
   
   TARGET_LINK_LIBRARIES(testLogData 
       ${Boost_UNIT_TEST_FRAMEWORK_LIBRARY}
+      ${QT_LIBRARIES}
+      ${LFA_LOGDATA_LIB}
   )
   
   ADD_TEST(NAME testLogData COMMAND ${CMAKE_CURRENT_BINARY_DIR}/testLogData)
