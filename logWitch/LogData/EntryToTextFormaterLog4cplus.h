@@ -8,7 +8,7 @@
 #ifndef ENTRYTOTEXTFORMATERLOG4CPLUS_H_
 #define ENTRYTOTEXTFORMATERLOG4CPLUS_H_
 
-#include "EntryToTextFormater.h"
+#include <LogData/EntryToTextFormater.h>
 
 class EntryToTextFormaterLog4cplus
     : public EntryToTextFormater

@@ -9,6 +9,8 @@ SET(LFA_LOGDATA_MOC_CLASSES
 )
 
 SET(LFA_LOGDATA_LIB_SOURCES
+  EntryToTextFormaterDefault.cpp
+  EntryToTextFormaterLog4cplus.cpp
   LogEntry.cpp
   LogEntryAttributeNames.cpp
   LogEntryFactory.cpp
@@ -23,8 +25,12 @@ SET(LFA_LOGDATA_LIB_SOURCES
 )
 
 QT4_WRAP_CPP(LFA_LOGDATA_MOC_SOURCES ${LFA_LOGDATA_MOC_CLASSES})
-
+  
 ADD_LIBRARY(${LFA_LOGDATA_LIB} STATIC ${LFA_LOGDATA_LIB_SOURCES} ${LFA_LOGDATA_MOC_SOURCES} )
+
+TARGET_LINK_LIBRARIES(${LFA_LOGDATA_LIB} 
+    ${QT_LIBRARIES}
+)
 
 ################################################################################
 # TEST

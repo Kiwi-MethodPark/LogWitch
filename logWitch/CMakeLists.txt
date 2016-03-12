@@ -17,8 +17,6 @@ SET(LFA_MOC_CLASSES
 
 SET(LFA_SOURCES
 	ContextMenuManipulateHeader.cpp
-	EntryToTextFormaterDefault.cpp
-	EntryToTextFormaterLog4cplus.cpp
 	FilterListView.cpp
 	LogEntryTableWindow.cpp
 	logfileanalyser.cpp

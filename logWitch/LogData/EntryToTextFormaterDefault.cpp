@@ -5,8 +5,7 @@
  *      Author: sven
  */
 
-#include "EntryToTextFormaterDefault.h"
-
+#include <LogData/EntryToTextFormaterDefault.h>
 #include <QTextStream>
 #include <QTextDocument>
 

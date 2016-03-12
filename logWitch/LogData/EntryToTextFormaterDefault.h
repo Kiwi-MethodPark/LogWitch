@@ -7,7 +7,7 @@
 
 #ifndef ENTRYTOTEXTFORMATERDEFAULT_H_
 #define ENTRYTOTEXTFORMATERDEFAULT_H_
-#include "EntryToTextFormater.h"
+#include <LogData/EntryToTextFormater.h>
 
 class EntryToTextFormaterDefault
 	: public EntryToTextFormater

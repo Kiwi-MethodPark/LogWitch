@@ -10,10 +10,10 @@
 #include <limits>
 #include <algorithm>
 #include <boost/bind.hpp>
+#include <LogData/EntryToTextFormaterDefault.h>
 
 #include <QtCore>
 
-#include "EntryToTextFormaterDefault.h"
 #include "LogData/LogEntryFactory.h"
 
 LogEntryParserModelConfiguration::LogEntryParserModelConfiguration( const QString &configurationString, boost::shared_ptr<LogEntryFactory> factory )

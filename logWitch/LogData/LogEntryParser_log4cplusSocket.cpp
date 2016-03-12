@@ -15,10 +15,10 @@
 #include <log4cplus/socketappender.h>
 #include <log4cplus/spi/loggingevent.h>
 #include <log4cplus/loglevel.h>
+#include <LogData/EntryToTextFormaterLog4cplus.h>
 
 #include <QtCore/QtCore>
 
-#include "EntryToTextFormaterLog4cplus.h"
 #include "LogData/LogEntry.h"
 #include "LogEntryFactory.h"
 #include "LogEntryFactory.h"

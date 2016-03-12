@@ -8,6 +8,7 @@
 #include "LogEntryTableWindow.h"
 
 #include <boost/scoped_ptr.hpp>
+#include <LogData/EntryToTextFormater.h>
 #include <limits>
 
 #include "ActionRules/ActionDataRewriter.h"
@@ -33,7 +34,6 @@
 #include "Models/LogEntryTableFilter.h"
 #include "Models/EntryFormatingModel.h"
 
-#include "EntryToTextFormater.h"
 #include "ContextMenuManipulateHeader.h"
 #include "FilterListView.h"
 
