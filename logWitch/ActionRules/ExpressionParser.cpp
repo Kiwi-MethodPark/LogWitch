@@ -12,7 +12,6 @@
 #include <boost/spirit/include/phoenix_operator.hpp>
 #include <boost/spirit/include/phoenix_fusion.hpp>
 #include <boost/spirit/include/phoenix_stl.hpp>
-#include <boost/spirit/home/phoenix/core/value.hpp>
 #include <boost/fusion/include/adapt_struct.hpp>
 #include <boost/variant/recursive_variant.hpp>
 
@@ -56,8 +55,12 @@ namespace expressionParser
     {
         struct createVGLogEntry
         {
+#if BOOST_VERSION < 105600
             template <typename S1,typename S2,typename S3>
             struct result { typedef void type; };
+#else
+            typedef void result_type;
+#endif
 
             void operator()(TSharedValueGetter& entry, const QString &name, TSharedConstLogEntryParserModelConfiguration configuration) const
             {
@@ -66,8 +69,12 @@ namespace expressionParser
         };
         struct createVGConstString
         {
+#if BOOST_VERSION < 105600
             template <typename S1,typename S2>
             struct result { typedef void type; };
+#else
+            typedef void result_type;
+#endif
 
             void operator()(TSharedValueGetter& entry, const QString &name) const
             {
@@ -76,8 +83,12 @@ namespace expressionParser
         };
         struct constructExpVG
         {
+#if BOOST_VERSION < 105600
             template <typename S1,typename S2, typename S3>
             struct result { typedef void type; };
+#else
+            typedef void result_type;
+#endif
 
             void operator()(TSharedExpression& entry, TSharedValueGetter &left, TSharedValueGetter &right) const
             {
@@ -86,8 +97,12 @@ namespace expressionParser
         };
         struct constructExpRegEx
         {
+#if BOOST_VERSION < 105600
             template <typename S1,typename S2, typename S3>
             struct result { typedef void type; };
+#else
+            typedef void result_type;
+#endif
 
             void operator()(TSharedExpression& entry, TSharedValueGetter &value, QString &regex) const
             {
@@ -96,8 +111,12 @@ namespace expressionParser
         };
         struct constructExpFind
         {
+#if BOOST_VERSION < 105600
             template <typename S1,typename S2, typename S3>
             struct result { typedef void type; };
+#else
+            typedef void result_type;
+#endif
 
             void operator()(TSharedExpression& entry, TSharedValueGetter &value, QString &find) const
             {
@@ -106,8 +125,12 @@ namespace expressionParser
         };
         struct constructExpOpNeg
         {
+#if BOOST_VERSION < 105600
             template <typename S1,typename S2>
             struct result { typedef void type; };
+#else
+            typedef void result_type;
+#endif
 
             void operator()(TSharedExpression& entry, TSharedExpression &value) const
             {
@@ -116,8 +139,12 @@ namespace expressionParser
         };
         struct constructExpOpAnd
         {
+#if BOOST_VERSION < 105600
             template <typename S1,typename S2,typename S3>
             struct result { typedef void type; };
+#else
+            typedef void result_type;
+#endif
 
             void operator()(TSharedExpression& entry, TSharedExpression &left, TSharedExpression &right) const
             {
@@ -126,8 +153,12 @@ namespace expressionParser
         };
         struct constructExpOpOr
         {
+#if BOOST_VERSION < 105600
             template <typename S1,typename S2,typename S3>
             struct result { typedef void type; };
+#else
+            typedef void result_type;
+#endif
 
             void operator()(TSharedExpression& entry, TSharedExpression &left, TSharedExpression &right) const
             {
@@ -136,8 +167,12 @@ namespace expressionParser
         };
         struct constructExpOpXOr
         {
+#if BOOST_VERSION < 105600
             template <typename S1,typename S2,typename S3>
             struct result { typedef void type; };
+#else
+            typedef void result_type;
+#endif
 
             void operator()(TSharedExpression& entry, TSharedExpression &left, TSharedExpression &right) const
             {
@@ -146,8 +181,12 @@ namespace expressionParser
         };
         struct constructExpConst
         {
+#if BOOST_VERSION < 105600
             template <typename S1,typename S2>
             struct result { typedef void type; };
+#else
+            typedef void result_type;
+#endif
 
             void operator()(TSharedExpression& entry, bool value) const
             {

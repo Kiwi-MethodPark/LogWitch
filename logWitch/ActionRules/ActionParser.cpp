@@ -7,8 +7,8 @@
 
 #include "ActionParser.h"
 
-#include <boost/spirit/home/phoenix/object/construct.hpp>
-#include <boost/spirit/home/phoenix/object/new.hpp>
+#include <boost/phoenix/object/construct.hpp>
+#include <boost/phoenix/object/new.hpp>
 #include <boost/spirit/include/qi.hpp>
 #include <boost/spirit/include/qi_uint.hpp>
 #include <boost/spirit/include/phoenix_core.hpp>
@@ -45,8 +45,12 @@ namespace actionParser
     {
         struct addRewriteRule
         {
+#if BOOST_VERSION < 105600
             template <typename S1, typename S2>
             struct result { typedef void type; };
+#else
+            typedef void result_type;
+#endif
 
             void operator()(TSharedActionDataRewriter& entry, const TRoleVariantPair & rule ) const
             {

@@ -9,7 +9,6 @@
 
 #include <boost/fusion/include/adapt_struct.hpp>
 #include <boost/fusion/include/tag_of.hpp>
-#include <boost/spirit/home/phoenix/core/value.hpp>
 #include <boost/spirit/include/phoenix_core.hpp>
 #include <boost/spirit/include/phoenix_operator.hpp>
 #include <boost/spirit/include/phoenix_object.hpp>
