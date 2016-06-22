@@ -13,9 +13,11 @@ if [ -d "buildUbuntuPackage" ]; then
 	rm -r buildUbuntuPackage
 fi
 
+CODENAME=`lsb_release -c -s`
+
 mkdir buildUbuntuPackage
 cd buildUbuntuPackage
-cmake .. -DCMAKE_BUILD_TYPE=release -DCMAKE_INSTALL_PREFIX:PATH=/usr -DTARGET_SYSTEM="Ubuntu_12.04"
+cmake .. -DCMAKE_BUILD_TYPE=release -DCMAKE_INSTALL_PREFIX:PATH=/usr -DTARGET_SYSTEM="${CODENAME}"
 make $1
 cpack -G DEB
 
