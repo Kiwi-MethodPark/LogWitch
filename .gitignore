@@ -7,4 +7,5 @@ CPackConfig.cmake
 CPackSourceConfig.cmake
 *.settings
 *.a
+*.deb
 CMakeCache.txt
