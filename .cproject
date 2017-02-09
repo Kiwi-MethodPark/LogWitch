@@ -61,4 +61,5 @@
 			<resource resourceType="PROJECT" workspacePath="/logWitch"/>
 		</configuration>
 	</storageModule>
+	<storageModule moduleId="org.eclipse.cdt.make.core.buildtargets"/>
 </cproject>
