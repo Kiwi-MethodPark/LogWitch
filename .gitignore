@@ -9,3 +9,4 @@ CPackSourceConfig.cmake
 *.a
 *.deb
 CMakeCache.txt
+buildUbuntuPackage/*
