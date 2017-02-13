@@ -20,8 +20,7 @@ typedef boost::shared_ptr<const QString> TSharedConstQString;
 typedef boost::shared_ptr<QVariant> TSharedQVariant;
 typedef boost::shared_ptr<const QVariant> TSharedConstQVariant;
 
-
-
+Q_DECLARE_METATYPE(TSharedQString)
 Q_DECLARE_METATYPE ( TSharedConstQString );
 
 #endif /* TYPES_H_ */

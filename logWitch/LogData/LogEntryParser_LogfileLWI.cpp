@@ -78,7 +78,7 @@ bool LogEntryParser_LogfileLWI::initParser()
     QRegExp expr("^([^:]*):(.*)$");
     QRegExp exprNumber("^(.*)\\(([0-9]*)\\)$");
     bool invalidOrdering = false;
-    int i = 0;
+    size_t i = 0;
 
     for (QStringList::iterator it = descriptions.begin();
         it != descriptions.end(); ++it, ++i)
@@ -204,8 +204,6 @@ TSharedLogEntry LogEntryParser_LogfileLWI::logEntryFromString(
     const QString &str)
 {
   TSharedLogEntry entry = m_factory->getNewLogEntry();
-
-  int fieldCount = m_factory->getNumberOfFields();
 
   return entry;
 }

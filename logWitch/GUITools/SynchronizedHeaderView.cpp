@@ -51,16 +51,6 @@ void HeaderViewGroup::addToGroup( SynchronizedHeaderView *view )
     m_groupChilds.push_back( view );
 }
 
-namespace
-{
-    void getIndexes( std::vector<int> &positions, SynchronizedHeaderView *view )
-    {
-        for( int i = 0; i < view->count(); ++i )
-            positions.push_back( view->logicalIndex( i ) );
-    }
-
-}
-
 void HeaderViewGroup::hideSection( int idx )
 {
     for( TGroupList::iterator it = m_groupChilds.begin()

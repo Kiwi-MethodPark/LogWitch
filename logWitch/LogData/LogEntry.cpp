@@ -20,7 +20,7 @@ LogEntry::LogEntry( LogEntryFactory *factory, const std::vector< QVariant > &def
 {
     Q_ASSERT( defAttributes.size() == myFactory->getNumberOfFields() );
 
-    for( int i = 0; i < defAttributes.size(); ++i )
+    for( size_t i = 0; i < defAttributes.size(); ++i )
         m_attributes[i] = defAttributes[i];
 }
 

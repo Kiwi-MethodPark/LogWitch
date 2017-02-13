@@ -47,7 +47,7 @@ void LogEntryFactory::addField( const AttributeConfiguration cfg )
 	else
 	    m_fieldCaches.push_back( boost::shared_ptr< ObjectPasser<ObjectCacheQStringSignaller> >( new ObjectPasser<ObjectCacheQStringSignaller> ) );
 
-	m_defaultLine.push_back( QVariant( m_fieldCaches.back()->getObject( boost::shared_ptr<QString>(new QString("")) ) ) );
+	m_defaultLine.push_back( QVariant::fromValue( m_fieldCaches.back()->getObject( boost::shared_ptr<QString>(new QString("")) ) ) );
 }
 
 int LogEntryFactory::getNumberOfFields( ) const

@@ -69,6 +69,9 @@ ENDIF()
 FIND_PACKAGE(log4cplus REQUIRED)
 FIND_PACKAGE(Boost REQUIRED)
 
+set(CMAKE_CXX_FLAGS_RELEASE        "-pipe -O2    -fvisibility-inlines-hidden -fdiagnostics-show-option -fno-strict-aliasing -Wall -Werror  -Wl,--as-needed -fPIC")
+set(CMAKE_CXX_FLAGS_DEBUG          "-pipe -O0 -g -fvisibility-inlines-hidden -fdiagnostics-show-option -Wall -Werror -Wl,--as-needed -fPIC")
+
 SET(LFA_RULES_LIB "logfileanalyzer_rules_lib")
 SET(LFA_GUITOOLS_LIB "logfileanalyzer_guitools_lib")
 SET(LFA_HELP_LIB "logfileanalyzer_help_lib")

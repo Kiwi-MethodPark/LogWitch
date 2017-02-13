@@ -294,7 +294,7 @@ bool LogEntryTableModel::removeRows ( int row, int count, const QModelIndex & pa
 
 bool LogEntryTableModel::removeRows_unlocked ( int row, int count, const QModelIndex & parent )
 {
-    if( row + count > m_table.size() || count == 0 )
+    if( row + count > int(m_table.size() ) || count == 0 )
         return false;
 
     beginRemoveRows( parent, row, row + count - 1 );

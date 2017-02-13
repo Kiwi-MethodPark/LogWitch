@@ -123,6 +123,7 @@ private:
 	boost::shared_ptr<LogEntryFactory> m_attr;
 
 	QVector<int> m_fieldWidthHints;
+	const QString m_configurationString;
 	bool m_fieldWidthHintsLoaded;
 
 	QVector<bool> m_fieldShowHint;
@@ -130,8 +131,6 @@ private:
 
 	QVector<int> m_fieldOrderHint;
 	bool m_fieldOrderHintLoaded;
-
-	const QString m_configurationString;
 };
 
 typedef boost::shared_ptr<LogEntryParserModelConfiguration> TSharedLogEntryParserModelConfiguration;

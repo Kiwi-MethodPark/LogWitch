@@ -35,6 +35,8 @@ namespace
             {
             case QVariant::DateTime:
                 return value.value<QDateTime>().toString(timestampFormat);
+            default:
+              ;
             }
 
             return value.toString();

@@ -47,10 +47,10 @@ QVariant TableModelRulesCompiled::data(const QModelIndex &index, int role) const
     if (index.column() >= m_columnCount
          || index.column() < 0
          || index.row() < 0
-         || index.row() > (m_table.size() ) )
+         || index.row() > int(m_table.size() ) )
      return QVariant();
 
-    if( index.row() == m_table.size() )
+    if( index.row() == int(m_table.size()) )
     {
         if( role == Qt::DisplayRole && index.column() == 0 )
             return QString(" * ");
@@ -193,10 +193,10 @@ bool TableModelRulesCompiled::setData( const QModelIndex &index, const QVariant&
     if (index.column() >= m_columnCount
          || index.column() < 0
          || index.row() < 0
-         || index.row() > (m_table.size() ) )
+         || index.row() > int(m_table.size() ) )
         return false;
 
-    if( index.row() == m_table.size() )
+    if( index.row() == int(m_table.size()) )
     {
         if( value.toString().length() == 0 )
             return false;
@@ -259,7 +259,7 @@ namespace
 
 QString TableModelRulesCompiled::getRule( const int row ) const
 {
-    if( row >= 0 && row < m_table.size() )
+    if( row >= 0 && row < int(m_table.size()) )
         return m_table[row]->toString();
     else
         return QString();
@@ -293,7 +293,7 @@ void TableModelRulesCompiled::removeRule( const QModelIndex &index )
      return;
 
     if ( index.row() < 0
-         || index.row() >= (m_table.size() ) )
+         || index.row() >= int(m_table.size() ) )
      return;
 
     beginRemoveRows(QModelIndex(), index.row(), index.row());
@@ -301,15 +301,6 @@ void TableModelRulesCompiled::removeRule( const QModelIndex &index )
     endRemoveRows();
 
     updateFilterRuleTable();
-}
-
-namespace
-{
-    // Sorting in backward order.
-    bool indexRow(const QModelIndex &s1, const QModelIndex &s2)
-    {
-        return s1.row() > s2.row();
-    }
 }
 
 void TableModelRulesCompiled::removeRules( const std::list<int> &rowList )
@@ -327,7 +318,7 @@ void TableModelRulesCompiled::removeRules( const std::list<int> &rowList )
     {
         if(   toRemoveLast != *it
            && *it >= 0
-           && *it < m_table.size() )
+           && *it <int( m_table.size()) )
         {
             beginRemoveRows(QModelIndex(), *it, *it);
             m_table.erase( m_table.begin() + *it );
@@ -415,7 +406,7 @@ bool TableModelRulesCompiled::dropMimeData(const QMimeData *data,
         return true;
 
     int insertPos = (parent.row() < 0) ? m_table.size() : parent.row();
-    if( insertPos >= m_table.size() )
+    if( insertPos >= int(m_table.size()) )
         insertPos = m_table.size();
 
     if( data->hasFormat( ruleMimeType ) )
@@ -431,7 +422,7 @@ bool TableModelRulesCompiled::dropMimeData(const QMimeData *data,
             for( std::list<int>::reverse_iterator it = srcRows.rbegin(); it != srcRows.rend(); ++it )
             {
                 int rowMapped = *it;
-                if( rowMapped < m_table.size() && rowMapped >= 0)
+                if( rowMapped < int(m_table.size()) && rowMapped >= 0)
                 {
                     rules.push_front( m_table[rowMapped] );
                     m_table.erase( m_table.begin() + rowMapped );
@@ -530,7 +521,7 @@ QMimeData *TableModelRulesCompiled::mimeData(const QModelIndexList &indexes) con
         if( find( rowSet.begin(), rowSet.end(), row ) == rowSet.end() )
         {
             rowSet.push_back( row );
-            if( row >= 0 && row < m_table.size() )
+            if( row >= 0 && row < int(m_table.size()) )
             {
                 if( lEnd )
                     stream << '\n';
