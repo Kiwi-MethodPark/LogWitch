@@ -398,7 +398,7 @@ TSharedExpression ExpressionParser::get() const
 
 bool ExpressionParser::isValid() const
 {
-    return m_expression;
+    return (bool)m_expression;
 }
 
 ExpressionParser::~ExpressionParser()
