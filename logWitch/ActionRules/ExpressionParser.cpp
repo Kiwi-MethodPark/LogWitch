@@ -56,141 +56,141 @@ namespace expressionParser
         struct createVGLogEntry
         {
 #if BOOST_VERSION < 105600
-            template <typename S1,typename S2,typename S3>
-            struct result { typedef void type; };
+            template <typename S1,typename S2>
+            struct result { typedef TSharedValueGetter type; };
 #else
-            typedef void result_type;
+            typedef TSharedValueGetter result_type;
 #endif
 
-            void operator()(TSharedValueGetter& entry, const QString &name, TSharedConstLogEntryParserModelConfiguration configuration) const
+            TSharedValueGetter operator()(const QString &name, const TSharedConstLogEntryParserModelConfiguration configuration) const
             {
-                entry = TSharedValueGetter( new ValueGetterLogEntry( name, configuration ) );
+                return TSharedValueGetter( new ValueGetterLogEntry( name, configuration ) );
             }
         };
         struct createVGConstString
         {
 #if BOOST_VERSION < 105600
-            template <typename S1,typename S2>
-            struct result { typedef void type; };
+            template <typename S1>
+            struct result { typedef TSharedValueGetter type; };
 #else
-            typedef void result_type;
+            typedef TSharedValueGetter result_type;
 #endif
 
-            void operator()(TSharedValueGetter& entry, const QString &name) const
+            TSharedValueGetter operator()(const QString &name) const
             {
-                entry = TSharedValueGetter( new ValueGetterConstQString( name ) );
+                return TSharedValueGetter( new ValueGetterConstQString( name ) );
             }
         };
         struct constructExpVG
         {
 #if BOOST_VERSION < 105600
-            template <typename S1,typename S2, typename S3>
-            struct result { typedef void type; };
+            template <typename S1,typename S2>
+            struct result { typedef TSharedExpression type; };
 #else
-            typedef void result_type;
+            typedef TSharedExpression result_type;
 #endif
 
-            void operator()(TSharedExpression& entry, TSharedValueGetter &left, TSharedValueGetter &right) const
+            TSharedExpression operator()(const TSharedValueGetter &left, const TSharedValueGetter &right) const
             {
-                entry = TSharedExpressionMatch( new ExpressionMatch( left, right ) );
+                return TSharedExpressionMatch( new ExpressionMatch( left, right ) );
             }
         };
         struct constructExpRegEx
         {
 #if BOOST_VERSION < 105600
-            template <typename S1,typename S2, typename S3>
-            struct result { typedef void type; };
+            template <typename S1,typename S2>
+            struct result { typedef TSharedExpression type; };
 #else
-            typedef void result_type;
+            typedef TSharedExpression result_type;
 #endif
 
-            void operator()(TSharedExpression& entry, TSharedValueGetter &value, QString &regex) const
+            TSharedExpression operator()(const TSharedValueGetter &value, const QString &regex) const
             {
-                entry = TSharedExpressionRegEx( new ExpressionRegEx( value, regex ) );
+                return TSharedExpressionRegEx( new ExpressionRegEx( value, regex ) );
             }
         };
         struct constructExpFind
         {
 #if BOOST_VERSION < 105600
             template <typename S1,typename S2, typename S3>
-            struct result { typedef void type; };
+            struct result { typedef TSharedExpression type; };
 #else
-            typedef void result_type;
+            typedef TSharedExpression result_type;
 #endif
 
-            void operator()(TSharedExpression& entry, TSharedValueGetter &value, QString &find) const
+            TSharedExpression operator()(const TSharedValueGetter &value, const QString &find) const
             {
-                entry = TSharedExpressionFind( new ExpressionFind( value, find ) );
+                return TSharedExpressionFind( new ExpressionFind( value, find ) );
             }
         };
         struct constructExpOpNeg
         {
 #if BOOST_VERSION < 105600
-            template <typename S1,typename S2>
-            struct result { typedef void type; };
+            template <typename S1>
+            struct result { typedef TSharedExpression type; };
 #else
-            typedef void result_type;
+            typedef TSharedExpression result_type;
 #endif
 
-            void operator()(TSharedExpression& entry, TSharedExpression &value) const
+            TSharedExpression operator()(const TSharedExpression &value) const
             {
-                entry = TSharedExpressionOpNegate( new ExpressionOpNegate( value ) );
+                return TSharedExpressionOpNegate( new ExpressionOpNegate( value ) );
             }
         };
         struct constructExpOpAnd
         {
 #if BOOST_VERSION < 105600
-            template <typename S1,typename S2,typename S3>
-            struct result { typedef void type; };
+            template <typename S1,typename S2>
+            struct result { typedef TSharedExpression type; };
 #else
-            typedef void result_type;
+            typedef TSharedExpression result_type;
 #endif
 
-            void operator()(TSharedExpression& entry, TSharedExpression &left, TSharedExpression &right) const
+            TSharedExpression operator()(const TSharedExpression &left, const TSharedExpression &right) const
             {
-                entry = TSharedExpressionOpAnd( new ExpressionOpAnd( left, right ) );
+                return TSharedExpressionOpAnd( new ExpressionOpAnd( left, right ) );
             }
         };
         struct constructExpOpOr
         {
 #if BOOST_VERSION < 105600
-            template <typename S1,typename S2,typename S3>
-            struct result { typedef void type; };
+            template <typename S1,typename S2>
+            struct result { typedef TSharedExpression type; };
 #else
-            typedef void result_type;
+            typedef TSharedExpression result_type;
 #endif
 
-            void operator()(TSharedExpression& entry, TSharedExpression &left, TSharedExpression &right) const
+            TSharedExpression operator()(const TSharedExpression &left, const TSharedExpression &right) const
             {
-                entry = TSharedExpressionOpOr( new ExpressionOpOr( left, right ) );
+                return TSharedExpressionOpOr( new ExpressionOpOr( left, right ) );
             }
         };
         struct constructExpOpXOr
         {
 #if BOOST_VERSION < 105600
-            template <typename S1,typename S2,typename S3>
-            struct result { typedef void type; };
+            template <typename S1,typename S2>
+            struct result { typedef TSharedExpression type; };
 #else
-            typedef void result_type;
+            typedef TSharedExpression result_type;
 #endif
 
-            void operator()(TSharedExpression& entry, TSharedExpression &left, TSharedExpression &right) const
+            TSharedExpression operator()(const TSharedExpression &left, const TSharedExpression &right) const
             {
-                entry = TSharedExpressionOpXOr( new ExpressionOpXOr( left, right ) );
+                return TSharedExpressionOpXOr( new ExpressionOpXOr( left, right ) );
             }
         };
         struct constructExpConst
         {
 #if BOOST_VERSION < 105600
-            template <typename S1,typename S2>
-            struct result { typedef void type; };
+            template <typename S1>
+            struct result { typedef TSharedExpression type; };
 #else
-            typedef void result_type;
+            typedef TSharedExpression result_type;
 #endif
 
-            void operator()(TSharedExpression& entry, bool value) const
+            TSharedExpression operator()(bool value) const
             {
-                entry = TSharedExpressionConst( new ExpressionConst( value ) );
+                return TSharedExpressionConst( new ExpressionConst( value ) );
             }
         };
     }
@@ -223,7 +223,7 @@ namespace expressionParser
 
            top =
                    expression [_val=_1]
-                   | qi::eps[constructExpConst(_val,val(false))];
+                   | qi::eps[_val = constructExpConst(val(false))];
 
            expression =
                      orExprTerm [_val=_1]
@@ -231,22 +231,22 @@ namespace expressionParser
                    ;
 
            orExprTerm =
-                     ((xorExprTerm >> "||" >> xorExprTerm)[constructExpOpOr(_val,_1,_2)])
+                     ((xorExprTerm >> "||" >> xorExprTerm)[_val=constructExpOpOr(_1,_2)])
                    | xorExprTerm [_val=_1]
                    ;
 
            xorExprTerm =
-                     ((andExprTerm >> "^^" >> andExprTerm)[constructExpOpXOr(_val,_1,_2)])
+                     ((andExprTerm >> "^^" >> andExprTerm)[_val = constructExpOpXOr(_1,_2)])
                    | andExprTerm [_val=_1]
                    ;
 
            andExprTerm =
-                     ((unaryExprTerm >> "&&" >> unaryExprTerm)[constructExpOpAnd(_val,_1,_2)])
+                     ((unaryExprTerm >> "&&" >> unaryExprTerm)[_val = constructExpOpAnd(_1,_2)])
                    | unaryExprTerm [_val=_1]
                    ;
 
            unaryExprTerm =
-                     ("!(" >> expression[constructExpOpNeg(_val,_1)] >> ")" )
+                     ("!(" >> expression[_val = constructExpOpNeg(_1)] >> ")" )
                    | ('(' >> expression >> ')') [_val=_1]
                    | basicExpr [_val=_1]
                    ;
@@ -258,26 +258,26 @@ namespace expressionParser
                    | expressionConst [_val=_1]
                    ;
 
-           expressionVG = ( valueGetter >> "==" >> valueGetter)[ constructExpVG(_val, _1, _2 )]
-                     | ( valueGetter >> "!=" >> valueGetter)[ constructExpVG(_val, _1, _2 )]
-                         >> qi::eps[constructExpOpNeg(_val,_val)] ;
+           expressionVG = ( valueGetter >> "==" >> valueGetter)[ _val = constructExpVG(_1, _2 )]
+                     | ( valueGetter >> "!=" >> valueGetter)[ _val = constructExpVG(_1, _2 )]
+                         >> qi::eps[_val = constructExpOpNeg(_val)] ;
 
-           expressionRegEx = (valueGetter >> "=~" >> quotedQStringRegEx)[ constructExpRegEx(_val, _1, _2)]
-                     | (valueGetter >> "!~" >> quotedQStringRegEx)[ constructExpRegEx(_val, _1, _2)]
-                         >> qi::eps[constructExpOpNeg(_val,_val)] ;
+           expressionRegEx = (valueGetter >> "=~" >> quotedQStringRegEx)[ _val = constructExpRegEx(_1, _2)]
+                     | (valueGetter >> "!~" >> quotedQStringRegEx)[ _val = constructExpRegEx(_1, _2)]
+                         >> qi::eps[_val = constructExpOpNeg(_val)] ;
 
            expressionConst =
-                     lit("true") [constructExpConst(_val,val(true))]
-                   | lit("false") [constructExpConst(_val,val(false))]
+                     lit("true") [_val = constructExpConst(val(true))]
+                   | lit("false") [_val = constructExpConst(val(false))]
                    ;
 
-           expressionFind = ("find(" >> valueGetter >> "," >> quotedQString('"') >> ")")[ constructExpFind(_val, _1, _2)];
+           expressionFind = ("find(" >> valueGetter >> "," >> quotedQString('"') >> ")")[ _val = constructExpFind(_1, _2)];
 
            valueGetter %= vg_ConstString
                    | vg_LogEntry;
 
-           vg_ConstString = quotedQString('"')[createVGConstString(_val,_1)];
-           vg_LogEntry = unquotedQString[createVGLogEntry(_val,_1,cfg)];
+           vg_ConstString = quotedQString('"')[_val = createVGConstString(_1)];
+           vg_LogEntry = unquotedQString[_val = createVGLogEntry(_1,cfg)];
 
            quotedQString = lexeme[
                                   lit(_r1)
