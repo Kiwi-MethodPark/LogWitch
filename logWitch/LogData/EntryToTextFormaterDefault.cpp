@@ -12,25 +12,26 @@
 #include "LogData/LogEntry.h"
 #include "LogData/LogEntryFactory.h"
 
-QString EntryToTextFormaterDefault::formatEntry( TconstSharedLogEntry entry ) const
+QString EntryToTextFormaterDefault::formatEntry(TconstSharedLogEntry entry) const
 {
-	QString out;
-	QTextStream str( &out );
-	QString tmp;
+  QString out;
+  QTextStream str(&out);
+  QString tmp;
 
-	int messageId = 2;
+  int messageId = 2;
 
-    for( int i = 0; i < entry->getFactory().getNumberOfFields(); i++ )
-    {
-        if( i != messageId )
-            str << "<b>" << entry->getFactory().getDescLong(i) << ":</b> " << *entry->getAttributeAsString(i) << "<br/>";
-    }
+  for (int i = 0; i < entry->getFactory().getNumberOfFields(); i++)
+  {
+    if (i != messageId)
+      str << "<b>" << entry->getFactory().getDescLong(i) << ":</b> "
+        << *entry->getAttributeAsString(i) << "<br/>";
+  }
 
-    if( entry->getFactory().getNumberOfFields() > messageId)
-        tmp = *entry->getAttributeAsString(messageId);
+  if (entry->getFactory().getNumberOfFields() > messageId)
+    tmp = *entry->getAttributeAsString(messageId);
 
-	str << "<b>Message:</b><p> <pre> " << Qt::escape( tmp ).replace("\n","<br/>") << "</pre></p>";
+  str << "<b>Message:</b><p> <pre> " << Qt::escape(tmp).replace("\n", "<br/>") << "</pre></p>";
 
-	return out;
+  return out;
 }
 
