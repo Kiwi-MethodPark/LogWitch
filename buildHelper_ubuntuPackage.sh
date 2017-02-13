@@ -1,16 +1,14 @@
 #/bin/sh
 
-
+set -e
+set -x
 echo "This script helps you to build a package for ubuntu from scratch."
 echo "We will create a directory called 'buildUnuntuPackage' for you"
 echo "and we will initialize it to the ubuntu defaults."
 echo "After these steps, we will starting make and run the package generator."
-echo ""
-echo "Hit return to continue ..."
-read dummy_var
 
 if [ -d "buildUbuntuPackage" ]; then
-	rm -r buildUbuntuPackage
+  rm -r buildUbuntuPackage
 fi
 
 CODENAME=`lsb_release -c -s`
