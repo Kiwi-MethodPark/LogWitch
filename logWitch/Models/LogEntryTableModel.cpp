@@ -141,7 +141,7 @@ QVariant LogEntryTableModel::data(const QModelIndex &index, int role) const
     else if (role == RawDataRole)
     {
     	TconstSharedLogEntry entry = m_table[index.row()];
-      return QVariant( entry );
+      return QVariant::fromValue( entry );
     }
 
     return QVariant();
