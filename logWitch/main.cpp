@@ -15,39 +15,39 @@
 int main(int argc, char *argv[])
 {
 #ifndef NDEBUG
-    qDebug() << "WARNING: Running with debug compile options. Performance may be lower.";
+  qDebug() << "WARNING: Running with debug compile options. Performance may be lower.";
 #endif
-    qRegisterMetaType<TSharedConstQString>("TSharedConstQString");
+  qRegisterMetaType<TSharedConstQString>("TSharedConstQString");
 
-    registerLogDataTypes();
+  registerLogDataTypes();
 
 
-    QCoreApplication::setOrganizationName("Steckmann");
-    QCoreApplication::setOrganizationDomain("steckmann.de");
-    QCoreApplication::setApplicationName( globals::applicationName );
-    QCoreApplication::setApplicationVersion( globals::applicationVersion );
+  QCoreApplication::setOrganizationName("Steckmann");
+  QCoreApplication::setOrganizationDomain("steckmann.de");
+  QCoreApplication::setApplicationName( globals::applicationName );
+  QCoreApplication::setApplicationVersion( globals::applicationVersion );
 
-    QApplication a(argc, argv);
-    LogfileAnalyser w;
+  QApplication a(argc, argv);
+  LogfileAnalyser w;
 
-    const QString mainWindowGeometry_Identifier( "MainWindowGeometry" );
+  const QString mainWindowGeometry_Identifier( "MainWindowGeometry" );
 
-    {
-        QSettings settings;
-        if( settings.contains( mainWindowGeometry_Identifier) )
-            w.restoreGeometry( settings.value( mainWindowGeometry_Identifier).toByteArray() );
+  {
+    QSettings settings;
+    if( settings.contains( mainWindowGeometry_Identifier) )
+      w.restoreGeometry( settings.value( mainWindowGeometry_Identifier).toByteArray() );
 
-        w.setWindowTitle( globals::applicationName + " " + globals::applicationVersion );
-    }
+    w.setWindowTitle( globals::applicationName + " " + globals::applicationVersion );
+  }
 
-    w.show();
-    int returnValue = a.exec();
+  w.show();
+  int returnValue = a.exec();
 
-    // Save window geometry
-    {
-        QSettings settings;
-        settings.setValue( mainWindowGeometry_Identifier, w.saveGeometry() );
-    }
+  // Save window geometry
+  {
+    QSettings settings;
+    settings.setValue( mainWindowGeometry_Identifier, w.saveGeometry() );
+  }
 
-    return returnValue;
+  return returnValue;
 }
