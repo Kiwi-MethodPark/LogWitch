@@ -11,7 +11,6 @@
 
 #include <QDockWidget>
 #include <QMdiSubWindow>
-#include <QPushButton>
 #include <QSplitter>
 #include <QTextEdit>
 
@@ -24,6 +23,7 @@ class LogEntryFilter;
 class LogEntryTableFilter;
 class QScrollDownTableView;
 class EntryFormatingModel;
+class QuickSearchBar;
 
 class LogEntryTableWindow
 	: public QMdiSubWindow
@@ -45,28 +45,9 @@ public:
 
     void setDockForFilter( QDockWidget *dock );
 
+    void search(Expression& exp, bool backwards);
+
 public slots:
-    /**
-     * Switches between the different modes for the quicksearch
-     * text line.
-     */
-    void switchSearchMode();
-
-    /**
-     * Updates the view from the quicksearch line
-     */
-    void updateSearch();
-
-    /**
-     * Search the next log entry which will match to out quicksearch expression.
-     */
-    void searchNext();
-
-    /**
-     * Search the previous log entry which will match to out quicksearch expression.
-     */
-    void searchPrev();
-
     void newSelection ( const QItemSelection & selected, const QItemSelection & deselected );
 
     void clearTable( );
@@ -93,11 +74,6 @@ private slots:
     void onDoubleClick ( const QModelIndex & index );
 
 private:
-    enum SearchModes { Regex, Text, Expression};
-
-    /// Private helper which performs the search
-    void search( bool backwards );
-private:
     boost::shared_ptr<LogEntryTableModel> m_model;
 
     QSplitter *m_splitter;
@@ -115,17 +91,7 @@ private:
 
 	EntryFormatingModel *m_timeFormatModel;
 
-	QLineEdit *m_quickSearch;
-
-	SearchModes m_searchMode;
-
-	QPushButton* m_searchModeButton;
-
-	QPushButton* m_markButton;
-
-	TSharedAction m_quickSearchAction;
-
-	TSharedExpression m_quickSearchExp;
+	QuickSearchBar* m_quickSearchBar;
 };
 
 #endif /* LOGENTRYTABLEWINDOW_H_ */

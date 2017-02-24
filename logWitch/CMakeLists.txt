@@ -13,6 +13,7 @@ SET(LFA_MOC_CLASSES
 	logfileanalyser.h
 	
 	GUI/DialogExportOptions.h
+	GUI/QuickSearchBar.h
 )
 
 SET(LFA_SOURCES
@@ -23,6 +24,7 @@ SET(LFA_SOURCES
 	main.cpp	
 	
 	GUI/DialogExportOptions.cpp
+	GUI/QuickSearchBar.cpp
 )
 
 SET(LFA_RESOURCES 

@@ -27,6 +27,7 @@
 #include "ActionRules/ValueGetterLogEntry.h"
 
 #include "GUI/DialogExportOptions.h"
+#include "GUI/QuickSearchBar.h"
 
 #include "GUITools/QScrollDownTableView.h"
 
@@ -64,11 +65,13 @@ void LogEntryTableWindow::updateHeaderPositionToModel(int, int, int)
     m_model->setHeaderData(view->logicalIndex(col), Qt::Horizontal, col, 514);
 }
 
-LogEntryTableWindow::LogEntryTableWindow(
-    boost::shared_ptr<LogEntryTableModel> model, QWidget *parent) :
-    QMdiSubWindow(parent), m_model(model), m_splitter(
-        new QSplitter(Qt::Vertical)), m_myFilterTabs( NULL), m_dockFilterShouldDockedTo(
-        NULL), m_tableView(new QScrollDownTableView()), m_searchMode(Text)
+LogEntryTableWindow::LogEntryTableWindow( boost::shared_ptr<LogEntryTableModel> model, QWidget *parent)
+: QMdiSubWindow(parent)
+, m_model(model)
+, m_splitter( new QSplitter(Qt::Vertical))
+, m_myFilterTabs( NULL)
+, m_dockFilterShouldDockedTo(NULL)
+, m_tableView(new QScrollDownTableView())
 {
   // Parametrize the filtering model, connect it to the table view.
   m_proxyModel = new LogEntryTableFilter(m_tableView);
@@ -161,57 +164,7 @@ LogEntryTableWindow::LogEntryTableWindow(
       SIGNAL(sectionMoved(int , int , int )), this,
       SLOT(updateHeaderPositionToModel(int,int,int)));
 
-  // Create quicksearch bar
-  QWidget *quickSearchBar = new QWidget;
-  m_quickSearch = new QLineEdit;
-  QHBoxLayout* quickSearchLayout = new QHBoxLayout;
-  quickSearchLayout->setContentsMargins(0, 0, 0, 0);
-  quickSearchBar->setLayout(quickSearchLayout);
-
-  QIcon iconDown, iconUp, search;
-  search.addFile(QString::fromUtf8(":/icons/search"), QSize(), QIcon::Normal,
-      QIcon::Off);
-  iconDown.addFile(QString::fromUtf8(":/icons/searchDown"), QSize(),
-      QIcon::Normal, QIcon::Off);
-  iconUp.addFile(QString::fromUtf8(":/icons/searchUp"), QSize(), QIcon::Normal,
-      QIcon::Off);
-
-  m_searchModeButton = new QPushButton(tr("Text"));
-  QObject::connect(m_searchModeButton, SIGNAL(clicked()), this,
-      SLOT(switchSearchMode()));
-
-  m_markButton = new QPushButton(tr("Highlight"));
-  m_markButton->setCheckable(true);
-  m_markButton->setChecked(true);
-
-  QObject::connect(m_markButton, SIGNAL(toggled(bool)), this,
-      SLOT(updateSearch()));
-
-  QObject::connect(m_quickSearch, SIGNAL(editingFinished()), this,
-      SLOT(updateSearch()));
-
-  QPushButton *searchDnBtn = new QPushButton(iconDown, "");
-  QObject::connect(searchDnBtn, SIGNAL(clicked()), this, SLOT(searchNext()));
-
-  QPushButton *searchUpBtn = new QPushButton(iconUp, "");
-  QObject::connect(searchUpBtn, SIGNAL(clicked()), this, SLOT(searchPrev()));
-
-  quickSearchLayout->addWidget(m_searchModeButton);
-  quickSearchLayout->addWidget(m_quickSearch);
-  quickSearchLayout->addWidget(m_markButton);
-  quickSearchLayout->addWidget(searchDnBtn);
-  quickSearchLayout->addWidget(searchUpBtn);
-
-  // Initialize the action for highlighting log entries.
-  ActionParser parser(model->getParserModelConfiguration());
-  if (!parser.parse("rewrite(BG:#81BEF7)"))
-  {
-    qDebug() << "Parsing of action failed!";
-  }
-  else
-  {
-    m_quickSearchAction = parser.get();
-  }
+  m_quickSearchBar = new QuickSearchBar( this, m_model, m_proxyModel->getRuleTable() );
 
   m_text = new QTextEdit("<b>Log Message viewer</b>", this);
   QObject::connect(m_tableView->selectionModel(),
@@ -229,7 +182,7 @@ LogEntryTableWindow::LogEntryTableWindow(
   m_splitter->addWidget(m_text);
   m_splitter->setStretchFactor(0, 20);
 
-  layout->addWidget(quickSearchBar);
+  layout->addWidget(m_quickSearchBar);
   layout->addWidget(m_splitter);
 
   centralWidget->setLayout(layout);
@@ -311,155 +264,6 @@ void LogEntryTableWindow::exportLogfile(const QString &filename)
   }
 }
 
-void LogEntryTableWindow::switchSearchMode()
-{
-  switch (m_searchMode)
-  {
-  case Text:
-    m_searchMode = Regex;
-    break;
-  case Regex:
-    m_searchMode = Expression;
-    break;
-  default:
-  case Expression:
-    m_searchMode = Text;
-    break;
-  }
-
-  switch (m_searchMode)
-  {
-  default:
-  case Text:
-    m_searchModeButton->setText(tr("Text"));
-    break;
-  case Regex:
-    m_searchModeButton->setText(tr("Regex"));
-    break;
-  case Expression:
-    m_searchModeButton->setText(tr("Expr"));
-    break;
-  }
-
-  updateSearch();
-}
-
-void LogEntryTableWindow::updateSearch()
-{
-  m_proxyModel->getRuleTable()->clear("quicksearch");
-  m_quickSearch->setStyleSheet("");
-  m_quickSearch->setToolTip("");
-  m_quickSearchExp.reset();
-
-  // Do not do any filtering or searching if no text was given.
-  if (m_quickSearch->text().length() == 0)
-    return;
-
-  if (m_searchMode == Expression)
-  {
-    ExpressionParser parser(m_model->getParserModelConfiguration());
-
-    if (parser.parse(m_quickSearch->text()))
-    {
-      m_quickSearchExp = parser.get();
-    }
-    else
-    {
-      m_quickSearch->setStyleSheet("background-color:red;");
-      m_quickSearch->setToolTip(
-          tr("Error while parsing: ") + parser.getError());
-      qDebug() << "Unable to parse expression: " << m_quickSearch->text();
-    }
-  }
-  else if (m_searchMode == Text)
-  {
-    TSharedValueGetterLogEntry log(
-        new ValueGetterLogEntry("message",
-            m_model->getParserModelConfiguration()));
-    m_quickSearchExp.reset(new ExpressionFind(log, m_quickSearch->text()));
-
-  }
-  else if (m_searchMode == Regex)
-  {
-    TSharedValueGetterLogEntry log(
-        new ValueGetterLogEntry("message",
-            m_model->getParserModelConfiguration()));
-    m_quickSearchExp.reset(new ExpressionRegEx(log, m_quickSearch->text()));
-  }
-
-  if (m_markButton->isChecked() && m_quickSearchExp)
-  {
-    TSharedRule rule(new Rule(m_quickSearchExp, m_quickSearchAction));
-    m_proxyModel->getRuleTable()->addRule("quicksearch", rule);
-  }
-}
-
-void LogEntryTableWindow::search(bool backwards)
-{
-  if (m_timeFormatModel->rowCount() > 0 && m_quickSearchExp)
-  {
-    int startRow = -1;
-
-    if (m_tableView->selectionModel()->hasSelection())
-    {
-      QItemSelection selection = m_tableView->selectionModel()->selection();
-      // There seems to be a QT Bug, if the ProxyFilterModel is removing the selection
-      // hasSelection retruns true while no selection is here!
-      if (!selection.isEmpty())
-      {
-        QModelIndex index = selection.front().topLeft();
-        startRow = index.row();
-      }
-    }
-
-    const int inc = backwards ? -1 : 1;
-    int nextRow = startRow + inc;
-
-    if (nextRow >= m_timeFormatModel->rowCount())
-      nextRow = 0;
-    if (nextRow < 0)
-      nextRow = m_timeFormatModel->rowCount() - 1;
-
-    for (; nextRow != startRow;)
-    {
-      TconstSharedLogEntry entry = m_model->getEntryByIndex(
-          mapToSource(m_timeFormatModel->index(nextRow, 0)));
-      if (entry && m_quickSearchExp->match(entry))
-        break;
-
-      // We need to correct startRow, if
-      // - we have no selection on entry
-      // - the table size may change during search
-      if (startRow < 0)
-        startRow = nextRow;
-      if (startRow >= m_timeFormatModel->rowCount())
-        startRow = m_timeFormatModel->rowCount() - 1;
-
-      // Incrementing part
-      nextRow += inc;
-
-      if (nextRow >= m_timeFormatModel->rowCount())
-        nextRow = 0;
-      if (nextRow < 0)
-        nextRow = m_timeFormatModel->rowCount() - 1;
-    }
-
-    if (nextRow != startRow)
-    {
-      m_tableView->setCurrentIndex(m_timeFormatModel->index(nextRow, 0));
-      m_tableView->setFocus();
-    }
-  }
-}
-void LogEntryTableWindow::searchNext()
-{
-  search(false);
-}
-
-void LogEntryTableWindow::searchPrev()
-{
-  search(true);
-}
 
 TSharedRuleTable LogEntryTableWindow::getRuleTable()
 {
@@ -564,6 +368,65 @@ void LogEntryTableWindow::newSelection(const QItemSelection & selected,
     }
   }
 }
+
+void LogEntryTableWindow::search(Expression& exp, bool backwards)
+{
+  if (m_timeFormatModel->rowCount() > 0 )
+  {
+    int startRow = -1;
+
+    if (m_tableView->selectionModel()->hasSelection())
+    {
+      QItemSelection selection = m_tableView->selectionModel()->selection();
+      // There seems to be a QT Bug, if the ProxyFilterModel is removing the selection
+      // hasSelection retruns true while no selection is here!
+      if (!selection.isEmpty())
+      {
+        QModelIndex index = selection.front().topLeft();
+        startRow = index.row();
+      }
+    }
+
+    const int inc = backwards ? -1 : 1;
+    int nextRow = startRow + inc;
+
+    if (nextRow >= m_timeFormatModel->rowCount())
+      nextRow = 0;
+    if (nextRow < 0)
+      nextRow = m_timeFormatModel->rowCount() - 1;
+
+    for (; nextRow != startRow;)
+    {
+      TconstSharedLogEntry entry = m_model->getEntryByIndex(
+          mapToSource(m_timeFormatModel->index(nextRow, 0)));
+      if (entry && exp.match(entry))
+        break;
+
+      // We need to correct startRow, if
+      // - we have no selection on entry
+      // - the table size may change during search
+      if (startRow < 0)
+        startRow = nextRow;
+      if (startRow >= m_timeFormatModel->rowCount())
+        startRow = m_timeFormatModel->rowCount() - 1;
+
+      // Incrementing part
+      nextRow += inc;
+
+      if (nextRow >= m_timeFormatModel->rowCount())
+        nextRow = 0;
+      if (nextRow < 0)
+        nextRow = m_timeFormatModel->rowCount() - 1;
+    }
+
+    if (nextRow != startRow)
+    {
+      m_tableView->setCurrentIndex(m_timeFormatModel->index(nextRow, 0));
+      m_tableView->setFocus();
+    }
+  }
+}
+
 
 void LogEntryTableWindow::contextMenu(const QPoint & pt)
 {
