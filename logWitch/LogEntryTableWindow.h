@@ -17,81 +17,82 @@
 #include "ActionRules/RuleTable.h"
 #include "ActionRules/CompiledRulesStateSaver.h"
 
-class LogEntryTableModel;
-class QSortFilterProxyModel;
+class EntryFormatingModel;
 class LogEntryFilter;
 class LogEntryTableFilter;
+class LogEntryTableModel;
 class QScrollDownTableView;
-class EntryFormatingModel;
+class QSortFilterProxyModel;
 class QuickSearchBar;
 
-class LogEntryTableWindow
-	: public QMdiSubWindow
+class LogEntryTableWindow: public QMdiSubWindow
 {
-	Q_OBJECT
+Q_OBJECT
 public:
-	LogEntryTableWindow( boost::shared_ptr<LogEntryTableModel> model, QWidget *parent = NULL );
-	virtual ~LogEntryTableWindow();
+  LogEntryTableWindow(boost::shared_ptr<LogEntryTableModel> model,
+      QWidget *parent = NULL);
+  virtual ~LogEntryTableWindow();
 
-	QModelIndex mapToSource ( const QModelIndex & proxyIndex ) const;
+  QModelIndex mapToSource(const QModelIndex & proxyIndex) const;
 
-	void addFilter( boost::shared_ptr<LogEntryFilter> flt );
+  void addFilter(boost::shared_ptr<LogEntryFilter> flt);
 
-	TSharedRuleTable getRuleTable();
+  TSharedRuleTable getRuleTable();
 
-    QTabWidget *getTabFilterWidget();
+  QTabWidget *getTabFilterWidget();
 
-    TSharedCompiledRulesStateSaver getCompiledRules();
+  TSharedCompiledRulesStateSaver getCompiledRules();
 
-    void setDockForFilter( QDockWidget *dock );
+  void setDockForFilter(QDockWidget *dock);
 
-    void search(Expression& exp, bool backwards);
+  void search(Expression& exp, bool backwards);
 
 public slots:
-    void newSelection ( const QItemSelection & selected, const QItemSelection & deselected );
+  void newSelection(const QItemSelection & selected,
+      const QItemSelection & deselected);
 
-    void clearTable( );
+  void clearTable();
 
-    void capture( bool active );
+  void capture(bool active);
 
-    void errorFromModel( QString error );
+  void errorFromModel(QString error);
 
-    void exportLogfile( const QString &filename );
+  void exportLogfile(const QString &filename);
 
-    /**
-     * Opens the context menu at the given position. This will be connected to the table view.
-     */
-    void contextMenu( const QPoint & );
+  /**
+   * Opens the context menu at the given position. This will be connected to the table view.
+   */
+  void contextMenu(const QPoint &);
 
 private slots:
-    /**
-     * This function is used to update the size of the header to the model.
-     */
-    void updateHeaderSizeToModel( int section, int, int newSize );
+  /**
+   * This function is used to update the size of the header to the model.
+   */
+  void updateHeaderSizeToModel(int section, int, int newSize);
 
-    void updateHeaderPositionToModel( int section, int, int  );
+  void updateHeaderPositionToModel(int section, int, int);
 
-    void onDoubleClick ( const QModelIndex & index );
+  void onDoubleClick(const QModelIndex & index);
 
 private:
-    boost::shared_ptr<LogEntryTableModel> m_model;
+  boost::shared_ptr<LogEntryTableModel> m_model;
 
-    QSplitter *m_splitter;
+  QSplitter *m_splitter;
 
-    /// Text field containing the formated log entry.
-    QTextEdit *m_text;
+  /// Text field containing the formated log entry.
+  QTextEdit *m_text;
 
-    QTabWidget *m_myFilterTabs;
+  QTabWidget *m_myFilterTabs;
 
-    QDockWidget *m_dockFilterShouldDockedTo;
+  QDockWidget *m_dockFilterShouldDockedTo;
 
-	QScrollDownTableView *m_tableView;
+  QScrollDownTableView *m_tableView;
 
-	LogEntryTableFilter *m_proxyModel;
+  LogEntryTableFilter *m_proxyModel;
 
-	EntryFormatingModel *m_timeFormatModel;
+  EntryFormatingModel *m_timeFormatModel;
 
-	QuickSearchBar* m_quickSearchBar;
+  QuickSearchBar* m_quickSearchBar;
 };
 
 #endif /* LOGENTRYTABLEWINDOW_H_ */
