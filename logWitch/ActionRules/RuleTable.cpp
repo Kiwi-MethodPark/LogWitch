@@ -21,7 +21,7 @@ void RuleTable::addRule( const char *tableName, TSharedRule &rule )
     qDebug() << "RuleTable::addRule";
 
     std::string tableNameAsString( tableName );
-    TRuleTableMap::iterator it = m_rulesFromSource.find( tableNameAsString );
+    auto it = m_rulesFromSource.find( tableNameAsString );
     if( it == m_rulesFromSource.end() )
     {
         it = m_rulesFromSource.insert( TRuleTableMap::value_type(tableNameAsString,TRuleSet()) ).first;
@@ -36,7 +36,7 @@ void RuleTable::addRule( const char *tableName, TSharedRule &rule )
 void RuleTable::clear( const char *tableName )
 {
     std::string tableNameAsString( tableName );
-    TRuleTableMap::iterator it = m_rulesFromSource.find( tableNameAsString );
+    auto it = m_rulesFromSource.find( tableNameAsString );
     if( it == m_rulesFromSource.end() )
         return;
 
@@ -44,9 +44,9 @@ void RuleTable::clear( const char *tableName )
 
     // rebuild table
     m_rules.clear();
-    for( it = m_rulesFromSource.begin(); it != m_rulesFromSource.end(); ++it )
+    for( auto sourcerule: m_rulesFromSource)
     {
-        m_rules.insert( it->second.begin(), it->second.end() );
+        m_rules.insert( sourcerule.second.begin(), sourcerule.second.end() );
     }
 
     dataChanged();
