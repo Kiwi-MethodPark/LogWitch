@@ -44,6 +44,10 @@
 #include "ContextMenuManipulateHeader.h"
 #include "FilterListView.h"
 
+namespace {
+  const std::vector<QString> s_colorsForQuickSearch = { "#81BEF7", "#FFC596", "#64FFA9", "#E4AFFF", "#A0FFD4" };
+}
+
 void LogEntryTableWindow::updateHeaderSizeToModel(int column, int, int newSize)
 {
   if (newSize == 0)
@@ -72,6 +76,7 @@ LogEntryTableWindow::LogEntryTableWindow( boost::shared_ptr<LogEntryTableModel> 
 , m_myFilterTabs( NULL)
 , m_dockFilterShouldDockedTo(NULL)
 , m_tableView(new QScrollDownTableView())
+, m_nextQsColor(0)
 {
   // Parametrize the filtering model, connect it to the table view.
   m_proxyModel = new LogEntryTableFilter(m_tableView);
@@ -164,8 +169,6 @@ LogEntryTableWindow::LogEntryTableWindow( boost::shared_ptr<LogEntryTableModel> 
       SIGNAL(sectionMoved(int , int , int )), this,
       SLOT(updateHeaderPositionToModel(int,int,int)));
 
-  m_quickSearchBar = new QuickSearchBar( this, m_model );
-
   m_text = new QTextEdit("<b>Log Message viewer</b>", this);
   QObject::connect(m_tableView->selectionModel(),
       SIGNAL(
@@ -182,8 +185,11 @@ LogEntryTableWindow::LogEntryTableWindow( boost::shared_ptr<LogEntryTableModel> 
   m_splitter->addWidget(m_text);
   m_splitter->setStretchFactor(0, 20);
 
-  layout->addWidget(m_quickSearchBar);
+  m_qsLayout = new QVBoxLayout();
+  layout->insertLayout(-1, m_qsLayout);
   layout->addWidget(m_splitter);
+
+  addQuicksearchBar();
 
   centralWidget->setLayout(layout);
   this->setWidget(centralWidget);
@@ -367,6 +373,12 @@ void LogEntryTableWindow::newSelection(const QItemSelection & selected,
               entry));
     }
   }
+}
+
+void LogEntryTableWindow::addQuicksearchBar()
+{
+  QString colorCode = s_colorsForQuickSearch[(m_nextQsColor++) % s_colorsForQuickSearch.size()];
+  m_qsLayout->addWidget( new QuickSearchBar( this, m_model, colorCode ) );
 }
 
 void LogEntryTableWindow::search(Expression& exp, bool backwards)

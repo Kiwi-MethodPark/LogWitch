@@ -8,7 +8,8 @@
 #include "RuleTable.h"
 
 RuleTable::RuleTable()
-:m_onChange ( false )
+: m_onChange ( false )
+, m_nextUid(0)
 {
 }
 
@@ -16,7 +17,23 @@ RuleTable::~RuleTable()
 {
 }
 
-void RuleTable::addRule( const char *tableName, TSharedRule &rule )
+std::string RuleTable::addNewUniqueTable()
+{
+  do {
+    std::string tableNameAsString = std::string("UN+") + std::to_string(++m_nextUid);
+
+    auto it = m_rulesFromSource.find( tableNameAsString );
+    if( it != m_rulesFromSource.end() ) {
+      continue;
+    }
+    else {
+      it = m_rulesFromSource.insert( TRuleTableMap::value_type(tableNameAsString,TRuleSet()) ).first;
+    }
+    return it->first;
+  } while ( true );
+}
+
+void RuleTable::addRule( const std::string& tableName, TSharedRule &rule )
 {
     qDebug() << "RuleTable::addRule";
 
@@ -33,7 +50,7 @@ void RuleTable::addRule( const char *tableName, TSharedRule &rule )
     dataChanged();
 }
 
-void RuleTable::clear( const char *tableName )
+void RuleTable::clear( const std::string& tableName )
 {
     std::string tableNameAsString( tableName );
     auto it = m_rulesFromSource.find( tableNameAsString );

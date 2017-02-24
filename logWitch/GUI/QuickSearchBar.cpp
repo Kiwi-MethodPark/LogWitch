@@ -20,7 +20,8 @@
 #include "Models/LogEntryTableModel.h"
 
 QuickSearchBar::QuickSearchBar(LogEntryTableWindow* parent
-    , boost::shared_ptr<LogEntryTableModel> model)
+    , boost::shared_ptr<LogEntryTableModel> model
+    , const QString& colorCode)
 : QWidget(parent)
 , m_model(model)
 , m_logWindow(parent)
@@ -32,12 +33,14 @@ QuickSearchBar::QuickSearchBar(LogEntryTableWindow* parent
   quickSearchLayout->setContentsMargins(0, 0, 0, 0);
   this->setLayout(quickSearchLayout);
 
-  QIcon iconDown, iconUp, search;
+  QIcon iconDown, iconUp, search, trash;
   search.addFile(QString::fromUtf8(":/icons/search"), QSize(), QIcon::Normal,
       QIcon::Off);
   iconDown.addFile(QString::fromUtf8(":/icons/searchDown"), QSize(),
       QIcon::Normal, QIcon::Off);
   iconUp.addFile(QString::fromUtf8(":/icons/searchUp"), QSize(), QIcon::Normal,
+      QIcon::Off);
+  trash.addFile(QString::fromUtf8(":/icons/trash"), QSize(), QIcon::Normal,
       QIcon::Off);
 
   m_searchModeButton = new QPushButton(tr("Text"));
@@ -47,6 +50,7 @@ QuickSearchBar::QuickSearchBar(LogEntryTableWindow* parent
   m_markButton = new QPushButton(tr("Highlight"));
   m_markButton->setCheckable(true);
   m_markButton->setChecked(true);
+  m_markButton->setStyleSheet("QPushButton:checked { background-color: "+ colorCode + "; }");
 
   QObject::connect(m_markButton, SIGNAL(toggled(bool)), this,
       SLOT(updateSearch()));
@@ -60,15 +64,19 @@ QuickSearchBar::QuickSearchBar(LogEntryTableWindow* parent
   QPushButton *searchUpBtn = new QPushButton(iconUp, "");
   QObject::connect(searchUpBtn, SIGNAL(clicked()), this, SLOT(searchPrev()));
 
+  QPushButton *closeBtn = new QPushButton(trash, "");
+  QObject::connect(closeBtn, SIGNAL(clicked()), this, SLOT(deleteLater()));
+
   quickSearchLayout->addWidget(m_searchModeButton);
   quickSearchLayout->addWidget(m_quickSearch);
   quickSearchLayout->addWidget(m_markButton);
   quickSearchLayout->addWidget(searchDnBtn);
   quickSearchLayout->addWidget(searchUpBtn);
+  quickSearchLayout->addWidget(closeBtn);
 
   // Initialize the action for highlighting log entries.
   ActionParser parser(m_model->getParserModelConfiguration());
-  if (!parser.parse("rewrite(BG:#81BEF7)"))
+  if (!parser.parse("rewrite(BG:"+colorCode+")"))
   {
     qDebug() << "Parsing of action failed!";
   }
@@ -76,10 +84,13 @@ QuickSearchBar::QuickSearchBar(LogEntryTableWindow* parent
   {
     m_quickSearchAction = parser.get();
   }
+
+  m_myRuleTableName = m_logWindow->getRuleTable()->addNewUniqueTable();
 }
 
 QuickSearchBar::~QuickSearchBar()
 {
+  m_logWindow->getRuleTable()->clear(m_myRuleTableName);
 }
 
 
@@ -119,7 +130,7 @@ void QuickSearchBar::switchSearchMode()
 void QuickSearchBar::updateSearch()
 {
   TSharedRuleTable ruleTableForSearching = m_logWindow->getRuleTable();
-  ruleTableForSearching->clear("quicksearch");
+  ruleTableForSearching->clear(m_myRuleTableName);
   m_quickSearch->setStyleSheet("");
   m_quickSearch->setToolTip("");
   m_quickSearchExp.reset();
@@ -163,7 +174,7 @@ void QuickSearchBar::updateSearch()
   if (m_markButton->isChecked() && m_quickSearchExp)
   {
     TSharedRule rule(new Rule(m_quickSearchExp, m_quickSearchAction));
-    ruleTableForSearching->addRule("quicksearch", rule);
+    ruleTableForSearching->addRule(m_myRuleTableName, rule);
   }
 }
 

@@ -179,6 +179,7 @@ void LogfileAnalyser::createWindowsFromParser(boost::shared_ptr<LogEntryParser> 
   m_signalMultiplexer.setObject(wnd);
   m_signalMultiplexer.connect(ui.actionClearLogTable, SIGNAL(triggered()), wnd, SLOT(clearTable()));
   m_signalMultiplexer.connect(ui.actionCapture, SIGNAL(toggled(bool)), wnd, SLOT(capture(bool)));
+  m_signalMultiplexer.connect(ui.actionAddQuicksearchFilter, SIGNAL(triggered()), wnd, SLOT(addQuicksearchBar()));
 
   wnd->setWindowState(Qt::WindowMaximized);
   wnd->setAttribute(Qt::WA_DeleteOnClose);

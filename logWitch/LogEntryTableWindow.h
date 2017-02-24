@@ -23,6 +23,7 @@ class LogEntryTableFilter;
 class LogEntryTableModel;
 class QScrollDownTableView;
 class QSortFilterProxyModel;
+class QVBoxLayout;
 class QuickSearchBar;
 
 class LogEntryTableWindow: public QMdiSubWindow
@@ -64,6 +65,8 @@ public slots:
    */
   void contextMenu(const QPoint &);
 
+  void addQuicksearchBar();
+
 private slots:
   /**
    * This function is used to update the size of the header to the model.
@@ -92,7 +95,9 @@ private:
 
   EntryFormatingModel *m_timeFormatModel;
 
-  QuickSearchBar* m_quickSearchBar;
+  QVBoxLayout* m_qsLayout;
+
+  unsigned int m_nextQsColor;
 };
 
 #endif /* LOGENTRYTABLEWINDOW_H_ */

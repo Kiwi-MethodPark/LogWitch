@@ -24,7 +24,7 @@ class QuickSearchBar:
 {
   Q_OBJECT
 public:
-  QuickSearchBar(LogEntryTableWindow* parent, boost::shared_ptr<LogEntryTableModel> model);
+  QuickSearchBar(LogEntryTableWindow* parent, boost::shared_ptr<LogEntryTableModel> model, const QString& colorCode = "#81BEF7");
   virtual ~QuickSearchBar();
 
 public slots:
@@ -64,9 +64,13 @@ private:
 
   QPushButton* m_markButton;
 
+  QPushButton* m_closeButton;
+
   TSharedAction m_quickSearchAction;
 
   TSharedExpression m_quickSearchExp;
+
+  std::string m_myRuleTableName;
 };
 
 #endif /* LOGWITCH_GUI_QUICKSEARCHBAR_H_ */

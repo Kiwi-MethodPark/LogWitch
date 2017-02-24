@@ -49,9 +49,15 @@ public:
 //        return table;
 //    }
 
-    void addRule( const char *tableName, TSharedRule &rule );
+    /**
+     * Adds a new table with a new unique name. This unique name will be
+     * returned to the caller.
+     */
+    std::string addNewUniqueTable();
 
-    void clear( const char *tableName );
+    void addRule( const std::string& tableName, TSharedRule &rule );
+
+    void clear( const std::string& tableName );
 
     // TActionList getActionsForEntry( TconstSharedLogEntry &entry ) const;
     template <class T>
@@ -111,6 +117,8 @@ private:
     TRuleSet m_rules;
 
     TRuleTableMap m_rulesFromSource;
+
+    unsigned int m_nextUid;
 };
 
 
