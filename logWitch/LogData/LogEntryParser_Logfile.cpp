@@ -46,6 +46,7 @@ LogEntryParser_Logfile::LogEntryParser_Logfile(  boost::shared_ptr<ParserStreamG
   m_myModelConfig = boost::shared_ptr<LogEntryParserModelConfiguration>(
       new LogEntryParserModelConfiguration("Logfile", myFactory));
   m_myModelConfig->setHierarchySplitString(4, "\\.");
+  m_myModelConfig->setHierarchySplitString(5, "/");
 
   for (int i = 0; i < myFactory->getNumberOfFields(); ++i)
   {
