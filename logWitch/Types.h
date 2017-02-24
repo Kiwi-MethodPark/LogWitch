@@ -10,6 +10,7 @@
 #include <boost/shared_ptr.hpp>
 
 #include <QMetaType>
+#include <QString>
 
 class QString;
 class QVariant;

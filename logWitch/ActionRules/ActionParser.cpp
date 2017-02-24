@@ -19,7 +19,7 @@
 #include <boost/variant/recursive_variant.hpp>
 #include <boost/fusion/include/std_pair.hpp>
 
-#include <Qt/qstring.h>
+#include <QString>
 #include <QtGui>
 
 #include "ActionRules/ActionDataRewriter.h"

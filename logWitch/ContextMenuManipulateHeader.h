@@ -8,6 +8,8 @@
 #ifndef CONTEXTMENUMANIPULATEHEADER_H_
 #define CONTEXTMENUMANIPULATEHEADER_H_
 #include <QtGui>
+#include <QMenu>
+#include <QHeaderView>
 
 /**
  * This class is responsible for showing the context menu which

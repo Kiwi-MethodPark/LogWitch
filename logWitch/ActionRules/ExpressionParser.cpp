@@ -15,7 +15,7 @@
 #include <boost/fusion/include/adapt_struct.hpp>
 #include <boost/variant/recursive_variant.hpp>
 
-#include <Qt/qstring.h>
+#include <QString>
 
 #include "ActionRules/Expression.h"
 #include "ActionRules/ExpressionFind.h"

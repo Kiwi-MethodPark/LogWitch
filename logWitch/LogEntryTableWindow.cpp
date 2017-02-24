@@ -7,9 +7,14 @@
 
 #include "LogEntryTableWindow.h"
 
-#include <boost/scoped_ptr.hpp>
-#include <LogData/EntryToTextFormater.h>
 #include <limits>
+
+#include <boost/scoped_ptr.hpp>
+
+#include <QHBoxLayout>
+#include <QLineEdit>
+#include <QMessageBox>
+#include <QVBoxLayout>
 
 #include "ActionRules/ActionDataRewriter.h"
 #include "ActionRules/ActionParser.h"
@@ -25,6 +30,7 @@
 
 #include "GUITools/QScrollDownTableView.h"
 
+#include "LogData/EntryToTextFormater.h"
 #include "LogData/LogEntryParserModelConfiguration.h"
 #include "LogData/LogEntryFactory.h"
 #include "LogData/ObjectCache.hxx"
@@ -77,7 +83,7 @@ LogEntryTableWindow::LogEntryTableWindow( boost::shared_ptr<LogEntryTableModel> 
 
     m_tableView->setModel( m_timeFormatModel );
     m_tableView->verticalHeader()->setDefaultSectionSize( 20 );
-    m_tableView->verticalHeader()->setResizeMode(QHeaderView::Fixed);
+    m_tableView->verticalHeader()->setSectionResizeMode(QHeaderView::Fixed);
     m_tableView->verticalHeader()->hide();
     m_tableView->setAlternatingRowColors(true);
     m_tableView->setSelectionBehavior(QAbstractItemView::SelectRows);
@@ -91,7 +97,7 @@ LogEntryTableWindow::LogEntryTableWindow( boost::shared_ptr<LogEntryTableModel> 
                      this, SLOT(onDoubleClick(const QModelIndex & )));
 
     // Context menu for the HorizontalHeaderView
-    m_tableView->horizontalHeader()->setMovable( true );
+    m_tableView->horizontalHeader()->setSectionsMovable( true );
     m_tableView->horizontalHeader()->setContextMenuPolicy( Qt::CustomContextMenu );
     new ContextMenuManipulateHeader( m_tableView->horizontalHeader() );
 

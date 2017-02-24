@@ -1,10 +1,12 @@
 #include "logfileanalyser.h"
 
-#include <QtGui>
-#include <QtCore/QtCore>
-
 #include <boost/shared_ptr.hpp>
 #include <boost/smart_ptr/make_shared.hpp>
+
+#include <QFileDialog>
+#include <QLabel>
+#include <QMessageBox>
+#include <QSpinBox>
 
 #include "LogData/LogEntryParser_dummy.h"
 #include "LogData/LogEntryFactory.h"

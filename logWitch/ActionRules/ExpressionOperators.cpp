@@ -7,6 +7,8 @@
 
 #include "ExpressionOperators.h"
 
+#include <iostream>
+
 ExpressionOpNegate::ExpressionOpNegate( TSharedExpression in )
 : m_expr( in )
 {

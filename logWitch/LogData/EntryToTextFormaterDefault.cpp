@@ -30,7 +30,7 @@ QString EntryToTextFormaterDefault::formatEntry(TconstSharedLogEntry entry) cons
   if (entry->getFactory().getNumberOfFields() > messageId)
     tmp = *entry->getAttributeAsString(messageId);
 
-  str << "<b>Message:</b><p> <pre> " << Qt::escape(tmp).replace("\n", "<br/>") << "</pre></p>";
+  str << "<b>Message:</b><p> <pre> " << tmp.toHtmlEscaped().replace("\n", "<br/>") << "</pre></p>";
 
   return out;
 }

@@ -32,7 +32,7 @@ ADD_EXECUTABLE( testStringCacheTreeItem ${testStringCacheTreeItem_SOURCES} )
 TARGET_LINK_LIBRARIES(testStringCacheTreeItem 
   	${Boost_UNIT_TEST_FRAMEWORK_LIBRARY}
  	${LFA_MODELS_LIB}
-  	${QT_LIBRARIES}
+  	${Qt5Core_LIBRARIES}
 )
 
 ADD_TEST(NAME testStringCacheTreeItem COMMAND ${CMAKE_CURRENT_BINARY_DIR}/testStringCacheTreeItem)

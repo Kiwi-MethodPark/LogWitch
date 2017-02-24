@@ -3,7 +3,7 @@
 
 #include <boost/shared_ptr.hpp>
 
-#include <QtGui/QMainWindow>
+#include <QMainWindow>
 
 #include "ui_logfileanalyser.h"
 #include "GUITools/SignalMultiplexer.h"

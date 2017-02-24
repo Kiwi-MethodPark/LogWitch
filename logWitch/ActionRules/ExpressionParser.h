@@ -7,7 +7,7 @@
 
 #ifndef EXPRESSIONPARSER_H_
 #define EXPRESSIONPARSER_H_
-#include <Qt/qstring.h>
+#include <QString>
 
 #include "ActionRules/Expression.h"
 #include "LogData/LogEntryParserModelConfiguration.h"

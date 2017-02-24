@@ -8,7 +8,7 @@
 #ifndef BOOSTSPIRITQSTRINGADAPTION_HXX_
 #define BOOSTSPIRITQSTRINGADAPTION_HXX_
 
-#include <Qt/qstring.h>
+#include <QString>
 
 #include <boost/spirit/include/qi.hpp>
 

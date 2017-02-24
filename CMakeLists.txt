@@ -61,6 +61,13 @@ ENDIF()
 IF(USEQT5)
   FIND_PACKAGE(Qt5Core REQUIRED)
   FIND_PACKAGE(Qt5Widgets REQUIRED)
+  FIND_PACKAGE(Qt5Network REQUIRED)
+  FIND_PACKAGE(Qt5Concurrent REQUIRED)
+  #find_package(Qt5 COMPONENTS Core Widgets)
+  
+  FIND_PACKAGE(Qt5Collectiongenerator REQUIRED)
+  
+  # QT_QCOLLECTIONGENERATOR_EXECUTABLE
 ELSE()
   FIND_PACKAGE(Qt4 4.7 REQUIRED)
 ENDIF()
@@ -80,8 +87,18 @@ SET(LFA_HELP_LIB "logfileanalyzer_help_lib")
 SET(LFA_LOGDATA_LIB "logfileanalyzer_logdata_lib")
 SET(LFA_MODELS_LIB "logfileanalyzer_models_lib")
 
-INCLUDE(${QT_USE_FILE})
-ADD_DEFINITIONS(${QT_DEFINITIONS})
+IF(USEQT5)
+   include_directories(
+        ${Qt5Widgets_INCLUDE_DIRS}
+        ${Qt5Gui_INCLUDE_DIRS}
+        ${Qt5Core_INCLUDE_DIRS}
+        ${Qt5Network_INCLUDE_DIRS}
+        ${Qt5Concurrent_INCLUDE_DIRS}
+    )
+ELSE()
+  INCLUDE(${QT_USE_FILE})
+  ADD_DEFINITIONS(${QT_DEFINITIONS})
+ENDIF()
 
 IF(NOT WITHOUT_TEST)
   ENABLE_TESTING()

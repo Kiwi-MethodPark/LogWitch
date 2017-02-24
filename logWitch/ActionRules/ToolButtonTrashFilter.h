@@ -9,6 +9,7 @@
 #define TOOLBUTTONTRASHFILTER_H_
 
 #include <QtGui>
+#include <QToolButton>
 
 class TableModelRulesCompiled;
 

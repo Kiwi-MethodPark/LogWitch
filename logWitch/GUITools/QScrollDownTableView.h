@@ -7,7 +7,7 @@
 
 #ifndef QSCROLLDOWNTABLEVIEW_H_
 #define QSCROLLDOWNTABLEVIEW_H_
-#include <QtGui>
+#include <QTableView>
 
 class QScrollDownTableView
 :public QTableView

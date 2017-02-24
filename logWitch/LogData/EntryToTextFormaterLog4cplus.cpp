@@ -28,7 +28,7 @@ QString EntryToTextFormaterLog4cplus::formatEntry( TconstSharedLogEntry entry ) 
         str << "<b>Thread:</b> " <<  *entry->getAttributeAsString(6)<< "<br/>";
         str << "<b>Nested diagnostic content:</b> " << *entry->getAttributeAsString(7) << "<br/>";
         tmp = *entry->getAttributeAsString(2);
-        str << "<b>Message:</b><p> <pre> " << Qt::escape( tmp ).replace("\n","<br/>") << "</pre></p>";
+        str << "<b>Message:</b><p> <pre> " << tmp.toHtmlEscaped().replace("\n","<br/>") << "</pre></p>";
     }
     else
         str << "<b>The attribute entry type seems to be incorrect! Please check.</b><br/>";

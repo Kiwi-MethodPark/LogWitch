@@ -7,8 +7,13 @@
 
 #include "FilterRuleSelectionWindow.h"
 
-#include <QtGui>
 #include <boost/bind.hpp>
+
+#include <QHeaderView>
+#include <QLabel>
+#include <QtGui>
+#include <QToolBar>
+#include <QVBoxLayout>
 
 #include "ActionRules/CompiledRulesStateSaver.h"
 #include "ActionRules/TableModelRulesCompiled.h"
@@ -34,14 +39,14 @@ FilterRuleSelectionWindow::FilterRuleSelectionWindow( QWidget* parent )
 
     m_ruleView->setHorizontalHeader( new SynchronizedHeaderView( NULL, Qt::Horizontal, m_ruleView ) );
     m_ruleView->horizontalHeader()->setDefaultSectionSize( 190 );
-    m_ruleView->horizontalHeader()->setMovable( true );
+    m_ruleView->horizontalHeader()->setSectionsMovable( true );
     if( settings.contains( filterRuleTableState_Identifier ) )
         m_ruleView->horizontalHeader()->restoreState( settings.value( filterRuleTableState_Identifier).toByteArray() );
     m_ruleView->horizontalHeader()->setContextMenuPolicy( Qt::CustomContextMenu );
     new ContextMenuManipulateHeader( m_ruleView->horizontalHeader() );
 
     m_ruleView->verticalHeader()->setDefaultSectionSize( 20 );
-    m_ruleView->verticalHeader()->setResizeMode(QHeaderView::Fixed);
+    m_ruleView->verticalHeader()->setSectionResizeMode(QHeaderView::Fixed);
     m_rulesModel = new TableModelRulesCompiled( m_ruleView );
     m_ruleView->setModel( m_rulesModel );
     m_ruleView->setSelectionBehavior(QAbstractItemView::SelectRows);

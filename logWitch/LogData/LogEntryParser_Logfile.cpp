@@ -9,8 +9,10 @@
 
 #include <boost/assign/list_of.hpp>
 #include <boost/foreach.hpp>
-#include <QtCore/QtCore>
+
 #include <QRegExp>
+#include <QtCore/QtCore>
+#include <QtConcurrent>
 
 #include "LogEntryFactory.h"
 #include "LogEntryAttributeNames.h"

@@ -34,7 +34,9 @@ ENDIF()
 ADD_LIBRARY(${LFA_LOGDATA_LIB} STATIC ${LFA_LOGDATA_LIB_SOURCES} ${LFA_LOGDATA_MOC_SOURCES} )
 
 TARGET_LINK_LIBRARIES(${LFA_LOGDATA_LIB} 
-    ${QT_LIBRARIES}
+    ${Qt5Core_LIBRARIES}
+    ${Qt5Widgets_LIBRARIES}
+    ${Qt5Network_LIBRARIES}
 )
 
 ################################################################################
@@ -63,7 +65,7 @@ IF(NOT WITHOUT_TEST)
   
   TARGET_LINK_LIBRARIES(testLogData 
       ${Boost_UNIT_TEST_FRAMEWORK_LIBRARY}
-      ${QT_LIBRARIES}
+      ${Qt5Core_LIBRARIES}
       ${LFA_LOGDATA_LIB}
   )
   

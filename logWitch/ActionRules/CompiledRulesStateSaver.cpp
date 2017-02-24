@@ -9,6 +9,11 @@
 
 #include <boost/bind.hpp>
 
+#include <QAction>
+#include <QHeaderView>
+#include <QToolBar>
+#include <QVBoxLayout>
+
 #include "ActionRules/FilterRuleSelectionWindow.h"
 #include "ActionRules/TableModelRulesCompiled.h"
 #include "ActionRules/ToolButtonTrashFilter.h"
@@ -33,7 +38,7 @@ CompiledRulesStateSaver::CompiledRulesStateSaver(  TSharedConstLogEntryParserMod
    // Construct view and set viewing stuff
    m_compiledRuleView = new QTableView(m_displayWidget );
    m_compiledRuleView->verticalHeader()->setDefaultSectionSize( 20 );
-   m_compiledRuleView->verticalHeader()->setResizeMode(QHeaderView::Fixed);
+   m_compiledRuleView->verticalHeader()->setSectionResizeMode(QHeaderView::Fixed);
    m_compiledRuleView->horizontalHeader()->setDefaultSectionSize( 190 );
 
    m_compiledRuleView->setSelectionBehavior(QAbstractItemView::SelectRows);

@@ -8,7 +8,10 @@
 #ifndef FILTERLISTVIEW_H_
 #define FILTERLISTVIEW_H_
 #include <boost/shared_ptr.hpp>
-#include <QtGui>
+
+#include <QAction>
+#include <QMenu>
+#include <QTreeView>
 
 class LogEntryTableWindow;
 class LogEntryParserModelConfiguration;

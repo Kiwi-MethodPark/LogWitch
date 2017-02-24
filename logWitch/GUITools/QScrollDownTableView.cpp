@@ -7,6 +7,8 @@
 
 #include "QScrollDownTableView.h"
 
+#include <QScrollBar>
+
 QScrollDownTableView::QScrollDownTableView(QWidget *parent )
 :QTableView( parent )
 {

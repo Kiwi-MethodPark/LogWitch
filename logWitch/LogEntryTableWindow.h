@@ -7,8 +7,14 @@
 
 #ifndef LOGENTRYTABLEWINDOW_H_
 #define LOGENTRYTABLEWINDOW_H_
-#include <QtGui>
 #include <boost/shared_ptr.hpp>
+
+#include <QDockWidget>
+#include <QMdiSubWindow>
+#include <QPushButton>
+#include <QSplitter>
+#include <QTextEdit>
+
 #include "ActionRules/RuleTable.h"
 #include "ActionRules/CompiledRulesStateSaver.h"
 
