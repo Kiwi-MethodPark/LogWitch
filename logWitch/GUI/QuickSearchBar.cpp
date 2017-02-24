@@ -20,13 +20,11 @@
 #include "Models/LogEntryTableModel.h"
 
 QuickSearchBar::QuickSearchBar(LogEntryTableWindow* parent
-    , boost::shared_ptr<LogEntryTableModel> model
-    , TSharedRuleTable ruleTableForSearching)
+    , boost::shared_ptr<LogEntryTableModel> model)
 : QWidget(parent)
 , m_model(model)
 , m_logWindow(parent)
 , m_searchMode(Text)
-, m_ruleTableForSearching(ruleTableForSearching)
 {
   // Create quicksearch bar
   m_quickSearch = new QLineEdit;
@@ -120,7 +118,8 @@ void QuickSearchBar::switchSearchMode()
 
 void QuickSearchBar::updateSearch()
 {
-  m_ruleTableForSearching->clear("quicksearch");
+  TSharedRuleTable ruleTableForSearching = m_logWindow->getRuleTable();
+  ruleTableForSearching->clear("quicksearch");
   m_quickSearch->setStyleSheet("");
   m_quickSearch->setToolTip("");
   m_quickSearchExp.reset();
@@ -164,7 +163,7 @@ void QuickSearchBar::updateSearch()
   if (m_markButton->isChecked() && m_quickSearchExp)
   {
     TSharedRule rule(new Rule(m_quickSearchExp, m_quickSearchAction));
-    m_ruleTableForSearching->addRule("quicksearch", rule);
+    ruleTableForSearching->addRule("quicksearch", rule);
   }
 }
 

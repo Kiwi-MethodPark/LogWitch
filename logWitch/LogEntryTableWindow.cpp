@@ -164,7 +164,7 @@ LogEntryTableWindow::LogEntryTableWindow( boost::shared_ptr<LogEntryTableModel> 
       SIGNAL(sectionMoved(int , int , int )), this,
       SLOT(updateHeaderPositionToModel(int,int,int)));
 
-  m_quickSearchBar = new QuickSearchBar( this, m_model, m_proxyModel->getRuleTable() );
+  m_quickSearchBar = new QuickSearchBar( this, m_model );
 
   m_text = new QTextEdit("<b>Log Message viewer</b>", this);
   QObject::connect(m_tableView->selectionModel(),

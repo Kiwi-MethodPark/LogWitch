@@ -14,7 +14,6 @@
 
 #include "ActionRules/Action.h"
 #include "ActionRules/Expression.h"
-#include "ActionRules/RuleTable.h"
 
 #include "LogEntryTableWindow.h"
 
@@ -25,7 +24,7 @@ class QuickSearchBar:
 {
   Q_OBJECT
 public:
-  QuickSearchBar(LogEntryTableWindow* parent, boost::shared_ptr<LogEntryTableModel> model, TSharedRuleTable ruleTableForSearching);
+  QuickSearchBar(LogEntryTableWindow* parent, boost::shared_ptr<LogEntryTableModel> model);
   virtual ~QuickSearchBar();
 
 public slots:
@@ -68,8 +67,6 @@ private:
   TSharedAction m_quickSearchAction;
 
   TSharedExpression m_quickSearchExp;
-
-  TSharedRuleTable m_ruleTableForSearching;
 };
 
 #endif /* LOGWITCH_GUI_QUICKSEARCHBAR_H_ */
