@@ -65,6 +65,9 @@ private slots:
   void openPort();
 
   void exportLogfile();
+
+public slots:
+  void openLogfile(const QString & fileNames);
 };
 
 #endif // LOGFILEANALYSER_H

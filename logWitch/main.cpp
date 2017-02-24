@@ -4,6 +4,7 @@
 
 #include <QtGui>
 #include <QApplication>
+#include <QCommandLineParser>
 
 #include "LogData/LogDataTypeRegistration.h"
 #include "Types.h"
@@ -29,6 +30,23 @@ int main(int argc, char *argv[])
 
   QApplication a(argc, argv);
   LogfileAnalyser w;
+
+  QCommandLineParser parser;
+  parser.setApplicationDescription(QCoreApplication::translate("main", "This is a tool for analyzing logfiles or capturing remote log data.") );
+  parser.addHelpOption();
+  parser.addVersionOption();
+
+  // An option with a value
+  parser.addPositionalArgument("logfile", QCoreApplication::translate("main", "File to open"));
+
+  parser.process(a);
+  const QStringList positionalArguments = parser.positionalArguments();
+  if (!positionalArguments.isEmpty())
+  {
+    // Request to open logfile ...
+    qDebug() << " Request to open logfile: " <<positionalArguments;
+    w.openLogfile(positionalArguments.at(0));
+  }
 
   const QString mainWindowGeometry_Identifier( "MainWindowGeometry" );
 
