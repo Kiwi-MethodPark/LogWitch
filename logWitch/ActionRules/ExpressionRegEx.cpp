@@ -29,6 +29,16 @@ bool ExpressionRegEx::match( TconstSharedLogEntry &entry ) const
     return value->contains( m_regex );
 }
 
+QString ExpressionRegEx::getPattern() const
+{
+  return m_regex.pattern();
+}
+
+TconstSharedValueGetter ExpressionRegEx::getValueGetter() const
+{
+  return m_value;
+}
+
 std::ostream &ExpressionRegEx::out( std::ostream &o, bool extended ) const
 {
     if( extended )

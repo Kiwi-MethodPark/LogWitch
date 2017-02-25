@@ -30,6 +30,16 @@ bool ExpressionFind::match( TconstSharedLogEntry &entry ) const
     return value->contains( m_pattern );
 }
 
+QString ExpressionFind::getPattern() const
+{
+  return m_pattern;
+}
+
+TconstSharedValueGetter ExpressionFind::getValueGetter() const
+{
+  return m_value;
+}
+
 std::ostream &ExpressionFind::out( std::ostream &o, bool extended ) const
 {
     if( extended )

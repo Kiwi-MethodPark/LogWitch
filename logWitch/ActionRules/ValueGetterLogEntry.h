@@ -27,6 +27,7 @@ public:
     virtual ~ValueGetterLogEntry();
 
     void setName( const QString &name );
+    QString getName() const;
 
     bool isValid( ) const;
 

@@ -66,6 +66,11 @@ void ValueGetterLogEntry::setName( const QString &name )
     }
 }
 
+QString ValueGetterLogEntry::getName() const
+{
+  return m_name;
+}
+
 ValueGetterLogEntry::~ValueGetterLogEntry()
 {
 }

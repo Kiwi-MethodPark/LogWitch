@@ -7,6 +7,8 @@
 
 #include "GUI/QuickSearchBar.h"
 
+#include <sstream>
+
 #include <QHBoxLayout>
 #include <QPushButton>
 
@@ -19,6 +21,85 @@
 
 #include "Models/LogEntryTableModel.h"
 
+class QuickSearchLineEdit: public QLineEdit
+{
+public:
+  QuickSearchLineEdit( QuickSearchBar* parent);
+
+  void dragEnterEvent(QDragEnterEvent *event);
+  void dropEvent(QDropEvent *event);
+
+private:
+  QuickSearchBar* m_qsBar;
+};
+
+QuickSearchLineEdit::QuickSearchLineEdit(QuickSearchBar* parent)
+: m_qsBar(parent)
+{
+  setAcceptDrops(true);
+}
+
+void QuickSearchLineEdit::dragEnterEvent(QDragEnterEvent *event)
+{
+  qDebug() << "QuickSearchLineEdit::dragEnterEvent";
+  if (event->mimeData()->hasFormat( TableModelRulesCompiled::ruleMimeType ) ) {
+    event->acceptProposedAction();
+  }
+  else {
+    QLineEdit::dragEnterEvent( event );
+  }
+}
+
+void QuickSearchLineEdit::dropEvent(QDropEvent *event)
+{
+  qDebug() << "QuickSearchLineEdit::dropEvent";
+  if (event->mimeData()->hasFormat(TableModelRulesCompiled::ruleMimeType))
+  {
+    event->accept();
+    event->setDropAction(Qt::CopyAction);
+    boost::shared_ptr<FilterRuleCompiled> rule(
+        new FilterRuleCompiled(event->mimeData()->text()) );
+
+    // Now decide what we can do with this rule...
+    auto expression = rule->getExpression();
+
+    bool expressionSet = false;
+    auto expressionFind = boost::dynamic_pointer_cast<ExpressionFind>( expression );
+    auto expressionRe = boost::dynamic_pointer_cast<ExpressionRegEx>( expression );
+
+    if (expressionFind) {
+      TconstSharedValueGetter vg = expressionFind->getValueGetter();
+      boost::shared_ptr<const ValueGetterLogEntry> vgLe = boost::dynamic_pointer_cast<const ValueGetterLogEntry>(vg);
+      if (vgLe && vgLe->getName() == "message") {
+        setText(expressionFind->getPattern());
+        m_qsBar->setSearchMode(QuickSearchBar::Text);
+        expressionSet = true;
+      }
+    }
+    else if (expressionRe) {
+      TconstSharedValueGetter vg = expressionRe->getValueGetter();
+      boost::shared_ptr<const ValueGetterLogEntry> vgLe = boost::dynamic_pointer_cast<const ValueGetterLogEntry>(vg);
+      if (vgLe && vgLe->getName() == "message") {
+        setText(expressionRe->getPattern());
+        m_qsBar->setSearchMode(QuickSearchBar::Regex);
+        expressionSet = true;
+      }
+    }
+
+    if (!expressionSet) {
+      std::stringstream str;
+      str << *expression;
+      setText(QString::fromStdString(str.str()));
+      m_qsBar->setSearchMode(QuickSearchBar::Expression);
+    }
+  }
+  else
+  {
+    QLineEdit::dropEvent(event);
+  }
+}
+
+
 QuickSearchBar::QuickSearchBar(LogEntryTableWindow* parent
     , boost::shared_ptr<LogEntryTableModel> model
     , const QString& colorCode)
@@ -28,7 +109,7 @@ QuickSearchBar::QuickSearchBar(LogEntryTableWindow* parent
 , m_searchMode(Text)
 {
   // Create quicksearch bar
-  m_quickSearch = new QLineEdit;
+  m_quickSearch = new QuickSearchLineEdit(this);
   QHBoxLayout* quickSearchLayout = new QHBoxLayout;
   quickSearchLayout->setContentsMargins(0, 0, 0, 0);
   this->setLayout(quickSearchLayout);
@@ -94,6 +175,12 @@ QuickSearchBar::~QuickSearchBar()
 }
 
 
+void QuickSearchBar::setSearchMode( SearchModes searchMode )
+{
+  m_searchMode = searchMode;
+  updateSearch();
+}
+
 void QuickSearchBar::switchSearchMode()
 {
   switch (m_searchMode)
@@ -110,6 +197,11 @@ void QuickSearchBar::switchSearchMode()
     break;
   }
 
+  updateSearch();
+}
+
+void QuickSearchBar::updateSearch()
+{
   switch (m_searchMode)
   {
   default:
@@ -124,11 +216,6 @@ void QuickSearchBar::switchSearchMode()
     break;
   }
 
-  updateSearch();
-}
-
-void QuickSearchBar::updateSearch()
-{
   TSharedRuleTable ruleTableForSearching = m_logWindow->getRuleTable();
   ruleTableForSearching->clear(m_myRuleTableName);
   m_quickSearch->setStyleSheet("");

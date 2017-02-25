@@ -26,6 +26,9 @@ public:
     bool match( TconstSharedLogEntry &entry ) const;
 
     std::ostream &out( std::ostream &o, bool extended = false ) const;
+
+    QString getPattern() const;
+    TconstSharedValueGetter getValueGetter() const;
 private:
     TconstSharedValueGetter m_value;
 

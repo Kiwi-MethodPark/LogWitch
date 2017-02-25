@@ -18,6 +18,7 @@
 #include "LogEntryTableWindow.h"
 
 class LogEntryTableModel;
+class QuickSearchLineEdit;
 
 class QuickSearchBar:
     public QWidget
@@ -27,12 +28,19 @@ public:
   QuickSearchBar(LogEntryTableWindow* parent, boost::shared_ptr<LogEntryTableModel> model, const QString& colorCode = "#81BEF7");
   virtual ~QuickSearchBar();
 
+  enum SearchModes { Regex, Text, Expression};
+
 public slots:
   /**
    * Switches between the different modes for the quicksearch
    * text line.
    */
   void switchSearchMode();
+
+  /**
+   * Sets a certain search mode.
+   */
+  void setSearchMode( SearchModes searchMode );
 
   /**
    * Updates the view from the quicksearch line
@@ -50,21 +58,18 @@ public slots:
   void searchPrev();
 
 private:
-  enum SearchModes { Regex, Text, Expression};
 
   boost::shared_ptr<LogEntryTableModel> m_model;
 
   LogEntryTableWindow* m_logWindow;
 
-  QLineEdit *m_quickSearch;
+  QuickSearchLineEdit *m_quickSearch;
 
   SearchModes m_searchMode;
 
   QPushButton* m_searchModeButton;
 
   QPushButton* m_markButton;
-
-  QPushButton* m_closeButton;
 
   TSharedAction m_quickSearchAction;
 
