@@ -12,6 +12,11 @@ Used libraries:
     need component Network
 - log4cplus
 
+
+qtdeclarative5-dev
+qtdeclarative5-dev-tools
+qttools5-dev-tools
+
 Build instructions:
 -------------------
 
