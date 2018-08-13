@@ -27,12 +27,14 @@ IF(NOT CMAKE_BUILD_TYPE)
 endif()
 
 # Set default value for the build type to release, if nothing else was specified
-SET(USEQT5)
+SET (USEQT5 ON)
 
 IF(USEQT5)
   CMAKE_MINIMUM_REQUIRED(VERSION 2.8.11 FATAL_ERROR)
+  MESSAGE(STATUS "Use QT5 für build.")
 ELSE()
   CMAKE_MINIMUM_REQUIRED(VERSION 2.6.0 FATAL_ERROR)
+  MESSAGE(STATUS "WARNING: Try to use obsolete non QT5 build!")
 ENDIF()
 
 SET(CMAKE_MODULE_PATH ${CMAKE_SOURCE_DIR}/cmake/modules)
