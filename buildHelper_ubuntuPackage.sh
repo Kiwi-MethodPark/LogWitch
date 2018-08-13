@@ -17,9 +17,9 @@ mkdir buildUbuntuPackage
 cd buildUbuntuPackage
 cmake .. -DCMAKE_BUILD_TYPE=release -DCMAKE_INSTALL_PREFIX:PATH=/usr -DTARGET_SYSTEM="${CODENAME}"
 make $1
+# Set umask to produce a correct permission debian file.
+umask 022
 cpack -G DEB
-
-../debCleaner.sh *.deb 
 
 if [ -n "${BUILD_LW_POSTFIX}" ]; then
 	for i in *.deb; do mv -v $i `basename $i .deb`.${BUILD_LW_POSTFIX}.deb; done
