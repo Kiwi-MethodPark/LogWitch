@@ -1,0 +1,16 @@
+Source: logwitch
+Section: development
+Priority: optional
+Maintainer: Sven Steckmann <logwitch@steckmann.de>
+Build-Depends: debhelper (>=10), cmake, libboost
+Standards-Version: 4.0.0
+Vcs-Git: https://github.com/Boldie/logwitch.git
+Homepage: https://www.steckmann.de/logwitch
+
+Package: logwitch
+Architecture: any
+Depends: ${shlibs:Depends}, ${misc:Depends}
+Description: A Logfile analyzer tool for various logging frameworks
+  The anlyzer can be used to analyze logfiles created from log4cplus.
+  With additional plugins the analyzer can use more file formats or
+  other logging frameworks.
