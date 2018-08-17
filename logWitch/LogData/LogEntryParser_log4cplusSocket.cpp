@@ -14,6 +14,11 @@
 
 #include <log4cplus/socketappender.h>
 #include <log4cplus/spi/loggingevent.h>
+
+#ifdef LOG4CPLUSV2
+#include <log4cplus/helpers/timehelper.h>
+#endif
+
 #include <log4cplus/loglevel.h>
 #include <LogData/EntryToTextFormaterLog4cplus.h>
 
@@ -251,12 +256,23 @@ void LogEntryParser_log4cplusSocket_Receiver::newDataAvailable()
 TSharedLogEntry LogEntryParser_log4cplusSocket_Receiver::bufferToEntry()
 {
 	log4cplus::spi::InternalLoggingEvent event = readFromBuffer(*m_buffer);
+
 #if QT_VERSION > 0x040700 //needs > Qt.4.7
+# ifdef LOG4CPLUSV2
+	using namespace log4cplus::helpers;
+	QDateTime timestamp( QDateTime::fromMSecsSinceEpoch ( qint64(to_time_t (event.getTimestamp())) * 1000
+	                                                      + ((qint64( microseconds_part(event.getTimestamp())/1000)%1000) ) ) );
+# else
 	QDateTime timestamp( QDateTime::fromMSecsSinceEpoch ( qint64(event.getTimestamp().getTime()) * 1000 + ((qint64( event.getTimestamp().usec()/1000)%1000) ) ) );
+# endif
 #else
 	// This is a workaround for older QT versions (<=4.7)
+# ifdef LOG4CPLUSV2
+#  error Needs to be implemented if needed.
+# else
 	QDateTime timestamp( QDateTime::fromTime_t(0) );
 	timestamp = timestamp.addMSecs(qint64(event.getTimestamp().getTime()) * 1000 + ((qint64( event.getTimestamp().usec()/1000)%1000) ) );
+# endif
 #endif
 
 	TSharedLogEntry entry = m_server->myFactory->getNewLogEntry( );
