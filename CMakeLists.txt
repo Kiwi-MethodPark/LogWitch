@@ -157,5 +157,24 @@ IF(EXISTS "${CMAKE_ROOT}/Modules/CPack.cmake")
     message( FATAL_ERROR "Unable to determine distribution version: ${TARGET_SYSTEM}" )
   ENDIF()
 
+  # generate a Debian compliant changelog
+  SET(CHANGELOG_HEADER "${APP_NAME_LC} (${CPACK_DEBIAN_PACKAGE_VERSION}) ${TARGET_SYSTEM}\; urgency=high")
+  EXECUTE_PROCESS(COMMAND date -R OUTPUT_VARIABLE RFC2822_TIMESTAMP)
+  # two spaces between maintainer and timestamp is NOT a mistake
+  SET(CHANGELOG_FOOTER " -- ${CPACK_DEBIAN_PACKAGE_MAINTAINER}  ${RFC2822_TIMESTAMP}")
+
+find_program(GZIP_CMD gzip)
+if(GIT_FOUND AND GZIP_CMD AND EXISTS ${CMAKE_SOURCE_DIR}/.git)
+  execute_process(COMMAND ${GIT_EXECUTABLE} log --no-merges --pretty=format:"%n  [%an]%n   * %s" --since="30 days ago"
+                  OUTPUT_VARIABLE CHANGELOG
+                  WORKING_DIRECTORY ${CMAKE_SOURCE_DIR}
+                  OUTPUT_STRIP_TRAILING_WHITESPACE)
+    string(REPLACE "\"" "" CHANGELOG ${CHANGELOG})
+  file(WRITE ${CPACK_PACKAGE_DIRECTORY}/deb/changelog.Debian ${CHANGELOG_HEADER}\n${CHANGELOG}\n\n${CHANGELOG_FOOTER})
+  execute_process(COMMAND ${GZIP_CMD} -f -9 -n ${CPACK_PACKAGE_DIRECTORY}/deb/changelog.Debian)
+  unset(CHANGELOG_HEADER)
+  unset(CHANGELOG_FOOTER)
+  unset(RFC2822_TIMESTAMP)
+endif()
   INCLUDE(CPack)
 ENDIF(EXISTS "${CMAKE_ROOT}/Modules/CPack.cmake")
