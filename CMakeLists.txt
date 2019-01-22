@@ -29,9 +29,9 @@ IF(NOT CMAKE_BUILD_TYPE)
 endif()
 
 # Set default value for the build type to release, if nothing else was specified
-SET (USEQT5 ON)
+OPTION (USEQT5 "QT5 library usage instead of 4" ON)
 # Set Log4Cplus version 2
-SET (USELOG4CPLUSV2 OFF)
+OPTION (USELOG4CPLUSV2 "Search for version 2 log4cplus library" OFF)
 
 IF(USEQT5)
   CMAKE_MINIMUM_REQUIRED(VERSION 2.8.11 FATAL_ERROR)
@@ -83,6 +83,8 @@ IF(USELOG4CPLUSV2)
 ELSE()
   FIND_PACKAGE(log4cplus REQUIRED)
 ENDIF()
+
+MESSAGE( "Log4cplus version: ${LOG4CPLUS_VERSION}" )
 
 FIND_PACKAGE(Boost REQUIRED)
 
