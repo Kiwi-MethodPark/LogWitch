@@ -63,8 +63,6 @@ public:
   LogfileAnalyser(QWidget *parent = 0);
   ~LogfileAnalyser();
 
-  bool initParser();
-
   void newParser(boost::shared_ptr<LogEntryParser> parser, bool alreadyInitialized) override;
 
 public slots:
