@@ -3,10 +3,12 @@
 
 #include <boost/shared_ptr.hpp>
 
+#include <QtCore>
 #include <QMainWindow>
 
 #include "ui_logfileanalyser.h"
 #include "GUITools/SignalMultiplexer.h"
+#include "ParserActionInterface.h"
 
 class HelpAssistant;
 
@@ -20,42 +22,11 @@ class WidgetStateSaver;
 class QMdiSubWindow;
 class FilterRuleSelectionWindow;
 
-/**
- * Interface to signal a new parser action which requests the main application ot
- * open a new window
- */
-class ParserActionInterface
-{
-public:
-	virtual ~ParserActionInterface() = default;
+namespace logwitch { namespace plugins {
+	class LogSourcePlugin;
+}}
 
-	/**
-	 * A new parser has been created an shall be passed to the application
-	 */
-	virtual void newParser(boost::shared_ptr<LogEntryParser> parser, bool alreadyInitialized = false) = 0;
-};
-
-class Log4cplusGUIIntegration: public QObject
-{
-	Q_OBJECT
-public:
-	Log4cplusGUIIntegration( ParserActionInterface* parserActionIfc );
-
-	virtual ~Log4cplusGUIIntegration();
-
-	QToolBar* getToolbar() {return m_toolbar; }
-
-private slots:
-	void openPort();
-
-private:
-	ParserActionInterface* m_parserActionIfc;
-
-	QToolBar* m_toolbar;
-	QSpinBox* m_port;
-};
-
-class LogfileAnalyser : public QMainWindow, public ParserActionInterface
+class LogfileAnalyser : public QMainWindow, public logwitch::ParserActionInterface
 {
   Q_OBJECT
 
@@ -87,8 +58,10 @@ private:
 
   boost::shared_ptr<HelpAssistant> m_helpAssistant;
 
-  // TODO: This is a temporary hack for refactoring, later there shall be only abstract types
-  Log4cplusGUIIntegration* m_log4cplusIntegration;
+  void loadPlugins();
+  void loadPlugins(QDir basePath);
+
+  std::list< logwitch::plugins::LogSourcePlugin* > m_logSourcePlugins;
 
 private slots:
   void openDummyLogfile();

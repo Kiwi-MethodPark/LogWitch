@@ -78,14 +78,6 @@ ELSE()
   FIND_PACKAGE(Qt4 4.7 REQUIRED)
 ENDIF()
 
-IF(USELOG4CPLUSV2)
-  FIND_PACKAGE(log4cplus-2.0 REQUIRED)
-ELSE()
-  FIND_PACKAGE(log4cplus REQUIRED)
-ENDIF()
-
-MESSAGE( "Log4cplus version: ${LOG4CPLUS_VERSION}" )
-
 FIND_PACKAGE(Boost REQUIRED)
 
 set(CMAKE_CXX_STANDARD 11)
@@ -98,6 +90,9 @@ SET(LFA_GUITOOLS_LIB "logfileanalyzer_guitools_lib")
 SET(LFA_HELP_LIB "logfileanalyzer_help_lib")
 SET(LFA_LOGDATA_LIB "logfileanalyzer_logdata_lib")
 SET(LFA_MODELS_LIB "logfileanalyzer_models_lib")
+SET(LFA_PLUGINS_BASIC_LIB "logfileanalyzer_plugins_basic_lib")
+
+SET(LFA_PLUGIN_LOG4CPLUS_LIB "logwitch_plugin_log4cplus")
 
 IF(USEQT5)
    include_directories(
@@ -115,6 +110,14 @@ ENDIF()
 IF(NOT WITHOUT_TEST)
   ENABLE_TESTING()
 ENDIF()
+
+SET(LW_PLUGIN_DIR usr/lib/logwitch)
+SET(LW_BINARY_DIR bin)
+
+# This directory is relative to bin to ensure install in custom destinations will work. 
+SET(LW_BIN_TO_PLUGIN_DIR ../usr/lib/logwitch)
+
+
 
 ADD_SUBDIRECTORY(logWitch)
 

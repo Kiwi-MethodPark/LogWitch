@@ -5,7 +5,7 @@
  *      Author: sven
  */
 
-#include "LogData/LogEntryParser_log4cplusSocket.h"
+#include "Plugins/LogSource/log4cplus/LogEntryParser_log4cplusSocket.h"
 
 #include <algorithm>
 #include <boost/shared_ptr.hpp>
@@ -20,16 +20,17 @@
 #endif
 
 #include <log4cplus/loglevel.h>
-#include <LogData/EntryToTextFormaterLog4cplus.h>
 
 #include <QtCore/QtCore>
 
 #include "LogData/LogEntry.h"
-#include "LogEntryFactory.h"
-#include "LogEntryFactory.h"
+#include "LogData/LogEntryAttributeNames.h"
+#include "LogData/LogEntryFactory.h"
 #include "LogData/LogEntryParserModelConfiguration.h"
-#include "LogEntryAttributeNames.h"
 
+#include "Plugins/LogSource/log4cplus//EntryToTextFormaterLog4cplus.h"
+
+namespace logwitch { namespace plugins { namespace log4cplus {
 
 LogEntryParser_log4cplusSocket::LogEntryParser_log4cplusSocket( int port )
     :m_port(port)
@@ -200,7 +201,7 @@ void LogEntryParser_log4cplusSocket_Receiver::newDataAvailable()
 	{
 		m_stateReadSize = true;
 		m_bytesNeeded = sizeof(unsigned int);
-		m_buffer.reset( new log4cplus::helpers::SocketBuffer(m_bytesNeeded) );
+		m_buffer.reset( new ::log4cplus::helpers::SocketBuffer(m_bytesNeeded) );
 	}
 
 	std::list<TSharedLogEntry> entries;
@@ -244,7 +245,7 @@ void LogEntryParser_log4cplusSocket_Receiver::newDataAvailable()
 				return;
 			}
 
-			m_buffer.reset( new log4cplus::helpers::SocketBuffer(sizeToReadNext) );
+			m_buffer.reset( new ::log4cplus::helpers::SocketBuffer(sizeToReadNext) );
 			m_bytesNeeded = sizeToReadNext;
 		}
 	}
@@ -255,7 +256,7 @@ void LogEntryParser_log4cplusSocket_Receiver::newDataAvailable()
 
 TSharedLogEntry LogEntryParser_log4cplusSocket_Receiver::bufferToEntry()
 {
-	log4cplus::spi::InternalLoggingEvent event = readFromBuffer(*m_buffer);
+	::log4cplus::spi::InternalLoggingEvent event = readFromBuffer(*m_buffer);
 
 #if QT_VERSION > 0x040700 //needs > Qt.4.7
 # ifdef LOG4CPLUSV2
@@ -278,17 +279,17 @@ TSharedLogEntry LogEntryParser_log4cplusSocket_Receiver::bufferToEntry()
 	TSharedLogEntry entry = m_server->myFactory->getNewLogEntry( );
 
 	QString logLevel = m_server->m_loglevelStringOff;
-	if( event.getLogLevel() >= log4cplus::OFF_LOG_LEVEL )
+	if( event.getLogLevel() >= ::log4cplus::OFF_LOG_LEVEL )
 		logLevel = m_server->m_loglevelStringOff;
-	else if( event.getLogLevel() >= log4cplus::FATAL_LOG_LEVEL )
+	else if( event.getLogLevel() >= ::log4cplus::FATAL_LOG_LEVEL )
 		logLevel = m_server->m_loglevelStringFatal;
-	else if( event.getLogLevel() >= log4cplus::ERROR_LOG_LEVEL )
+	else if( event.getLogLevel() >= ::log4cplus::ERROR_LOG_LEVEL )
 		logLevel = m_server->m_loglevelStringError;
-	else if( event.getLogLevel() >= log4cplus::WARN_LOG_LEVEL )
+	else if( event.getLogLevel() >= ::log4cplus::WARN_LOG_LEVEL )
 		logLevel = m_server->m_loglevelStringWarn;
-	else if( event.getLogLevel() >= log4cplus::DEBUG_LOG_LEVEL )
+	else if( event.getLogLevel() >= ::log4cplus::DEBUG_LOG_LEVEL )
 		logLevel = m_server->m_loglevelStringDebug;
-	else if( event.getLogLevel() >= log4cplus::TRACE_LOG_LEVEL )
+	else if( event.getLogLevel() >= ::log4cplus::TRACE_LOG_LEVEL )
 		logLevel = m_server->m_loglevelStringTrace;
 
 	entry->setAttribute( QVariant( timestamp ), 1 );
@@ -319,3 +320,4 @@ void LogEntryParser_log4cplusSocket_Receiver::shutdown()
 	deleteLater();
 }
 
+}}}

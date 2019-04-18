@@ -3,6 +3,7 @@
 #include <boost/shared_ptr.hpp>
 #include <boost/smart_ptr/make_shared.hpp>
 
+#include <QtGui>
 #include <QFileDialog>
 #include <QLabel>
 #include <QMessageBox>
@@ -18,58 +19,13 @@
 #include "Models/StringCacheTreeModel.h"
 #include "LogData/LogEntryParser_Logfile.h"
 #include "LogData/LogEntryParser_LogfileLWI.h"
-#include "LogData/LogEntryParser_log4cplusSocket.h"
 #include "GUITools/WidgetStateSaver.h"
 #include "GUITools/GetSetStateSaver.hxx"
 #include "GUITools/SignalMultiplexerStateApplier.h"
 #include "ActionRules/FilterRuleSelectionWindow.h"
 #include "Help/HelpAssistant.h"
 
-
-
-Log4cplusGUIIntegration::Log4cplusGUIIntegration( ParserActionInterface* parserActionIfc )
-: m_parserActionIfc(parserActionIfc)
-{
-	m_toolbar = new QToolBar("Log4cplus v2.2");
-
-	QAction* actionOpenServer = new QAction(this);
-	actionOpenServer->setObjectName(QStringLiteral("actionOpenLog4cplusServer"));
-	QIcon icon1;
-	icon1.addFile(QStringLiteral(":/icons/network"), QSize(), QIcon::Normal, QIcon::On);
-	actionOpenServer->setIcon(icon1);
-
-	actionOpenServer->setText(QApplication::translate("Plugin_Source_Log4cplus", "Start Server", Q_NULLPTR));
-#ifndef QT_NO_TOOLTIP
-	actionOpenServer->setToolTip(QApplication::translate("Plugin_Source_Log4cplus", "Starts the Log4cplus logging server.", Q_NULLPTR));
-#endif // QT_NO_TOOLTIP
-
-	QLabel *portLabel = new QLabel(QApplication::translate("Plugin_Source_Log4cplus", "Port: ", Q_NULLPTR));
-	m_port = new QSpinBox(m_toolbar);
-	m_port->setToolTip(QApplication::translate("Plugin_Source_Log4cplus", "Port to listen for log4cplus socket appender", Q_NULLPTR));
-	m_port->setMinimum(1);
-	m_port->setMaximum(65535);
-	m_port->setValue(9998);
-
-	m_toolbar->addAction(actionOpenServer);
-	m_toolbar->addWidget(portLabel);
-	m_toolbar->addWidget(m_port);
-
-	QObject::connect(actionOpenServer, SIGNAL(triggered()), this, SLOT(openPort()));
-}
-
-Log4cplusGUIIntegration::~Log4cplusGUIIntegration()
-{
-	delete m_toolbar;
-}
-
-void Log4cplusGUIIntegration::openPort()
-{
-  int port = m_port->value();
-  boost::shared_ptr<LogEntryParser_log4cplusSocket> socketParser(
-    new LogEntryParser_log4cplusSocket(port));
-
-  m_parserActionIfc->newParser(socketParser);
-}
+#include "Plugins/LogSource/Interface/LogSourcePlugin.h"
 
 LogfileAnalyser::LogfileAnalyser(QWidget *parent)
   : QMainWindow(parent),
@@ -79,8 +35,7 @@ LogfileAnalyser::LogfileAnalyser(QWidget *parent)
 {
   ui.setupUi(this);
 
-  m_log4cplusIntegration = new Log4cplusGUIIntegration(this);
-  addToolBar( m_log4cplusIntegration->getToolbar() );
+  loadPlugins();
 
   m_stateSaver = new WidgetStateSaver(this);
   m_stateSaver->addElementToWatch(&m_signalMultiplexer,
@@ -104,7 +59,66 @@ LogfileAnalyser::LogfileAnalyser(QWidget *parent)
                                   GetSetStateSaver<FilterRuleSelWndStateSaverTypes>::generate());
   m_stateSaver->addElementToWatch(ui.actionCapture,
                                   GetSetStateSaver<QQctionCheckedSaverTypes>::generate());
+}
 
+LogfileAnalyser::~LogfileAnalyser()
+{
+	for ( auto plugin: m_logSourcePlugins )
+		delete plugin;
+}
+
+void LogfileAnalyser::loadPlugins()
+{
+	// In case of building release
+	QDir pluginsDir(qApp->applicationDirPath());
+	if (pluginsDir.cd(LW_PLUGIN_DIR))
+		loadPlugins(pluginsDir);
+	else
+	{
+		qDebug() << " Unable to find relative plugin directory: " << LW_PLUGIN_DIR;
+		qDebug() << " Falling back to developer directory search in application binary path";
+
+		// In case of building locally and developing
+		QDir pluginsDir(qApp->applicationDirPath());
+		pluginsDir.cd("Plugins");
+		loadPlugins(pluginsDir);
+	}
+}
+
+void LogfileAnalyser::loadPlugins(QDir basePath)
+{
+	qDebug() << "loadPlugins from " << basePath.absolutePath();
+
+	for (QString fileName: basePath.entryList(QDir::Files))
+	{
+		QString pluginFileName = basePath.absoluteFilePath (fileName);
+		QPluginLoader pluginLoader (pluginFileName);
+		QObject *plugin = pluginLoader.instance ();
+		if (plugin)
+		{
+			qDebug() << "Found plugin: " << fileName;
+			auto logsourceplugin = qobject_cast<logwitch::plugins::LogSourcePlugin *> (plugin);
+			if (logsourceplugin)
+			{
+				qDebug() << " Plugin is of type LogSourcePlugin";
+				logsourceplugin->attachParserAction(this);
+			  addToolBar( logsourceplugin->getToolbar() );
+
+				m_logSourcePlugins.push_back(logsourceplugin);
+			}
+		}
+		else
+		{
+			//qDebug() << pluginFileName << " Error: " << pluginLoader.errorString();
+		}
+	}
+
+	for (QString dirName: basePath.entryList(QDir::Dirs|QDir::NoDotAndDotDot))
+	{
+		QDir nextDir( basePath );
+		nextDir.cd(dirName);
+		loadPlugins( nextDir );
+	}
 }
 
 void LogfileAnalyser::subWindowDestroyed(QObject *obj)
@@ -137,11 +151,6 @@ void LogfileAnalyser::showDocumentation()
   qDebug() << "ShuwDocumentation";
 
   m_helpAssistant->showDocumentation("index.html");
-}
-
-LogfileAnalyser::~LogfileAnalyser()
-{
-	delete m_log4cplusIntegration;
 }
 
 void LogfileAnalyser::openLogfile(const QString &fileName)

@@ -21,6 +21,7 @@ SET(LFA_SOURCES
 	FilterListView.cpp
 	LogEntryTableWindow.cpp
 	logfileanalyser.cpp
+	ParserActionInterface.cpp
 	main.cpp	
 	
 	GUI/DialogExportOptions.cpp
@@ -46,6 +47,7 @@ ADD_SUBDIRECTORY(GUITools)
 ADD_SUBDIRECTORY(Help)
 ADD_SUBDIRECTORY(LogData)
 ADD_SUBDIRECTORY(Models)
+ADD_SUBDIRECTORY(Plugins)
 
 #LINK_DIRECTORIES(
 #  ${CMAKE_CURRENT_BINARY_DIR}/ActionRules
@@ -90,12 +92,13 @@ TARGET_LINK_LIBRARIES( LogWitch
    	${LFA_LOGDATA_LIB}
   	${LFA_MODELS_LIB}
   	${QT_LIBRARIES}
-  	${LOG4CPLUS_LIBRARIES}
 )
+
+TARGET_COMPILE_DEFINITIONS( LogWitch PRIVATE -DLW_PLUGIN_DIR="${LW_BIN_TO_PLUGIN_DIR}" )
 
 ###################### Installation
 install (TARGETS LogWitch
-         RUNTIME DESTINATION bin )
+         RUNTIME DESTINATION "${LW_BINARY_DIR}" )
          
 IF(NOT UNIX)
 	INSTALL( FILES ${QT_LIBRARY_DIR}/QtCore4.dll
@@ -104,8 +107,7 @@ IF(NOT UNIX)
 		${QT_LIBRARY_DIR}/QtSvg4.dll
 		${QT_LIBRARY_DIR}/QtXml4.dll
 		${PACKAGING_ADDDIR}/qt.conf
-		${LOG4CPLUS_DLL}
-		DESTINATION bin )
+		DESTINATION "${LW_BINARY_DIR}" )
 	INSTALL( FILES ${QT_PLUGINS_DIR}/imageformats/qsvg4.dll
 		DESTINATION bin/plugins/imageformats )
 ENDIF()

@@ -21,6 +21,9 @@
 #include "LogData/LogEntryFactory.h"
 #include "LogData/LogEntryParser.h"
 
+namespace logwitch { namespace plugins { namespace log4cplus {
+
+
 class LogEntryParser_log4cplusSocket_Receiver;
 
 class LogEntryParser_log4cplusSocket
@@ -37,7 +40,7 @@ public:
 
 	QString getName() const;
 
-    bool initParser();
+  bool initParser();
 
 	void startEmiting();
 
@@ -108,11 +111,13 @@ private:
 private:
 	QTcpSocket *m_socket;
 
-	boost::shared_ptr<log4cplus::helpers::SocketBuffer> m_buffer;
+	boost::shared_ptr<::log4cplus::helpers::SocketBuffer> m_buffer;
 	quint64 m_bytesNeeded;
 	bool m_stateReadSize;
 
 	LogEntryParser_log4cplusSocket *m_server;
 };
+
+}}}
 
 #endif /* LOGENTRYPARSER_LOG4CPLUSSOCKET_H_ */

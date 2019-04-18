@@ -5,12 +5,15 @@
  *      Author: sven
  */
 
-#include <LogData/EntryToTextFormaterLog4cplus.h>
+#include "Plugins/LogSource/log4cplus/EntryToTextFormaterLog4cplus.h"
+
 #include <QTextStream>
 #include <QTextDocument>
 
 #include "LogData/LogEntry.h"
 #include "LogData/LogEntryFactory.h"
+
+using namespace logwitch::plugins::log4cplus;
 
 QString EntryToTextFormaterLog4cplus::formatEntry( TconstSharedLogEntry entry ) const
 {
