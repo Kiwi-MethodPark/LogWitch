@@ -25,6 +25,52 @@
 #include "ActionRules/FilterRuleSelectionWindow.h"
 #include "Help/HelpAssistant.h"
 
+
+
+Log4cplusGUIIntegration::Log4cplusGUIIntegration( ParserActionInterface* parserActionIfc )
+: m_parserActionIfc(parserActionIfc)
+{
+	m_toolbar = new QToolBar("Log4cplus v2.2");
+
+	QAction* actionOpenServer = new QAction(this);
+	actionOpenServer->setObjectName(QStringLiteral("actionOpenLog4cplusServer"));
+	QIcon icon1;
+	icon1.addFile(QStringLiteral(":/icons/network"), QSize(), QIcon::Normal, QIcon::On);
+	actionOpenServer->setIcon(icon1);
+
+	actionOpenServer->setText(QApplication::translate("Plugin_Source_Log4cplus", "Start Server", Q_NULLPTR));
+#ifndef QT_NO_TOOLTIP
+	actionOpenServer->setToolTip(QApplication::translate("Plugin_Source_Log4cplus", "Starts the Log4cplus logging server.", Q_NULLPTR));
+#endif // QT_NO_TOOLTIP
+
+	QLabel *portLabel = new QLabel(QApplication::translate("Plugin_Source_Log4cplus", "Port: ", Q_NULLPTR));
+	m_port = new QSpinBox(m_toolbar);
+	m_port->setToolTip(QApplication::translate("Plugin_Source_Log4cplus", "Port to listen for log4cplus socket appender", Q_NULLPTR));
+	m_port->setMinimum(1);
+	m_port->setMaximum(65535);
+	m_port->setValue(9998);
+
+	m_toolbar->addAction(actionOpenServer);
+	m_toolbar->addWidget(portLabel);
+	m_toolbar->addWidget(m_port);
+
+	QObject::connect(actionOpenServer, SIGNAL(triggered()), this, SLOT(openPort()));
+}
+
+Log4cplusGUIIntegration::~Log4cplusGUIIntegration()
+{
+	delete m_toolbar;
+}
+
+void Log4cplusGUIIntegration::openPort()
+{
+  int port = m_port->value();
+  boost::shared_ptr<LogEntryParser_log4cplusSocket> socketParser(
+    new LogEntryParser_log4cplusSocket(port));
+
+  m_parserActionIfc->newParser(socketParser);
+}
+
 LogfileAnalyser::LogfileAnalyser(QWidget *parent)
   : QMainWindow(parent),
     m_myFilterDock( NULL),
@@ -33,16 +79,8 @@ LogfileAnalyser::LogfileAnalyser(QWidget *parent)
 {
   ui.setupUi(this);
 
-  QString tooltipLog4CPlusPort("Port to listen for log4cplus socket appender");
-
-  QLabel *portLabel = new QLabel("Port: ");
-  m_uiLog4cplusPort = new QSpinBox(this);
-  m_uiLog4cplusPort->setToolTip(tooltipLog4CPlusPort);
-  m_uiLog4cplusPort->setMinimum(1);
-  m_uiLog4cplusPort->setMaximum(65535);
-  m_uiLog4cplusPort->setValue(9998);
-  ui.ToolbarLog4cplus->addWidget(portLabel);
-  m_uiLog4cplusPort_Action = ui.ToolbarLog4cplus->addWidget(m_uiLog4cplusPort);
+  m_log4cplusIntegration = new Log4cplusGUIIntegration(this);
+  addToolBar( m_log4cplusIntegration->getToolbar() );
 
   m_stateSaver = new WidgetStateSaver(this);
   m_stateSaver->addElementToWatch(&m_signalMultiplexer,
@@ -53,7 +91,6 @@ LogfileAnalyser::LogfileAnalyser(QWidget *parent)
   QObject::connect(ui.actionAddEntries, SIGNAL(triggered()), this, SLOT(moreDummyLogfile()));
   QObject::connect(ui.actionOpen, SIGNAL(triggered()), this, SLOT(openLogfile()));
   QObject::connect(ui.actionExportLogfile, SIGNAL(triggered()), this, SLOT(exportLogfile()));
-  QObject::connect(ui.actionOpenLog4cplusServer, SIGNAL(triggered()), this, SLOT(openPort()));
   QObject::connect(ui.mdiArea, SIGNAL(subWindowActivated ( QMdiSubWindow *)), this,
                    SLOT(subWindowActivated( QMdiSubWindow * )));
 
@@ -104,7 +141,7 @@ void LogfileAnalyser::showDocumentation()
 
 LogfileAnalyser::~LogfileAnalyser()
 {
-
+	delete m_log4cplusIntegration;
 }
 
 void LogfileAnalyser::openLogfile(const QString &fileName)
@@ -148,13 +185,9 @@ void LogfileAnalyser::openLogfile()
   }
 }
 
-void LogfileAnalyser::openPort()
+void LogfileAnalyser::newParser(boost::shared_ptr<LogEntryParser> parser, bool alreadyInitialized)
 {
-  int port = m_uiLog4cplusPort->value();
-  boost::shared_ptr<LogEntryParser_log4cplusSocket> socketParser(
-    new LogEntryParser_log4cplusSocket(port));
-
-  createWindowsFromParser(socketParser);
+	createWindowsFromParser( parser, alreadyInitialized);
 }
 
 void LogfileAnalyser::createWindowsFromParser(boost::shared_ptr<LogEntryParser> parser, bool alreadyInitialized)
