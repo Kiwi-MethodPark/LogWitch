@@ -18,3 +18,4 @@ ADD_LIBRARY(${LFA_PLUGINS_BASIC_LIB} STATIC ${LFA_PLUGINS_BASIC_LIB_SOURCES} ${L
 ################################################################################
 # Add plugins now
 ADD_SUBDIRECTORY(log4cplus)
+ADD_SUBDIRECTORY(dummy)

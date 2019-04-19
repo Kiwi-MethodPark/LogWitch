@@ -1,5 +1,4 @@
 SET(LFA_LOGDATA_MOC_CLASSES
-	LogEntryParser_dummy.h
   LogEntryParser_Logfile.h
   LogEntryParser_LogfileLWI.h
   NewLogEntryMessage.h
@@ -13,7 +12,6 @@ SET(LFA_LOGDATA_LIB_SOURCES
   LogEntry.cpp
   LogEntryAttributeNames.cpp
   LogEntryFactory.cpp
-  LogEntryParser_dummy.cpp
   LogEntryParser_Logfile.cpp
   LogEntryParser_LogfileLWI.cpp
   LogEntryParserModelConfiguration.cpp

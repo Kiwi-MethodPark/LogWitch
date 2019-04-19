@@ -46,8 +46,6 @@ private:
 
   Ui::LogfileAnalyserClass ui;
 
-  boost::shared_ptr<LogEntryParser_dummy> m_parser;
-
   QDockWidget *m_myFilterDock;
   QDockWidget *m_myFilterRulesDock;
 
@@ -64,10 +62,6 @@ private:
   std::list< logwitch::plugins::LogSourcePlugin* > m_logSourcePlugins;
 
 private slots:
-  void openDummyLogfile();
-
-  void moreDummyLogfile();
-
   void openLogfile();
 
   void exportLogfile();

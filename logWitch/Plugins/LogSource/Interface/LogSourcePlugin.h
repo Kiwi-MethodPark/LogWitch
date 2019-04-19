@@ -54,6 +54,13 @@ namespace logwitch {
 		 * @return The toolbar or null_ptr if there is no toolbar to display.
 		 */
 		virtual QToolBar* getToolbar() = 0;
+
+		/**
+		 * The plugin will fill this menu with custom actions or something else. The
+		 * menu given is located in the "Log Source" menu. The plugin can also do
+		 * nothing if it is not necessary.
+		 */
+		virtual void fillMenu( QMenu* menu ) = 0;
 	};
 }}
 
@@ -75,6 +82,8 @@ namespace logwitch { namespace plugins {
 		virtual const LogSourcePluginDesription& getDescription() const { return m_pluginDescription; }
 
 		virtual QToolBar* getToolbar() override { return nullptr; }
+
+		virtual void fillMenu( QMenu* menu ) override { };
 
 		void attachParserAction( logwitch::ParserActionInterface* parserActionIfc ) override { m_parserActionIfc = parserActionIfc; }
 

@@ -35,9 +35,12 @@
     </property>
     <addaction name="actionOpen"/>
     <addaction name="actionExportLogfile"/>
-    <addaction name="actionOpenDummyLogger"/>
-    <addaction name="actionAddEntries"/>
    </widget>
+   <widget class="QMenu" name="menuLogSources">
+    <property name="title">
+     <string>Log Sources</string>
+    </property>
+   </widget>   
    <widget class="QMenu" name="menuHelp">
     <property name="title">
      <string>Help</string>
@@ -45,6 +48,7 @@
     <addaction name="actionHelp"/>
    </widget>
    <addaction name="menuFile"/>
+   <addaction name="menuLogSources"/>
    <addaction name="menuHelp"/>
   </widget>
   <widget class="QStatusBar" name="statusbar"/>

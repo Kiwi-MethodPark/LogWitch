@@ -9,7 +9,6 @@
 #include <QMessageBox>
 #include <QSpinBox>
 
-#include "LogData/LogEntryParser_dummy.h"
 #include "LogData/LogEntryFactory.h"
 #include "LogData/ParserStreamGetterFile.h"
 
@@ -42,8 +41,6 @@ LogfileAnalyser::LogfileAnalyser(QWidget *parent)
                                   SignalMultiplexerStateApplier::generate(&m_signalMultiplexer));
 
   QObject::connect(ui.actionHelp, SIGNAL(triggered()), this, SLOT(showDocumentation()));
-  QObject::connect(ui.actionOpenDummyLogger, SIGNAL(triggered()), this, SLOT(openDummyLogfile()));
-  QObject::connect(ui.actionAddEntries, SIGNAL(triggered()), this, SLOT(moreDummyLogfile()));
   QObject::connect(ui.actionOpen, SIGNAL(triggered()), this, SLOT(openLogfile()));
   QObject::connect(ui.actionExportLogfile, SIGNAL(triggered()), this, SLOT(exportLogfile()));
   QObject::connect(ui.mdiArea, SIGNAL(subWindowActivated ( QMdiSubWindow *)), this,
@@ -102,7 +99,11 @@ void LogfileAnalyser::loadPlugins(QDir basePath)
 			{
 				qDebug() << " Plugin is of type LogSourcePlugin";
 				logsourceplugin->attachParserAction(this);
-			  addToolBar( logsourceplugin->getToolbar() );
+				QToolBar* toolbar = logsourceplugin->getToolbar();
+				if (toolbar)
+				  addToolBar(toolbar);
+
+			  logsourceplugin->fillMenu( ui.menuLogSources );
 
 				m_logSourcePlugins.push_back(logsourceplugin);
 			}
@@ -259,22 +260,6 @@ void LogfileAnalyser::createWindowsFromParser(boost::shared_ptr<LogEntryParser> 
 
 }
 
-void LogfileAnalyser::openDummyLogfile()
-{
-  // Create table with log entries and a new model for this
-  boost::shared_ptr<LogEntryParser_dummy> parser(new LogEntryParser_dummy);
-  m_parser = parser;
-
-  createWindowsFromParser(parser);
-}
-
-void LogfileAnalyser::moreDummyLogfile()
-{
-  if (!m_parser)
-    return;
-
-  m_parser->addEntries(100);
-}
 
 void LogfileAnalyser::exportLogfile()
 {

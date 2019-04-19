@@ -14,6 +14,10 @@
 
 #include "Plugins/LogSource/log4cplus/LogEntryParser_log4cplusSocket.h"
 
+namespace{
+  const QString settingskey_port("plugins/log4cplus/port");
+}
+
 using namespace logwitch::plugins::log4cplus;
 
 Log4cplusGUIIntegration::Log4cplusGUIIntegration ()
@@ -22,6 +26,8 @@ Log4cplusGUIIntegration::Log4cplusGUIIntegration ()
   m_pluginDescription.description =
       "Plugin supports log4cplus framework with the remote logging socket appender.";
   m_pluginDescription.version = "1.0.0";
+
+  QSettings settings;
 
   m_toolbar = new QToolBar("Log4cplus");
 
@@ -51,7 +57,7 @@ Log4cplusGUIIntegration::Log4cplusGUIIntegration ()
                               Q_NULLPTR));
   m_port->setMinimum(1);
   m_port->setMaximum(65535);
-  m_port->setValue(9998);
+  m_port->setValue( settings.value( settingskey_port, 9998).toInt() );
 
   m_toolbar->addAction(actionOpenServer);
   m_toolbar->addWidget(portLabel);
@@ -63,6 +69,9 @@ Log4cplusGUIIntegration::Log4cplusGUIIntegration ()
 
 Log4cplusGUIIntegration::~Log4cplusGUIIntegration ()
 {
+  QSettings settings;
+  settings.setValue(settingskey_port, m_port->value() );
+
   delete m_toolbar;
 }
 
