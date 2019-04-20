@@ -94,6 +94,7 @@ SET(LFA_PLUGINS_BASIC_LIB "logfileanalyzer_plugins_basic_lib")
 
 SET(LFA_PLUGIN_LOG4CPLUS_LIB "logwitch_plugin_log4cplus")
 SET(LFA_PLUGIN_DUMMY_LIB "logwitch_plugin_dummy")
+SET(LFA_PLUGIN_PYTHON_LIB "logwitch_plugin_python")
 
 IF(USEQT5)
    include_directories(

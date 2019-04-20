@@ -115,10 +115,16 @@ LogEntryAttributeNames::LogEntryAttributeNames()
 ,attDescTimestamp("timestamp",tr("Timestamp"))
 ,attDescMessage("message",tr("Log Message"))
 ,attDescLoglevel("level",tr("Loglevel"))
+,attDescLoglevelNo("levelNo",tr("Loglevel #"))
 ,attDescNDC("ndc",tr("Nested Diagnostic content"))
 ,attDescThread("thread",tr("Thread"))
+,attDescThreadName("threadName",tr("Thread Name"))
 ,attDescLogger("logger",tr("Logger"))
 ,attDescFileSource("fsource",tr("File Source"))
+,attDescFilename("filename",tr("File Name"))
+,attDescProcess("process",tr("Process"))
+,attDescProcessName("processName",tr("Process Name"))
+,attDescFunctionName("funcName",tr("Function Name"))
 ,m_defaultCellIfo( false, 150, AttributeConfiguration::TQStringPair("unknown", tr("Unknown") ), boost::make_shared<QStringToVariant>() )
 {
     m_defaultCellIfos.insert( StringIntMap::value_type( attDescNumber.first       , AttributeConfiguration( false, 60 , attDescNumber
@@ -129,6 +135,8 @@ LogEntryAttributeNames::LogEntryAttributeNames()
             , boost::make_shared<QStringToVariant>() ) ) );
     m_defaultCellIfos.insert( StringIntMap::value_type( attDescLoglevel.first     , AttributeConfiguration( true,  70 , attDescLoglevel
             , boost::make_shared<QStringToVariant>() ) ) );
+    m_defaultCellIfos.insert( StringIntMap::value_type( attDescLoglevelNo.first     , AttributeConfiguration( true,  70 , attDescLoglevelNo
+            , boost::make_shared<QStringToVariant>() ) ) );
     m_defaultCellIfos.insert( StringIntMap::value_type( attDescNDC.first          , AttributeConfiguration( true,  100, attDescNDC
             , boost::make_shared<QStringToVariant>() ) ) );
     m_defaultCellIfos.insert( StringIntMap::value_type( attDescThread.first       , AttributeConfiguration( true,  70 , attDescThread
@@ -136,6 +144,16 @@ LogEntryAttributeNames::LogEntryAttributeNames()
     m_defaultCellIfos.insert( StringIntMap::value_type( attDescLogger.first       , AttributeConfiguration( true,  250, attDescLogger
             , boost::make_shared<QStringToVariant>() ) ) );
     m_defaultCellIfos.insert( StringIntMap::value_type( attDescFileSource.first   , AttributeConfiguration( true,  150, attDescFileSource
+            , boost::make_shared<QStringToVariant>() ) ) );
+    m_defaultCellIfos.insert( StringIntMap::value_type( attDescFilename.first   , AttributeConfiguration( true,  100, attDescFilename
+            , boost::make_shared<QStringToVariant>() ) ) );
+    m_defaultCellIfos.insert( StringIntMap::value_type( attDescThreadName.first   , AttributeConfiguration( true,  125, attDescThreadName
+            , boost::make_shared<QStringToVariant>() ) ) );
+    m_defaultCellIfos.insert( StringIntMap::value_type( attDescProcess.first   , AttributeConfiguration( true,  70, attDescProcess
+            , boost::make_shared<QStringToVariant>() ) ) );
+    m_defaultCellIfos.insert( StringIntMap::value_type( attDescProcessName.first   , AttributeConfiguration( true,  125, attDescProcessName
+            , boost::make_shared<QStringToVariant>() ) ) );
+    m_defaultCellIfos.insert( StringIntMap::value_type( attDescFunctionName.first   , AttributeConfiguration( true,  125, attDescFunctionName
             , boost::make_shared<QStringToVariant>() ) ) );
 }
 

@@ -6,6 +6,7 @@
         <file alias="information">../icons/information.svg</file>
         <file alias="minus">../icons/minus.svg</file>
         <file alias="network">../icons/network.svg</file>
+        <file alias="networkPython">../icons/customized/networkPython.svg</file>
         <file alias="plus">../icons/plus.svg</file>
         <file alias="search">../icons/magnify.svg</file>
         <file alias="searchDown">../icons/downArrow.svg</file>

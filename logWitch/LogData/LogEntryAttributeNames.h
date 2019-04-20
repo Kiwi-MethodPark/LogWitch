@@ -66,10 +66,16 @@ private:
     const AttributeConfiguration::TQStringPair attDescTimestamp;
     const AttributeConfiguration::TQStringPair attDescMessage;
     const AttributeConfiguration::TQStringPair attDescLoglevel;
+    const AttributeConfiguration::TQStringPair attDescLoglevelNo;
     const AttributeConfiguration::TQStringPair attDescNDC;
     const AttributeConfiguration::TQStringPair attDescThread;
+    const AttributeConfiguration::TQStringPair attDescThreadName;
     const AttributeConfiguration::TQStringPair attDescLogger;
     const AttributeConfiguration::TQStringPair attDescFileSource;
+    const AttributeConfiguration::TQStringPair attDescFilename;
+    const AttributeConfiguration::TQStringPair attDescProcess;
+    const AttributeConfiguration::TQStringPair attDescProcessName;
+    const AttributeConfiguration::TQStringPair attDescFunctionName;
 
     typedef std::map<QString, AttributeConfiguration> StringIntMap;
 
