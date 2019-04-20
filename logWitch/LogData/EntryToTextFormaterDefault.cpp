@@ -24,7 +24,7 @@ QString EntryToTextFormaterDefault::formatEntry(TconstSharedLogEntry entry) cons
   {
     if (i != messageId)
       str << "<b>" << entry->getFactory().getDescLong(i) << ":</b> "
-        << *entry->getAttributeAsString(i) << "<br/>";
+        << entry->getAttributeAsString(i)->toHtmlEscaped() << "<br/>";
   }
 
   if (entry->getFactory().getNumberOfFields() > messageId)
