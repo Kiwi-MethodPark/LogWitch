@@ -34,7 +34,7 @@ Log4cplusGUIIntegration::Log4cplusGUIIntegration ()
   QAction* actionOpenServer = new QAction(this);
   actionOpenServer->setObjectName(QStringLiteral("actionOpenLog4cplusServer"));
   QIcon icon1;
-  icon1.addFile(QStringLiteral(":/icons/network"), QSize(), QIcon::Normal,
+  icon1.addFile(QStringLiteral(":/icons/networkLog4CPlus"), QSize(), QIcon::Normal,
                 QIcon::On);
   actionOpenServer->setIcon(icon1);
 
