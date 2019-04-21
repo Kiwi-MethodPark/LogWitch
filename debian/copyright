@@ -1,11 +1,36 @@
 Format: http://www.debian.org/doc/packaging-manuals/copyright-format/1.0/
 Upstream-Name: LogWitch
-Upstream-Contact: Sven Steckmanne <logwitch@steckmann.de>
+Upstream-Contact: Sven Steckmann <logwitch@steckmann.de>
 Source: http://www.steckmann.de
+
 Files: *
-Copyright: 2013 Sven Steckmann 
-License: proprietary
- This program is distributed in the hope that it will be
- useful, but WITHOUT ANY WARRANTY; without even the implied
- warranty of MERCHANTABILITY or FITNESS FOR A PARTICULAR
- PURPOSE.
+Copyright: 2013-2019 Sven Steckmann
+License: GPL-3+
+
+Files: icons/*
+Copyright: opencliparts.org
+License: CC0
+
+License: GPL-3+
+ This program is free software; you can redistribute it and/or modify
+ it under the terms of the GNU General Public License as published by
+ the Free Software Foundation; either version 3 of the License, or
+ (at your option) any later version. 
+ .
+ This program is distributed in the hope that it will be useful,
+ but WITHOUT ANY WARRANTY; without even the implied warranty of
+ MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE. See the
+ GNU General Public License for more details.
+ .
+ You should have received a copy of the GNU General Public License along
+ with this program; if not, write to the Free Software Foundation, Inc.,
+ 51 Franklin Street, Fifth Floor, Boston, MA 02110-1301 USA.
+ .
+ On Debian systems, the full text of the GNU General Public
+ License version 2 can be found in the file
+ '/usr/share/common-licenses/GPL-3'.
+ 
+License: CC0
+ On Debian systems, the full text of the CC0
+ License can be found in the file
+ '/usr/share/common-licenses/CC0-1.0'.
