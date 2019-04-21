@@ -33,6 +33,10 @@ OPTION (USEQT5 "QT5 library usage instead of 4" ON)
 # Set Log4Cplus version 2
 OPTION (USELOG4CPLUSV2 "Search for version 2 log4cplus library" OFF)
 
+OPTION (WITH_PLUGINLOG4CPLUS "Compile logt4cplus plugin" ON)
+OPTION (WITH_PLUGINPYTHON "Compile python plugin" ON)
+OPTION (WITH_PLUGINDUMMY "Compile python plugin" ON)
+
 IF(USEQT5)
   CMAKE_MINIMUM_REQUIRED(VERSION 2.8.11 FATAL_ERROR)
   MESSAGE(STATUS "Use QT5 für build.")
@@ -113,11 +117,11 @@ IF(NOT WITHOUT_TEST)
   ENABLE_TESTING()
 ENDIF()
 
-SET(LW_PLUGIN_DIR usr/lib/logwitch)
+SET(LW_PLUGIN_DIR lib/logwitch)
 SET(LW_BINARY_DIR bin)
 
 # This directory is relative to bin to ensure install in custom destinations will work. 
-SET(LW_BIN_TO_PLUGIN_DIR ../usr/lib/logwitch)
+SET(LW_BIN_TO_PLUGIN_DIR ../lib/logwitch)
 
 
 
