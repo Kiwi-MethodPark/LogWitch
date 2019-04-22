@@ -8,9 +8,10 @@ Used libraries:
 ---------------
 
 - boost
-- Qt4 (>4.7)
+- Qt5
     need component Network
 - log4cplus
+- python3
 
 
 qtdeclarative5-dev
