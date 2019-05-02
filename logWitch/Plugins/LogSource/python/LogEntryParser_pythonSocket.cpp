@@ -329,7 +329,7 @@ TSharedLogEntry LogEntryParser_pythonSocket_Receiver::bufferToEntry ()
 
   try
   {
-    // if (m_pickleImport.is_none())
+    if (m_pickleImport.is_none())
     {
       Py_Initialize();
       m_pickleImport = py::import("pickle");
