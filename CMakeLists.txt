@@ -36,6 +36,8 @@ OPTION (USELOG4CPLUSV2 "Search for version 2 log4cplus library" OFF)
 OPTION (WITH_PLUGINLOG4CPLUS "Compile logt4cplus plugin" ON)
 OPTION (WITH_PLUGINPYTHON "Compile python plugin" ON)
 OPTION (WITH_PLUGINDUMMY "Compile python plugin" ON)
+set(QT5_BASE_DIR "Default" CACHE STRING "")
+
 
 IF(USEQT5)
   CMAKE_MINIMUM_REQUIRED(VERSION 2.8.11 FATAL_ERROR)
@@ -85,9 +87,13 @@ ENDIF()
 FIND_PACKAGE(Boost REQUIRED)
 
 set(CMAKE_CXX_STANDARD 11)
-
-set(CMAKE_CXX_FLAGS_RELEASE        "-pipe -O2    -fvisibility-inlines-hidden -fdiagnostics-show-option -fno-strict-aliasing -Wall -Werror  -Wl,--as-needed -fPIC -DNDEBUG")
-set(CMAKE_CXX_FLAGS_DEBUG          "-pipe -O0 -g -fvisibility-inlines-hidden -fdiagnostics-show-option -Wall -Werror -Wl,--as-needed -fPIC")
+if(UNIX)
+	set(CMAKE_CXX_FLAGS_RELEASE        "-pipe -O2    -fvisibility-inlines-hidden -fdiagnostics-show-option -fno-strict-aliasing -Wall -Werror  -Wl,--as-needed -fPIC -DNDEBUG")
+	set(CMAKE_CXX_FLAGS_DEBUG          "-pipe -O0 -g -fvisibility-inlines-hidden -fdiagnostics-show-option -Wall -Werror -Wl,--as-needed -fPIC")
+else(UNIX)
+	set(CMAKE_CXX_FLAGS_RELEASE        "/O2 --Zc:wchar_t /wd4100 /wd4002 /wd4101 /wd4541 /wd4065 /wd4996 /wd4244 /GR /bigobj /MP -MD")
+	set(CMAKE_CXX_FLAGS_DEBUG          "/Od /ZI -Zc:wchar_t /wd4100 /wd4002 /wd4101 /wd4541 /wd4065 /wd4996 /wd4244 /GR /bigobj /MP -MDd")
+endif(UNIX)
 
 SET(LFA_RULES_LIB "logfileanalyzer_rules_lib")
 SET(LFA_GUITOOLS_LIB "logfileanalyzer_guitools_lib")
@@ -192,7 +198,10 @@ IF(EXISTS "${CMAKE_ROOT}/Modules/CPack.cmake")
       SET(CPACK_DEBIAN_PACKAGE_DEPENDS "libc6, liblog4cplus-1.1-9 (>= 1.1), libqt5core5a:amd64 (>=5.9), libqt5gui5:amd64 (>=5.9), libqt5network5:amd64 (>=5.9), libqt5help5 (>=5.9)")
 	ENDIF()
   ELSE()
-    message( FATAL_ERROR "Unable to determine distribution version: ${TARGET_SYSTEM}" )
+	if(UNIX)
+    	message( FATAL_ERROR "Unable to determine distribution version: ${TARGET_SYSTEM}" )
+	endif(UNIX)
+	
   ENDIF()
 
   # generate a Debian compliant changelog
