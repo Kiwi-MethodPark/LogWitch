@@ -91,7 +91,7 @@ if(UNIX)
 	set(CMAKE_CXX_FLAGS_RELEASE        "-pipe -O2    -fvisibility-inlines-hidden -fdiagnostics-show-option -fno-strict-aliasing -Wall -Werror  -Wl,--as-needed -fPIC -DNDEBUG")
 	set(CMAKE_CXX_FLAGS_DEBUG          "-pipe -O0 -g -fvisibility-inlines-hidden -fdiagnostics-show-option -Wall -Werror -Wl,--as-needed -fPIC")
 else(UNIX)
-	set(CMAKE_CXX_FLAGS_RELEASE        "/O2 --Zc:wchar_t /wd4100 /wd4002 /wd4101 /wd4541 /wd4065 /wd4996 /wd4244 /GR /bigobj /MP -MD")
+	set(CMAKE_CXX_FLAGS_RELEASE        "/O2 --Zc:wchar_t /wd4100 /wd4002 /wd4101 /wd4541 /wd4065 /wd4996 /wd4244 /GR /bigobj /MP -MD -DNDEBUG")
 	set(CMAKE_CXX_FLAGS_DEBUG          "/Od /ZI -Zc:wchar_t /wd4100 /wd4002 /wd4101 /wd4541 /wd4065 /wd4996 /wd4244 /GR /bigobj /MP -MDd")
 endif(UNIX)
 
