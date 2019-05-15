@@ -29,6 +29,11 @@ int main(int argc, char *argv[])
   QCoreApplication::setApplicationVersion( globals::applicationVersion );
 
   QApplication a(argc, argv);
+#ifdef WIN32  
+  QSettings::setDefaultFormat(QSettings::IniFormat);
+  QSettings::setPath(QSettings::IniFormat, QSettings::UserScope, QApplication::applicationDirPath());
+#endif
+
   LogfileAnalyser w;
 
   QCommandLineParser parser;
