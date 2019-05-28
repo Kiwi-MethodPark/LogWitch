@@ -94,6 +94,8 @@ if(UNIX)
 else(UNIX)
 	set(CMAKE_CXX_FLAGS_RELEASE        "/O2 --Zc:wchar_t /wd4100 /wd4002 /wd4101 /wd4541 /wd4065 /wd4996 /wd4244 /GR /bigobj /MP -MD -DNDEBUG")
 	set(CMAKE_CXX_FLAGS_DEBUG          "/Od /ZI -Zc:wchar_t /wd4100 /wd4002 /wd4101 /wd4541 /wd4065 /wd4996 /wd4244 /GR /bigobj /MP -MDd")
+	set (CMAKE_SHARED_LINKER_FLAGS 	   "${CMAKE_SHARED_LINKER_FLAGS} /LARGEADDRESSAWARE")
+	set (CMAKE_EXE_LINKER_FLAGS        "${CMAKE_EXE_LINKER_FLAGS} /LARGEADDRESSAWARE")
 endif(UNIX)
 
 SET(LFA_RULES_LIB "logfileanalyzer_rules_lib")
