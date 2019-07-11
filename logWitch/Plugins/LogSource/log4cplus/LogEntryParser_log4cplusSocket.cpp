@@ -13,7 +13,12 @@
 #include <iostream>
 
 #include <log4cplus/socketappender.h>
+#include <log4cplus/version.h>
 #include <log4cplus/spi/loggingevent.h>
+
+#if LOG4CPLUS_VERSION >= 2000000
+#define LOG4CPLUSV2
+#endif
 
 #ifdef LOG4CPLUSV2
 #include <log4cplus/helpers/timehelper.h>
