@@ -279,7 +279,7 @@ TSharedLogEntry LogEntryParser_log4cplusSocket_Receiver::bufferToEntry ()
 
 #if QT_VERSION > 0x040700 //needs > Qt.4.7
 # ifdef LOG4CPLUSV2
-  using namespace log4cplus::helpers;
+  using namespace ::log4cplus::helpers;
   QDateTime timestamp( QDateTime::fromMSecsSinceEpoch ( qint64(to_time_t (event.getTimestamp())) * 1000
           + ((qint64( microseconds_part(event.getTimestamp())/1000)%1000) ) ) );
 # else
