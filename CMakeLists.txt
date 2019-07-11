@@ -75,6 +75,7 @@ IF(USEQT5)
   FIND_PACKAGE(Qt5Widgets REQUIRED)
   FIND_PACKAGE(Qt5Network REQUIRED)
   FIND_PACKAGE(Qt5Concurrent REQUIRED)
+  FIND_PACKAGE(Qt5Help REQUIRED)
   #find_package(Qt5 COMPONENTS Core Widgets)
   
   FIND_PACKAGE(Qt5Collectiongenerator REQUIRED)
