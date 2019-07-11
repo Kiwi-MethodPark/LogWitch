@@ -24,4 +24,3 @@ if (NOT TARGET Qt5::qcollectiongenerator)
 endif()
 
 set(Qt5_QCOLLECTIONGENERATOR_EXECUTABLE Qt5::qcollectiongenerator)
-                                                                                   
