@@ -199,7 +199,7 @@ IF(EXISTS "${CMAKE_ROOT}/Modules/CPack.cmake")
 	ENDIF()
   ELSE()
 	if(UNIX)
-    	message( FATAL_ERROR "Unable to determine distribution version: ${TARGET_SYSTEM}" )
+    	message( WARNING "Unable to determine distribution version: ${TARGET_SYSTEM}" )
 	endif(UNIX)
 	
   ENDIF()
