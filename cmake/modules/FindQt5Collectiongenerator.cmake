@@ -17,15 +17,10 @@ if (NOT TARGET Qt5::qcollectiongenerator)
 	if(WIN32)
 		set(imported_location "${QT5_BASE_DIR}/bin/qcollectiongenerator.exe")
 		_qt5_HelpTools_check_file_exists(${imported_location})
-	else(WIN32)
-    	set(imported_location "/usr/lib/x86_64-linux-gnu/qt5/bin/qcollectiongenerator")
-    	_qt5_HelpTools_check_file_exists(${imported_location})
+		set_target_properties(Qt5::qcollectiongenerator PROPERTIES
+			IMPORTED_LOCATION ${imported_location}
+		)
 	endif(WIN32)
-
-    set_target_properties(Qt5::qcollectiongenerator PROPERTIES
-        IMPORTED_LOCATION ${imported_location}
-    )
 endif()
 
 set(Qt5_QCOLLECTIONGENERATOR_EXECUTABLE Qt5::qcollectiongenerator)
-                                                                                   

@@ -13,7 +13,12 @@
 #include <iostream>
 
 #include <log4cplus/socketappender.h>
+#include <log4cplus/version.h>
 #include <log4cplus/spi/loggingevent.h>
+
+#if LOG4CPLUS_VERSION >= 2000000
+#define LOG4CPLUSV2
+#endif
 
 #ifdef LOG4CPLUSV2
 #include <log4cplus/helpers/timehelper.h>
@@ -274,7 +279,7 @@ TSharedLogEntry LogEntryParser_log4cplusSocket_Receiver::bufferToEntry ()
 
 #if QT_VERSION > 0x040700 //needs > Qt.4.7
 # ifdef LOG4CPLUSV2
-  using namespace log4cplus::helpers;
+  using namespace ::log4cplus::helpers;
   QDateTime timestamp( QDateTime::fromMSecsSinceEpoch ( qint64(to_time_t (event.getTimestamp())) * 1000
           + ((qint64( microseconds_part(event.getTimestamp())/1000)%1000) ) ) );
 # else
