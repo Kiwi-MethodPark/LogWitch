@@ -18,6 +18,10 @@ To run logwitch:
 ```shell
 docker run -e DISPLAY -v $XAUTHORITY:/root/.Xauthority --net=host --privileged logwitch
 ```
+If you don't want to use privileged mode you can use [mviereck/x11docker](https://github.com/mviereck/x11docker)
+```shell
+x11docker -- -p 9998:9998 -- logwitch
+```
 <!-- or if you don't want to run the program in privileged mode.
 ```shell
 docker run -p 9998:9998 -e DISPLAY -v $XAUTHORITY:/root/.Xauthority -v /tmp/.X11-unix:/tmp/.X11-unix logwitch
